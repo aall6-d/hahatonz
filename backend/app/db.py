@@ -19,16 +19,13 @@ def get_db():
 def init_db():
     conn = get_db()
     conn.executescript("""
-        try:
-        conn.execute("ALTER TABLE tickets ADD COLUMN alt_used INTEGER DEFAULT 0")
-    except Exception:
-        pass
     CREATE TABLE IF NOT EXISTS tickets (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         category TEXT, title TEXT, problem_text TEXT,
         status TEXT DEFAULT 'new', state TEXT DEFAULT 'new',
         scenario_id TEXT, question_index INTEGER DEFAULT 0,
         answers TEXT DEFAULT '[]', confidence REAL DEFAULT 0,
+        alt_used INTEGER DEFAULT 0,
         created_at TEXT, updated_at TEXT
     );
     CREATE TABLE IF NOT EXISTS messages (
@@ -40,6 +37,11 @@ def init_db():
         ticket_id INTEGER, rating INTEGER, comment TEXT, created_at TEXT
     );
     """)
+    try:
+        conn.execute(
+            "ALTER TABLE tickets ADD COLUMN alt_used INTEGER DEFAULT 0")
+    except Exception:
+        pass
     conn.commit()
     conn.close()
 
@@ -66,7 +68,8 @@ def create_ticket(problem_text):
 
 def get_ticket(ticket_id):
     conn = get_db()
-    row = conn.execute("SELECT * FROM tickets WHERE id=?", (ticket_id,)).fetchone()
+    row = conn.execute(
+        "SELECT * FROM tickets WHERE id=?", (ticket_id,)).fetchone()
     conn.close()
     return dict(row) if row else None
 
@@ -94,8 +97,8 @@ def list_tickets():
 def add_message(ticket_id, role, content):
     conn = get_db()
     conn.execute(
-        "INSERT INTO messages (ticket_id, role, content, created_at) VALUES (?,?,?,?)",
-        (ticket_id, role, content, now()))
+        "INSERT INTO messages (ticket_id, role, content, created_at) "
+        "VALUES (?,?,?,?)", (ticket_id, role, content, now()))
     conn.commit()
     conn.close()
 
@@ -119,7 +122,7 @@ def add_answer(ticket_id, answer):
 def add_feedback(ticket_id, rating, comment):
     conn = get_db()
     conn.execute(
-        "INSERT INTO feedback (ticket_id, rating, comment, created_at) VALUES (?,?,?,?)",
-        (ticket_id, rating, comment, now()))
+        "INSERT INTO feedback (ticket_id, rating, comment, created_at) "
+        "VALUES (?,?,?,?)", (ticket_id, rating, comment, now()))
     conn.commit()
     conn.close()
