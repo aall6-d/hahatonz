@@ -8,30 +8,57 @@
 <style>
 :root{--red:#E30611;--red-d:#B00500;--pink:#FF8A92;--bg:#fff;--gray:#f5f5f7;--text:#1d1d1f;--muted:#86868b;--r:24px;--sh:0 10px 36px rgba(0,0,0,.07)}
 *{box-sizing:border-box;margin:0;padding:0}
-html{scroll-behavior:smooth}
-body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Roboto,sans-serif;background:var(--bg);color:var(--text);display:flex;flex-direction:column;height:100dvh;-webkit-font-smoothing:antialiased}
+html{scroll-behavior:smooth;overflow-x:hidden}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Roboto,sans-serif;background:var(--bg);color:var(--text);display:flex;flex-direction:column;height:100dvh;-webkit-font-smoothing:antialiased;overflow-x:hidden;
+cursor:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 26 26"><path d="M13 1 L15 10 L24 13 L15 16 L13 25 L11 16 L2 13 L11 10 Z" fill="%23E30611" stroke="white" stroke-width="1.5"/></svg>') 13 13,auto}
+button,a,input,textarea,.opts button,.stars span,header nav button{cursor:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 30 30"><circle cx="15" cy="15" r="12" fill="white" opacity=".85"/><path d="M15 3 L17.2 12.8 L27 15 L17.2 17.2 L15 27 L12.8 17.2 L3 15 L12.8 12.8 Z" fill="%23E30611"/></svg>') 15 15,pointer}
 ::selection{background:rgba(227,6,17,.14)}
 
-/* ===== ЖИДКОЕ СТЕКЛО: нейтральные стеклянные облака, видимые всегда ===== */
-.glass-bg{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
-.glass-bg i{position:absolute;display:block;backdrop-filter:blur(20px) saturate(1.15);-webkit-backdrop-filter:blur(20px) saturate(1.15);box-shadow:inset 0 1px 1px rgba(255,255,255,.8),inset 0 -2px 6px rgba(255,255,255,.4),0 16px 50px rgba(20,20,25,.05);opacity:.75;border:1px solid rgba(255,255,255,.55)}
-.glass-bg .g1{width:58vw;height:42vw;left:-14vw;top:-10vw;background:linear-gradient(145deg,rgba(236,236,240,.6),rgba(248,248,250,.25));animation:g-drift1 46s ease-in-out infinite,g-morph 23s ease-in-out infinite}
-.glass-bg .g2{width:50vw;height:38vw;right:-12vw;top:28vh;background:linear-gradient(145deg,rgba(243,240,238,.55),rgba(250,249,247,.22));animation:g-drift2 52s ease-in-out infinite,g-morph 29s ease-in-out infinite reverse}
-.glass-bg .g3{width:36vw;height:30vw;left:24vw;bottom:-12vh;background:linear-gradient(145deg,rgba(238,241,244,.5),rgba(248,250,251,.2));animation:g-drift3 58s ease-in-out infinite,g-morph 31s ease-in-out infinite}
-@keyframes g-morph{0%,100%{border-radius:58% 42% 55% 45%/52% 48% 52% 48%}33%{border-radius:45% 55% 48% 52%/58% 42% 55% 45%}66%{border-radius:52% 48% 42% 58%/45% 55% 45% 55%}}
-@keyframes g-drift1{0%,100%{transform:translate(0,0) rotate(0deg)}50%{transform:translate(6vw,4vh) rotate(9deg)}}
-@keyframes g-drift2{0%,100%{transform:translate(0,0) rotate(0deg)}50%{transform:translate(-5vw,-6vh) rotate(-7deg)}}
-@keyframes g-drift3{0%,100%{transform:translate(0,0) rotate(0deg)}50%{transform:translate(4vw,-5vh) rotate(6deg)}}
-@media (max-width:768px){.glass-bg i{backdrop-filter:none;-webkit-backdrop-filter:none;opacity:.55}}
+/* ===== хвост-искра за курсором ===== */
+#cur{position:fixed;left:0;top:0;width:30px;height:30px;pointer-events:none;z-index:999;opacity:.7;transform:translate(-50%,-50%);transition:width .2s,height .2s,opacity .3s;filter:blur(.4px) drop-shadow(0 0 8px rgba(227,6,17,.5))}
+#cur svg{width:100%;height:100%;display:block;animation:k-spin 6s linear infinite}
+#cur.big{width:44px;height:44px;opacity:.95}
+@media (pointer:coarse){#cur{display:none}}
 
-/* ===== КРУПНЫЙ ИНТЕРФЕЙС ===== */
-header{display:flex;align-items:center;gap:12px;padding:15px 22px;border-bottom:1px solid #f0f0f2;background:rgba(255,255,255,.82);backdrop-filter:saturate(1.4) blur(10px);position:sticky;top:0;z-index:5}
-header b{font-size:19px;letter-spacing:-.01em}
+/* ===== ЖИДКОЕ СТЕКЛО iOS: blob'ы + преломляющие панели ===== */
+.glass-bg{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+.glass-bg .blob{position:absolute;border-radius:50%;filter:blur(46px);opacity:.55}
+.glass-bg .b1{width:56vw;height:40vw;left:-12vw;top:-9vw;background:radial-gradient(circle at 35% 35%,#e9e9ef,#f5f5f8 55%,transparent 74%);animation:g-drift1 44s ease-in-out infinite}
+.glass-bg .b2{width:48vw;height:36vw;right:-10vw;top:26vh;background:radial-gradient(circle at 40% 40%,#f3efe9,#faf8f5 55%,transparent 74%);animation:g-drift2 52s ease-in-out infinite}
+.glass-bg .b3{width:36vw;height:30vw;left:22vw;bottom:-12vh;background:radial-gradient(circle at 45% 45%,#e8eef3,#f4f8fa 55%,transparent 74%);animation:g-drift3 58s ease-in-out infinite}
+.glass-bg .pane{position:absolute;border-radius:40px;backdrop-filter:blur(20px) saturate(170%) brightness(1.03);-webkit-backdrop-filter:blur(20px) saturate(170%) brightness(1.03);background:linear-gradient(140deg,rgba(255,255,255,.55),rgba(255,255,255,.16) 60%);border:1px solid rgba(255,255,255,.65);box-shadow:inset 0 1px 0 rgba(255,255,255,.85),inset 0 -2px 8px rgba(255,255,255,.4),0 18px 50px rgba(15,15,20,.06);opacity:.65}
+.glass-bg .p1{width:46vw;height:30vw;left:5vw;top:12vh;transform:rotate(-6deg);animation:p-drift1 50s ease-in-out infinite,p-morph 26s ease-in-out infinite}
+.glass-bg .p2{width:38vw;height:26vw;right:3vw;bottom:6vh;transform:rotate(5deg);animation:p-drift2 56s ease-in-out infinite,p-morph 30s ease-in-out infinite reverse}
+@keyframes g-drift1{0%,100%{transform:translate(0,0)}50%{transform:translate(6vw,4vh)}}
+@keyframes g-drift2{0%,100%{transform:translate(0,0)}50%{transform:translate(-5vw,-6vh)}}
+@keyframes g-drift3{0%,100%{transform:translate(0,0)}50%{transform:translate(4vw,-5vh)}}
+@keyframes p-drift1{0%,100%{transform:rotate(-6deg) translate(0,0)}50%{transform:rotate(-3deg) translate(4vw,3vh)}}
+@keyframes p-drift2{0%,100%{transform:rotate(5deg) translate(0,0)}50%{transform:rotate(8deg) translate(-3vw,-4vh)}}
+@keyframes p-morph{0%,100%{border-radius:40px 46px 42px 48px}50%{border-radius:48px 40px 50px 42px}}
+@media (max-width:768px){.glass-bg .pane{backdrop-filter:none;-webkit-backdrop-filter:none;opacity:.4}}
+
+/* ===== универсальное iOS-стекло для поверхностей ===== */
+.glass{position:relative;background:linear-gradient(135deg,rgba(255,255,255,.72),rgba(255,255,255,.44) 45%,rgba(246,246,248,.4));backdrop-filter:blur(22px) saturate(180%) brightness(1.04);-webkit-backdrop-filter:blur(22px) saturate(180%) brightness(1.04);border:1px solid rgba(255,255,255,.6);box-shadow:inset 0 1px 0 rgba(255,255,255,.95),inset 0 -1px 0 rgba(255,255,255,.4),0 12px 40px rgba(15,15,20,.08)}
+.glass::before{content:"";position:absolute;inset:0;border-radius:inherit;background:linear-gradient(120deg,rgba(255,255,255,.5),rgba(255,255,255,0) 38%);pointer-events:none}
+.glass::after{content:"";position:absolute;inset:0;border-radius:inherit;box-shadow:inset 0 0 0 1px rgba(255,255,255,.16),inset 0 -8px 18px rgba(255,255,255,.2);pointer-events:none}
+
+/* ===== центрированный интерфейс + push при панели ===== */
+header,#chat,#composer{transition:transform .35s cubic-bezier(.25,.9,.3,1);transform:none}
+body.panel-open header,body.panel-open #chat,body.panel-open #composer{transform:translateX(-46px)}
+@media (max-width:900px){body.panel-open header,body.panel-open #chat,body.panel-open #composer{transform:none}}
+
+header{display:flex;align-items:center;gap:12px;padding:15px 22px;border-bottom:1px solid rgba(240,240,242,.8);background:rgba(255,255,255,.6);backdrop-filter:saturate(1.5) blur(16px);-webkit-backdrop-filter:saturate(1.5) blur(16px);position:sticky;top:0;z-index:5}
+header b{font-size:19px;letter-spacing:-.01em;position:relative}
 header .tag{font-size:12px;color:var(--muted);border:1px solid #e6e6e9;border-radius:7px;padding:2px 7px}
 header nav{margin-left:auto;display:flex;gap:9px}
-header nav button{border:none;background:var(--gray);border-radius:13px;padding:11px 16px;font-size:14px;cursor:pointer;transition:.2s}
-header nav button:hover{background:#ececef;transform:translateY(-1px)}
-#chat{flex:1;overflow-y:auto;padding:28px 22px;max-width:980px;width:100%;margin:0 auto;display:flex;flex-direction:column;gap:16px;position:relative;z-index:1}
+header nav button{border:none;background:rgba(245,245,247,.8);border-radius:13px;padding:11px 16px;font-size:14px;transition:.2s;position:relative}
+header nav button:hover{background:#ececef;transform:translateY(-1px);box-shadow:0 6px 16px rgba(227,6,17,.1)}
+/* тултип о помощнике */
+.brand-tip{position:absolute;top:calc(100% + 12px);left:0;width:min(380px,86vw);padding:14px 16px;border-radius:18px;font-size:13.5px;font-weight:400;line-height:1.5;color:var(--text);opacity:0;transform:translateY(-8px) scale(.96);pointer-events:none;transition:.28s cubic-bezier(.25,.9,.3,1.1);z-index:30;text-align:left}
+header b:hover .brand-tip,header b:focus .brand-tip{opacity:1;transform:none}
+.brand-tip b{color:var(--red);font-size:13.5px}
+
+#chat{flex:1;overflow-y:auto;padding:28px 22px;max-width:980px;width:100%;margin:0 auto;display:flex;flex-direction:column;gap:16px;position:relative;z-index:1;perspective:1200px}
 #chat::-webkit-scrollbar{width:9px}
 #chat::-webkit-scrollbar-thumb{background:#e3e3e6;border-radius:8px}
 .hero{text-align:center;padding:34px 0 8px;transition:opacity .45s,transform .45s;animation:pop .6s cubic-bezier(.2,.9,.3,1.15)}
@@ -39,37 +66,43 @@ header nav button:hover{background:#ececef;transform:translateY(-1px)}
 .hero h1{font-size:clamp(32px,6.5vw,52px);letter-spacing:-.03em;font-weight:700;margin-top:14px}
 .hero h1 b{color:var(--red)}
 .hero p{color:var(--muted);font-size:17px;margin-top:8px}
-.msg{max-width:90%;padding:16px 19px;border-radius:var(--r);font-size:16.5px;line-height:1.55;white-space:pre-wrap;animation:pop .35s cubic-bezier(.2,.9,.3,1.2)}
+
+/* сообщения-стекло с 3D */
+.msg{max-width:90%;padding:16px 19px;border-radius:var(--r);font-size:16.5px;line-height:1.55;white-space:pre-wrap;animation:pop .35s cubic-bezier(.2,.9,.3,1.2);transition:transform .3s ease,box-shadow .3s ease}
+.msg:hover{transform:translateY(-2px) rotateX(1.5deg)}
 @keyframes pop{from{opacity:0;transform:translateY(8px) scale(.97)}}
-.msg.user{align-self:flex-end;background:rgba(245,245,247,.92)}
-.msg.bot{align-self:flex-start;background:rgba(255,255,255,.88);border:1px solid #ededf0;box-shadow:var(--sh);display:flex;gap:13px;backdrop-filter:blur(6px)}
-.abody{min-width:0}
+.msg.user{align-self:flex-end;background:linear-gradient(135deg,rgba(245,245,247,.9),rgba(238,238,240,.65));backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border:1px solid rgba(255,255,255,.7);box-shadow:inset 0 1px 0 rgba(255,255,255,.9),0 8px 26px rgba(15,15,20,.06)}
+.msg.bot{align-self:flex-start;background:linear-gradient(135deg,rgba(255,255,255,.75),rgba(255,255,255,.45) 45%,rgba(246,246,248,.42));backdrop-filter:blur(22px) saturate(180%) brightness(1.04);-webkit-backdrop-filter:blur(22px) saturate(180%) brightness(1.04);border:1px solid rgba(255,255,255,.65);box-shadow:inset 0 1px 0 rgba(255,255,255,.95),inset 0 -1px 0 rgba(255,255,255,.4),0 12px 40px rgba(15,15,20,.08);display:flex;gap:13px;position:relative}
+.msg.bot::before{content:"";position:absolute;inset:0;border-radius:inherit;background:linear-gradient(120deg,rgba(255,255,255,.5),rgba(255,255,255,0) 38%);pointer-events:none}
+.abody{min-width:0;position:relative}
 .badge{display:block;font-size:13px;color:var(--muted);margin-bottom:7px}
 .badge b{color:var(--red)}
 .opts{display:flex;flex-wrap:wrap;gap:9px;margin-top:13px}
-.opts button{border:1px solid #e6e6e9;background:#fff;border-radius:15px;padding:13px 18px;font-size:15px;cursor:pointer;min-height:48px;transition:.18s}
-.opts button:hover{border-color:var(--red);color:var(--red);transform:translateY(-1px);box-shadow:0 6px 16px rgba(227,6,17,.12)}
-.opts button:active{transform:scale(.97)}
+.opts button{border:1px solid rgba(230,230,233,.9);background:rgba(255,255,255,.85);border-radius:15px;padding:13px 18px;font-size:15px;min-height:48px;transition:.2s cubic-bezier(.25,.9,.3,1.1);position:relative;backdrop-filter:blur(8px)}
+.opts button:hover{border-color:var(--red);color:var(--red);transform:translateY(-2px);box-shadow:0 8px 20px rgba(227,6,17,.14)}
+.opts button:active{transform:scale(.96)}
+.opts button::after{content:"";position:absolute;right:-7px;top:-7px;width:15px;height:15px;background:var(--red);clip-path:polygon(50% 0,62% 38%,100% 50%,62% 62%,50% 100%,38% 62%,0 50%,38% 38%);opacity:0;transform:scale(.3) rotate(0deg);transition:.28s cubic-bezier(.3,1.6,.4,1)}
+.opts button:hover::after{opacity:1;transform:scale(1) rotate(90deg)}
 .opts button.primary{background:var(--red);border-color:var(--red);color:#fff}
 .opts button.primary:hover{background:var(--red-d)}
+.opts button.primary::after{background:var(--pink)}
 .steps{list-style:none;margin:11px 0 5px;counter-reset:s}
-.steps li{counter-increment:s;padding:13px 15px;border:1px solid #ededf0;border-radius:16px;margin-bottom:8px;font-size:15.5px;transition:.18s;background:#fff}
-.steps li:hover{border-color:rgba(227,6,17,.35)}
+.steps li{counter-increment:s;padding:13px 15px;border:1px solid rgba(237,237,240,.9);border-radius:16px;margin-bottom:8px;font-size:15.5px;transition:.18s;background:rgba(255,255,255,.8);backdrop-filter:blur(6px)}
+.steps li:hover{border-color:rgba(227,6,17,.35);transform:translateX(2px)}
 .steps li::before{content:counter(s);display:inline-block;width:24px;height:24px;border-radius:50%;background:var(--gray);color:var(--red);font-weight:700;text-align:center;line-height:24px;margin-right:10px;font-size:13px}
-.stars{font-size:30px;cursor:pointer;letter-spacing:6px;color:#d6d6da;margin-top:8px}
+.stars{font-size:30px;letter-spacing:6px;color:#d6d6da;margin-top:8px}
 .stars span{transition:.15s}
-.stars span:hover{transform:scale(1.2)}
+.stars span:hover{transform:scale(1.25) rotate(8deg);color:var(--pink)}
 .stars span.on{color:var(--red)}
-#composer{display:flex;gap:10px;padding:15px 22px;border-top:1px solid #f0f0f2;max-width:980px;width:100%;margin:0 auto;background:rgba(255,255,255,.9);backdrop-filter:blur(8px);position:relative;z-index:2}
-#composer input{flex:1;border:1px solid #e6e6e9;border-radius:18px;padding:15px 18px;font-size:16px;outline:none;transition:.2s}
-#composer input:focus{border-color:var(--red);box-shadow:0 0 0 4px rgba(227,6,17,.08)}
-#composer button{width:52px;height:52px;border-radius:50%;border:none;background:var(--red);color:#fff;font-size:19px;cursor:pointer;transition:.18s;box-shadow:0 6px 18px rgba(227,6,17,.28)}
-#composer button:hover{background:var(--red-d);transform:translateY(-1px)}
-#composer button:active{transform:scale(.94)}
 
-/* =========================================================
-   АКТИ v8 — мимика ТОЛЬКО белыми глазами
-   ========================================================= */
+#composer{display:flex;gap:10px;padding:15px 22px;border-top:1px solid rgba(240,240,242,.8);max-width:980px;width:100%;margin:0 auto;background:rgba(255,255,255,.65);backdrop-filter:blur(16px) saturate(1.4);-webkit-backdrop-filter:blur(16px) saturate(1.4);position:relative;z-index:2}
+#composer input{flex:1;border:1px solid rgba(230,230,233,.9);border-radius:18px;padding:15px 18px;font-size:16px;outline:none;transition:.2s;background:rgba(255,255,255,.8);backdrop-filter:blur(8px)}
+#composer input:focus{border-color:var(--red);box-shadow:0 0 0 4px rgba(227,6,17,.08),inset 0 1px 0 rgba(255,255,255,.9)}
+#composer button{width:52px;height:52px;border-radius:50%;border:none;background:var(--red);color:#fff;font-size:19px;transition:.2s cubic-bezier(.25,.9,.3,1.1);box-shadow:0 6px 18px rgba(227,6,17,.28)}
+#composer button:hover{background:var(--red-d);transform:translateY(-2px) scale(1.05);box-shadow:0 10px 26px rgba(227,6,17,.4)}
+#composer button:active{transform:scale(.92)}
+
+/* ===== АКТИ v8 (без изменений характера) ===== */
 .akti{flex:none;--ex:0px;--ey:0px}
 .akti svg{width:100%;height:100%;display:block;overflow:visible;transform-origin:50% 80%}
 .akti .a-glow{fill:var(--red);opacity:.14;filter:blur(9px);transform-box:fill-box;transform-origin:center;transition:opacity .5s ease;animation:k-glowmorph 4.2s ease-in-out infinite}
@@ -83,19 +116,14 @@ header nav button:hover{background:#ececef;transform:translateY(-1px)}
 .akti .s3{animation:k-star 4.8s ease-in-out infinite 3s}
 .akti .s4{animation:k-star 6.2s ease-in-out infinite 1.2s}
 .akti .a-q{fill:var(--red);font-family:-apple-system,"Segoe UI",sans-serif;font-weight:900;font-size:56px;text-anchor:middle;dominant-baseline:central;opacity:0;transform-box:fill-box;transform-origin:center;transition:opacity .3s,transform .45s cubic-bezier(.3,1.4,.4,1);filter:drop-shadow(0 0 8px rgba(227,6,17,.5))}
-/* белые глаза */
 .akti .a-eye{fill:#fff;transition:transform .3s ease}
 .akti .a-face{transform:translate(var(--ex),var(--ey));transition:transform .45s ease}
 .akti .a-faceg{transition:transform .4s cubic-bezier(.34,1.4,.44,1)}
 .akti .a-blush{fill:var(--pink);filter:blur(2.6px);opacity:0;transition:opacity .6s ease,transform .6s ease;transform-box:fill-box;transform-origin:center}
 .akti .a-tear{fill:var(--pink);opacity:0;filter:blur(.4px)}
-
-/* логотип: покачивание + свечение, без лица */
 .akti.logo{width:36px;height:36px}
 .akti.logo svg{animation:k-sway 7s ease-in-out infinite}
 .akti.logo .a-s,.akti.logo .a-mini,.akti.logo .a-halo,.akti.logo .a-face,.akti.logo .a-tear,.akti.logo .a-q{display:none}
-
-/* hero крупнее */
 .hero-akti-wrap{perspective:600px;width:180px;height:180px;margin:0 auto;position:relative}
 .hero-akti{width:100%;height:100%;transition:transform .35s cubic-bezier(.25,.9,.3,1.1);transform-style:preserve-3d;will-change:transform}
 .hero-akti .a-s.s1{transform:translateZ(40px)}
@@ -103,20 +131,15 @@ header nav button:hover{background:#ececef;transform:translateY(-1px)}
 .hero-akti .a-s.s3{transform:translateZ(30px)}
 .hero-akti .a-s.s4{transform:translateZ(50px)}
 .msg .akti{width:46px;height:46px}
-
-/* hover */
 .akti:hover .a-body{animation:k-squish 1.8s ease-in-out infinite}
 .akti:hover .a-core{filter:hue-rotate(16deg) drop-shadow(0 0 9px rgba(227,6,17,.65)) drop-shadow(0 0 24px rgba(227,6,17,.35))}
 .akti:hover .a-glow{opacity:.42;animation:k-glowmorph 1.6s ease-in-out infinite}
 .akti:hover .a-faceg{transform:scale(1.1)}
 .akti:hover .a-blush{opacity:.4}
 .akti:hover .a-eye.el,.akti:hover .a-eye.er{animation:e-hover 2.2s ease-in-out infinite}
-
-/* ===== СОСТОЯНИЯ ТЕЛА ===== */
 .akti[data-state="idle"] svg{animation:k-sway 5.2s ease-in-out infinite}
 .akti[data-state="idle"] .a-body{animation:k-float 5.5s ease-in-out infinite}
 .akti[data-state="idle"] .a-eye.el,.akti[data-state="idle"] .a-eye.er{animation:e-idle 4.8s ease-in-out infinite}
-
 .akti[data-state="thinking"]{--ey:-2px}
 .akti[data-state="thinking"] svg{animation:k-sway 2.3s ease-in-out infinite}
 .akti[data-state="thinking"] .a-body{animation:k-float 2.6s ease-in-out infinite}
@@ -124,7 +147,6 @@ header nav button:hover{background:#ececef;transform:translateY(-1px)}
 .akti[data-state="thinking"] .a-halo{opacity:.7;animation:k-spin 4s linear infinite reverse}
 .akti[data-state="thinking"] .a-eye.el{animation:e-think-l 3.6s ease-in-out infinite}
 .akti[data-state="thinking"] .a-eye.er{animation:e-think-r 3.6s ease-in-out infinite}
-
 .akti[data-state="question"]{--ey:-1px}
 .akti[data-state="question"] svg{animation:k-sway 3.4s ease-in-out infinite}
 .akti[data-state="question"] .a-faceg{transform:scale(1.08)}
@@ -132,7 +154,6 @@ header nav button:hover{background:#ececef;transform:translateY(-1px)}
 .akti[data-state="question"] .a-mini{opacity:1;animation:k-twinkle 1.8s ease-in-out infinite}
 .akti[data-state="question"] .a-eye.el{animation:e-cur-l 5s ease-in-out infinite}
 .akti[data-state="question"] .a-eye.er{animation:e-cur-r 5s ease-in-out infinite}
-
 .akti[data-state="solution"]{--ey:-1px}
 .akti[data-state="solution"] svg{animation:k-sway 1.5s ease-in-out infinite}
 .akti[data-state="solution"] .a-body{animation:k-joy 1.3s ease-in-out infinite}
@@ -141,7 +162,6 @@ header nav button:hover{background:#ececef;transform:translateY(-1px)}
 .akti[data-state="solution"] .a-blush{opacity:.55;transform:scale(1.1)}
 .akti[data-state="solution"] .a-glow{opacity:.3;animation:k-glowmorph 1.2s ease-in-out infinite}
 .akti[data-state="solution"] .a-s{animation:k-star 1.6s ease-in-out infinite}
-
 .akti[data-state="success"]{--ey:-1px}
 .akti[data-state="success"] svg{animation:k-wiggle .95s cubic-bezier(.3,1.4,.4,1) 1,k-sway 1.4s ease-in-out infinite .95s}
 .akti[data-state="success"] .a-body{animation:k-joy 1.3s ease-in-out infinite,k-joybig .85s cubic-bezier(.3,1.5,.4,1) 1}
@@ -154,8 +174,6 @@ header nav button:hover{background:#ececef;transform:translateY(-1px)}
 .akti[data-state="success"] .s2{animation:k-fly2 1s ease-out forwards}
 .akti[data-state="success"] .s3{animation:k-fly3 1s ease-out forwards}
 .akti[data-state="success"] .s4{animation:k-fly4 1s ease-out forwards}
-
-/* грусть: глаза полуприкрыты и опущены */
 .akti[data-state="escalation"],.akti[data-state="slow"]{--ey:2.5px}
 .akti[data-state="escalation"] svg,.akti[data-state="slow"] svg{animation:k-sway-sad 9s ease-in-out infinite}
 .akti[data-state="escalation"] .a-body,.akti[data-state="slow"] .a-body{animation:k-droop 4.5s ease-in-out infinite}
@@ -167,18 +185,13 @@ header nav button:hover{background:#ececef;transform:translateY(-1px)}
 .akti[data-state="escalation"] .a-tear,.akti[data-state="slow"] .a-tear{animation:k-tear 2.4s ease-in infinite}
 .akti[data-state="escalation"] .a-tear.tr,.akti[data-state="slow"] .a-tear.tr{animation-delay:1.2s}
 .akti[data-state="slow"] svg{animation-duration:12s}
-
-/* смущение: косят в сторону */
 .akti[data-mood="shy"]{--ex:3px;--ey:1px}
 .akti[data-mood="shy"] .a-body{animation:k-shy 2.4s ease-in-out infinite}
 .akti[data-mood="shy"] .a-core{filter:hue-rotate(-14deg) drop-shadow(0 0 7px rgba(255,138,146,.6))}
 .akti[data-mood="shy"] .a-blush{opacity:.75;transform:scale(1.25)}
 .akti[data-mood="shy"] .a-eye.el{animation:e-shy-l 2.4s ease-in-out infinite}
 .akti[data-mood="shy"] .a-eye.er{animation:e-shy-r 2.4s ease-in-out infinite}
-/* подмигивание */
 .akti[data-mood="wink"] .a-eye.er{animation:e-wink .8s ease-in-out 1}
-
-/* typing */
 .hero-akti[data-typing="true"] .a-core{transform:scale(.45);opacity:.4}
 .hero-akti[data-typing="true"] .a-glow{opacity:.08}
 .hero-akti[data-typing="true"] .a-s{animation:none;opacity:0}
@@ -186,7 +199,6 @@ header nav button:hover{background:#ececef;transform:translateY(-1px)}
 .hero-akti[data-typing="true"] .a-face{opacity:.25}
 .hero-akti[data-typing="true"] .a-q{opacity:1;animation:k-q-pulse 1.4s ease-in-out infinite}
 
-/* ===== кадры тела ===== */
 @keyframes k-spin{to{transform:rotate(360deg)}}
 @keyframes k-sway{0%,100%{transform:rotate(-5deg)}50%{transform:rotate(5deg)}}
 @keyframes k-sway-sad{0%,100%{transform:rotate(-2.5deg) translateY(1px)}50%{transform:rotate(2.5deg) translateY(2px)}}
@@ -208,8 +220,6 @@ header nav button:hover{background:#ececef;transform:translateY(-1px)}
 @keyframes k-fly3{0%{opacity:0;transform:translate(0,0) scale(.3)}25%{opacity:1}100%{opacity:0;transform:translate(-14px,15px) scale(.85) rotate(60deg)}}
 @keyframes k-fly4{0%{opacity:0;transform:translate(0,0) scale(.3)}25%{opacity:1}100%{opacity:0;transform:translate(15px,14px) scale(.8) rotate(-80deg)}}
 @keyframes k-q-pulse{0%,100%{transform:scale(1) rotate(-5deg)}50%{transform:scale(1.1) rotate(4deg)}}
-
-/* ===== кадры ГЛАЗ (вся мимика) ===== */
 @keyframes e-idle{0%,88%,100%{transform:scale(1)}92%{transform:scaleY(.1)}96%{transform:scale(1)}}
 @keyframes e-think-l{0%,84%,100%{transform:scaleY(.78) translateY(-1px)}88%{transform:scaleY(.1)}92%{transform:scaleY(.78) translateY(-1px)}}
 @keyframes e-think-r{0%,84%,100%{transform:scaleY(1.1) translateY(-1.6px)}88%{transform:scaleY(.1)}92%{transform:scaleY(1.1) translateY(-1.6px)}}
@@ -224,30 +234,35 @@ header nav button:hover{background:#ececef;transform:translateY(-1px)}
 @keyframes e-hover{0%,70%,100%{transform:scale(1.18)}76%{transform:scaleY(.12)}82%{transform:scale(1.18)}88%{transform:scaleY(.12)}94%{transform:scale(1.18)}}
 @keyframes e-wink{0%,100%{transform:scale(1)}45%,60%{transform:scaleY(.08)}}
 
-/* салют */
 .salut-p{position:fixed;width:var(--size,6px);height:var(--size,6px);background:var(--c,var(--red));pointer-events:none;z-index:100;animation:salut-fly 1.15s cubic-bezier(.2,.7,.4,1) forwards;box-shadow:0 0 10px currentColor;border-radius:50% 10% 50% 10%;transform:translate(-50%,-50%);color:var(--c,var(--red))}
 @keyframes salut-fly{0%{opacity:1;transform:translate(-50%,-50%) scale(.2) rotate(0)}60%{opacity:1}100%{opacity:0;transform:translate(calc(-50% + var(--dx)),calc(-50% + var(--dy) + 60px)) scale(1.15) rotate(var(--rot))}}
 
-/* панели */
-.panel{position:fixed;inset:0;background:rgba(20,20,22,.35);backdrop-filter:blur(2px);display:none;z-index:10}
+.panel{position:fixed;inset:0;background:rgba(20,20,22,.3);backdrop-filter:blur(2px);display:none;z-index:10}
 .panel.open{display:block}
-.panel .box{position:absolute;right:0;top:0;bottom:0;width:min(520px,100%);background:#fff;padding:20px;overflow-y:auto;box-shadow:-20px 0 60px rgba(0,0,0,.12);border-radius:26px 0 0 26px;animation:slide .3s cubic-bezier(.2,.9,.3,1.1)}
+.panel .box{position:absolute;right:0;top:0;bottom:0;width:min(520px,100%);padding:20px;overflow-y:auto;border-radius:26px 0 0 26px;animation:slide .3s cubic-bezier(.2,.9,.3,1.1);background:linear-gradient(160deg,rgba(255,255,255,.85),rgba(248,248,250,.6));backdrop-filter:blur(26px) saturate(180%);-webkit-backdrop-filter:blur(26px) saturate(180%);border:1px solid rgba(255,255,255,.7);box-shadow:inset 0 1px 0 rgba(255,255,255,.9),-20px 0 60px rgba(15,15,20,.12)}
 @keyframes slide{from{transform:translateX(30px);opacity:0}}
-.panel input{width:100%;border:1px solid #e6e6e9;border-radius:14px;padding:12px 14px;margin:10px 0;font-size:15px;outline:none}
+.panel input{width:100%;border:1px solid #e6e6e9;border-radius:14px;padding:12px 14px;margin:10px 0;font-size:15px;outline:none;background:rgba(255,255,255,.8)}
 .panel input:focus{border-color:var(--red)}
 table{width:100%;border-collapse:collapse;font-size:14px}
 td,th{padding:10px 7px;border-bottom:1px solid #f0f0f2;text-align:left}
 th{color:var(--muted);font-weight:600}
 
-@media (prefers-reduced-motion:reduce){.akti svg,.akti .a-body,.akti .a-core,.akti .a-mini,.akti .a-halo,.akti .a-glow,.akti .a-s,.akti .a-q,.akti .a-eye,.akti .a-tear,.msg,.hero,.salut-p,.glass-bg i{animation:none !important;transition:none !important}}
+@media (prefers-reduced-motion:reduce){.akti svg,.akti .a-body,.akti .a-core,.akti .a-mini,.akti .a-halo,.akti .a-glow,.akti .a-s,.akti .a-q,.akti .a-eye,.akti .a-tear,.msg,.hero,.salut-p,.glass-bg .blob,.glass-bg .pane,#cur svg{animation:none !important;transition:none !important}}
 @media (max-width:640px){.hero-akti-wrap{width:130px;height:130px}.msg{font-size:15.5px}}
 </style>
 </head>
 <body>
-<div class="glass-bg" aria-hidden="true"><i class="g1"></i><i class="g2"></i><i class="g3"></i></div>
+<div class="glass-bg" aria-hidden="true">
+  <i class="blob b1"></i><i class="blob b2"></i><i class="blob b3"></i>
+  <i class="pane p1"></i><i class="pane p2"></i>
+</div>
+<div id="cur" aria-hidden="true"><svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><path fill="#E30611" d="M96 50 60.6 52.8 70.8 62 57.4 56.7 72.9 82.8 53.8 60.3 51.9 71.9 48.6 59.9 34.9 91.3 43.7 59 30.1 66.7 41.2 54.7 13.3 59.8 39 50 28.7 44.3 41.1 45.5 14.8 20.4 43.7 41 41.8 27.4 48.6 40.1 53.5 10.2 53.8 39.7 64.9 28.7 57.9 43.8Z"/></svg></div>
 <header>
   <div class="akti logo" id="logo" data-state="idle"></div>
-  <b>Актион Ассист</b><span class="tag">AI</span>
+  <b>Актион Ассист
+    <span class="brand-tip glass"><b>Актион Ассист</b> — ИИ-помощник технической поддержки экосистемы Актион. Понимает проблему, описанную своими словами, определяет категорию и уверенность, задаёт минимум уточняющих вопросов, даёт пошаговые решения из базы знаний и передаёт специалисту готовую карточку диагностики, если не справился сам.</span>
+  </b>
+  <span class="tag">AI</span>
   <nav>
     <button onclick="openPanel('history')">История</button>
     <button onclick="openPanel('kb')">База знаний</button>
@@ -281,7 +296,7 @@ let ticketId=null,pending=null;
 const chat=document.getElementById('chat');
 const esc=s=>String(s??'').replace(/[<>&]/g,c=>({'<':'&lt;','>':'&gt;','&':'&amp;'}[c]));
 
-/* ===== SVG Акти v8: только белые глаза ===== */
+/* ===== SVG Акти ===== */
 const SPARK="M96 50 60.6 52.8 70.8 62 57.4 56.7 72.9 82.8 53.8 60.3 51.9 71.9 48.6 59.9 34.9 91.3 43.7 59 30.1 66.7 41.2 54.7 13.3 59.8 39 50 28.7 44.3 41.1 45.5 14.8 20.4 43.7 41 41.8 27.4 48.6 40.1 53.5 10.2 53.8 39.7 64.9 28.7 57.9 43.8Z";
 const STAR="M10 0 Q11.6 6.8 20 10 Q11.6 13.2 10 20 Q8.4 13.2 0 10 Q8.4 6.8 10 0Z";
 const TEAR="M0 0 c2.6 4.2 2.6 7.4 0 9.6 c-2.6 -2.2 -2.6 -5.4 0 -9.6Z";
@@ -314,6 +329,14 @@ const heroAkti=document.getElementById('heroAkti');
 const heroWrap=document.querySelector('.hero-akti-wrap');
 const setHeader=s=>{logo.dataset.state=s;};
 
+/* ===== курсор-хвост ===== */
+const cur=document.getElementById('cur');
+let cx=innerWidth/2,cy=innerHeight/2,tx=cx,ty=cy;
+addEventListener('mousemove',e=>{tx=e.clientX;ty=e.clientY;},{passive:true});
+(function loop(){cx+=(tx-cx)*.16;cy+=(ty-cy)*.16;cur.style.transform=`translate(${cx-15}px,${cy-15}px)`;requestAnimationFrame(loop);})();
+document.addEventListener('mouseover',e=>{if(e.target.closest('button,a,input,.stars span'))cur.classList.add('big');});
+document.addEventListener('mouseout',e=>{if(e.target.closest('button,a,input,.stars span'))cur.classList.remove('big');});
+
 /* параллакс + взгляд */
 let rafId=null;
 heroWrap.addEventListener('mousemove',e=>{
@@ -327,11 +350,7 @@ heroWrap.addEventListener('mousemove',e=>{
     heroAkti.style.setProperty('--ey',(y*3).toFixed(1)+'px');
   });
 });
-heroWrap.addEventListener('mouseleave',()=>{
-  heroAkti.style.transform='';
-  heroAkti.style.removeProperty('--ex');
-  heroAkti.style.removeProperty('--ey');
-});
+heroWrap.addEventListener('mouseleave',()=>{heroAkti.style.transform='';heroAkti.style.removeProperty('--ex');heroAkti.style.removeProperty('--ey');});
 window.addEventListener('deviceorientation',e=>{
   if(e.gamma==null)return;
   const x=Math.max(-1,Math.min(1,(e.gamma||0)/30));
@@ -342,6 +361,12 @@ window.addEventListener('deviceorientation',e=>{
 /* typing */
 const inputEl=document.getElementById('input');
 inputEl.addEventListener('input',()=>{heroAkti.dataset.typing=inputEl.value.trim()?'true':'false';});
+
+/* ===== печатающийся плейсхолдер при наведении ===== */
+const PHRASES=['опишите вашу проблему…','чем я могу помочь?','что случилось?','расскажите своими словами…','например: не могу войти в Актион 360','какая ошибка на экране?','я внимательно слушаю…'];
+let phTimer=null;
+function typePlaceholder(text){clearInterval(phTimer);let i=0;inputEl.placeholder='';phTimer=setInterval(()=>{i++;inputEl.placeholder=text.slice(0,i);if(i>=text.length)clearInterval(phTimer);},36);}
+document.getElementById('composer').addEventListener('mouseenter',()=>{if(!inputEl.value)typePlaceholder(PHRASES[Math.floor(Math.random()*PHRASES.length)]);});
 
 /* режиссёр настроений */
 setInterval(()=>{
@@ -442,7 +467,7 @@ async function resolve(){
   stars(c);
 }
 
-/* ===== ВАША stars(): одноразовая оценка + already + support ===== */
+/* ===== ВАША stars() ===== */
 function stars(c){
   const w=document.createElement('div');w.className='stars';
   let done=false;
@@ -467,8 +492,12 @@ function stars(c){
 
 document.getElementById('composer').onsubmit=e=>{e.preventDefault();const v=document.getElementById('input').value.trim();if(!v)return;document.getElementById('input').value='';send(v);};
 
+/* панели с push-эффектом */
+const panel=document.getElementById('panel');
+panel.addEventListener('click',e=>{if(e.target===panel)closePanel();});
 async function openPanel(kind){
-  const p=document.getElementById('panel');p.classList.add('open');
+  panel.classList.add('open');
+  document.body.classList.add('panel-open');
   const body=document.getElementById('panelBody');body.innerHTML='Загрузка…';
   try{
     if(kind==='history'){
@@ -493,7 +522,7 @@ async function openPanel(kind){
   }catch(e){body.innerHTML='Не удалось загрузить данные.';}
 }
 function table(rows,cols){return '<table><tr>'+cols.map(c=>'<th>'+c+'</th>').join('')+'</tr>'+rows.map(r=>'<tr>'+cols.map(c=>'<td>'+esc(r[c])+'</td>').join('')+'</tr>').join('')+'</table>';}
-function closePanel(){document.getElementById('panel').classList.remove('open');}
+function closePanel(){panel.classList.remove('open');document.body.classList.remove('panel-open');}
 
 (async()=>{
   const c=addBot('Опишите проблему своими словами — я помогу разобраться.','idle');
