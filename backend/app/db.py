@@ -19,6 +19,10 @@ def get_db():
 def init_db():
     conn = get_db()
     conn.executescript("""
+        try:
+        conn.execute("ALTER TABLE tickets ADD COLUMN alt_used INTEGER DEFAULT 0")
+    except Exception:
+        pass
     CREATE TABLE IF NOT EXISTS tickets (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         category TEXT, title TEXT, problem_text TEXT,
@@ -45,7 +49,8 @@ def now():
 
 
 ALLOWED = {"category", "title", "problem_text", "status", "state",
-           "scenario_id", "question_index", "answers", "confidence"}
+           "scenario_id", "question_index", "answers", "confidence",
+           "alt_used"}
 
 
 def create_ticket(problem_text):
