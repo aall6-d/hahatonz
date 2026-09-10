@@ -4,49 +4,48 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Актион Ассист — техническая поддержка</title>
-<link rel="icon" href='data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><g stroke="%23E30611" stroke-width="4" stroke-linecap="round"><line x1="32" y1="10" x2="32" y2="22"/><line x1="32" y1="42" x2="32" y2="54"/><line x1="10" y1="32" x2="22" y2="32"/><line x1="42" y1="32" x2="54" y2="32"/><line x1="16" y1="16" x2="24" y2="24"/><line x1="40" y1="40" x2="48" y2="48"/><line x1="48" y1="16" x2="40" y2="24"/><line x1="24" y1="40" x2="16" y2="48"/></g></svg>'>
+<link rel="icon" href='data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><path fill="%23E30611" d="M96 50 60.6 52.8 70.8 62 57.4 56.7 72.9 82.8 53.8 60.3 51.9 71.9 48.6 59.9 34.9 91.3 43.7 59 30.1 66.7 41.2 54.7 13.3 59.8 39 50 28.7 44.3 41.1 45.5 14.8 20.4 43.7 41 41.8 27.4 48.6 40.1 53.5 10.2 53.8 39.7 64.9 28.7 57.9 43.8Z"/></svg>'>
 <style>
 :root{--red:#E30611;--red-d:#B00500;--pink:#FF8A92;--bg:#fff;--gray:#f5f5f7;--text:#1d1d1f;--muted:#86868b;--sh:0 16px 44px rgba(15,15,20,.06)}
 *{box-sizing:border-box;margin:0;padding:0}
-html{overflow-x:hidden}
-body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Roboto,sans-serif;background:var(--bg);color:var(--text);display:flex;flex-direction:column;height:100dvh;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+html{overflow-x:hidden;cursor:default}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Roboto,sans-serif;background:var(--bg);color:var(--text);display:flex;flex-direction:column;height:100dvh;-webkit-font-smoothing:antialiased;overflow-x:hidden;cursor:default}
+button,a,input,textarea,.stars span{cursor:pointer}
 ::selection{background:rgba(227,6,17,.14)}
 
-/* ===== РИФЛЁНОЕ СТЕКЛО (fluted glass) ===== */
-.glass-rib{position:relative;background:rgba(255,255,255,.44);backdrop-filter:blur(18px) saturate(160%) brightness(1.03);-webkit-backdrop-filter:blur(18px) saturate(160%) brightness(1.03);border:1px solid rgba(255,255,255,.7);box-shadow:inset 0 1px 0 rgba(255,255,255,.85),inset 0 -1px 0 rgba(255,255,255,.4),var(--sh)}
-.glass-rib::before{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;background:repeating-linear-gradient(90deg,rgba(255,255,255,.55) 0 1px,rgba(255,255,255,0) 1px 7px,rgba(120,120,132,.05) 7px 8px,rgba(255,255,255,0) 8px 14px);opacity:.7}
-.glass-rib::after{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;background:linear-gradient(115deg,rgba(255,255,255,.5),rgba(255,255,255,0) 34%,rgba(255,255,255,0) 70%,rgba(255,255,255,.28))}
+/* ===== мягкое стекло без полосок ===== */
+.glass{position:relative;background:linear-gradient(135deg,rgba(255,255,255,.68),rgba(255,255,255,.44) 45%,rgba(246,246,248,.42));backdrop-filter:blur(20px) saturate(170%) brightness(1.03);-webkit-backdrop-filter:blur(20px) saturate(170%) brightness(1.03);border:1px solid rgba(255,255,255,.68);box-shadow:inset 0 1px 0 rgba(255,255,255,.9),inset 0 -1px 0 rgba(255,255,255,.4),var(--sh)}
+.glass::before{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;background:linear-gradient(120deg,rgba(255,255,255,.45),rgba(255,255,255,0) 36%)}
 
-/* ===== два витающих рифлёных блока сзади ===== */
+/* два спокойных стеклянных блока сзади */
 .glass-bg{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
-.glass-bg i{position:absolute;display:block;border-radius:44px;background:rgba(246,246,248,.5);backdrop-filter:blur(16px) saturate(150%);-webkit-backdrop-filter:blur(16px) saturate(150%);border:1px solid rgba(255,255,255,.6);box-shadow:inset 0 1px 0 rgba(255,255,255,.8),0 20px 60px rgba(15,15,20,.05);opacity:.7}
-.glass-bg i::before{content:"";position:absolute;inset:0;border-radius:inherit;background:repeating-linear-gradient(90deg,rgba(255,255,255,.6) 0 1px,rgba(255,255,255,0) 1px 9px,rgba(120,120,132,.06) 9px 10px,rgba(255,255,255,0) 10px 18px)}
+.glass-bg i{position:absolute;display:block;border-radius:44px;background:linear-gradient(140deg,rgba(246,246,248,.55),rgba(250,250,251,.28));backdrop-filter:blur(16px) saturate(150%);-webkit-backdrop-filter:blur(16px) saturate(150%);border:1px solid rgba(255,255,255,.6);box-shadow:inset 0 1px 0 rgba(255,255,255,.8),0 20px 60px rgba(15,15,20,.05);opacity:.7}
 .glass-bg .r1{width:46vw;height:34vw;left:-8vw;top:-6vw;transform:rotate(-7deg);animation:rib-drift1 48s ease-in-out infinite}
 .glass-bg .r2{width:40vw;height:30vw;right:-7vw;bottom:-8vw;transform:rotate(6deg);animation:rib-drift2 56s ease-in-out infinite}
 @keyframes rib-drift1{0%,100%{transform:rotate(-7deg) translate(0,0)}50%{transform:rotate(-4deg) translate(5vw,4vh)}}
 @keyframes rib-drift2{0%,100%{transform:rotate(6deg) translate(0,0)}50%{transform:rotate(9deg) translate(-4vw,-4vh)}}
 @media (max-width:768px){.glass-bg i{backdrop-filter:none;-webkit-backdrop-filter:none;opacity:.5}}
 
-/* ===== оболочка центровки + push только при панели ===== */
+/* центровка + push только при панели */
 .shell{width:min(1060px,100%);margin-inline:auto;padding-inline:16px;transition:transform .35s cubic-bezier(.25,.9,.3,1);transform:none}
 body.panel-open .shell{transform:translateX(-44px)}
 @media (max-width:900px){body.panel-open .shell{transform:none}}
 
-header{position:sticky;top:0;z-index:5;background:rgba(255,255,255,.6);backdrop-filter:saturate(1.5) blur(16px);-webkit-backdrop-filter:saturate(1.5) blur(16px);border-bottom:1px solid rgba(240,240,242,.8)}
-.head-in{display:flex;align-items:center;gap:12px;padding:14px 16px}
-header b{font-size:19px;letter-spacing:-.01em;position:relative}
+/* шапка: ссылки справа, описание раскрывается ВНУТРИ шапки */
+header{position:sticky;top:0;z-index:5;background:rgba(255,255,255,.62);backdrop-filter:saturate(1.5) blur(16px);-webkit-backdrop-filter:saturate(1.5) blur(16px);border-bottom:1px solid rgba(240,240,242,.8)}
+.head-row{display:flex;align-items:center;gap:12px;padding:14px 22px}
+header b.brand{font-size:19px;letter-spacing:-.01em}
 header .tag{font-size:12px;color:var(--muted);border:1px solid #e6e6e9;border-radius:7px;padding:2px 7px}
 header nav{margin-left:auto;display:flex;gap:9px}
 header nav button{border:none;background:rgba(245,245,247,.85);border-radius:13px;padding:11px 16px;font-size:14px;transition:.2s;position:relative}
 header nav button:hover{background:#ececef;transform:translateY(-1px);box-shadow:0 6px 16px rgba(227,6,17,.1)}
 header nav button::after{content:"";position:absolute;right:-6px;top:-6px;width:13px;height:13px;background:var(--red);clip-path:polygon(50% 0,62% 38%,100% 50%,62% 62%,50% 100%,38% 62%,0 50%,38% 38%);opacity:0;transform:scale(.3) rotate(0deg);transition:.28s cubic-bezier(.3,1.6,.4,1)}
 header nav button:hover::after{opacity:1;transform:scale(1) rotate(90deg)}
-.brand-tip{position:absolute;top:calc(100% + 12px);left:0;width:min(380px,86vw);padding:14px 16px;border-radius:18px;font-size:13.5px;font-weight:400;line-height:1.5;color:var(--text);opacity:0;transform:translateY(-8px) scale(.96);pointer-events:none;transition:.28s cubic-bezier(.25,.9,.3,1.1);z-index:30;text-align:left}
-header b:hover .brand-tip{opacity:1;transform:none}
-.brand-tip b{color:var(--red);font-size:13.5px}
+.brand-tip{max-height:0;opacity:0;overflow:hidden;transition:max-height .35s cubic-bezier(.25,.9,.3,1),opacity .3s,padding .35s;padding:0 22px;font-size:13.5px;line-height:1.55;color:var(--text)}
+header.tip-open .brand-tip{max-height:180px;opacity:1;padding:0 22px 16px}
+.brand-tip b{color:var(--red)}
 
 main.shell{flex:1;display:flex;flex-direction:column;min-height:0;padding-top:14px;padding-bottom:14px;position:relative;z-index:1}
-/* чат ВНУТРИ стеклянной рамки — ползунок на её кромке */
 .chat-card{flex:1;min-height:0;border-radius:28px;overflow:hidden;display:flex}
 #chat{flex:1;overflow-y:auto;padding:22px 24px;display:flex;flex-direction:column;gap:14px;scrollbar-gutter:stable;scrollbar-width:thin;scrollbar-color:rgba(20,20,25,.18) transparent}
 #chat::-webkit-scrollbar{width:10px}
@@ -63,8 +62,8 @@ main.shell{flex:1;display:flex;flex-direction:column;min-height:0;padding-top:14
 .msg{max-width:88%;padding:15px 18px;border-radius:22px;font-size:16px;line-height:1.55;white-space:pre-wrap;animation:pop .35s cubic-bezier(.2,.9,.3,1.2);transition:transform .3s ease,box-shadow .3s ease;position:relative}
 .msg:hover{transform:translateY(-2px)}
 @keyframes pop{from{opacity:0;transform:translateY(8px) scale(.97)}}
-.msg.user{align-self:flex-end;background:rgba(245,245,247,.85);border:1px solid rgba(255,255,255,.8);box-shadow:inset 0 1px 0 rgba(255,255,255,.9),0 6px 20px rgba(15,15,20,.05)}
-.msg.bot{align-self:flex-start;background:rgba(255,255,255,.7);backdrop-filter:blur(14px) saturate(150%);-webkit-backdrop-filter:blur(14px) saturate(150%);border:1px solid rgba(255,255,255,.75);box-shadow:inset 0 1px 0 rgba(255,255,255,.9),0 10px 30px rgba(15,15,20,.06);display:flex;gap:12px}
+.msg.user{align-self:flex-end;background:rgba(245,245,247,.88);border:1px solid rgba(255,255,255,.8);box-shadow:inset 0 1px 0 rgba(255,255,255,.9),0 6px 20px rgba(15,15,20,.05)}
+.msg.bot{align-self:flex-start;background:rgba(255,255,255,.72);backdrop-filter:blur(16px) saturate(160%);-webkit-backdrop-filter:blur(16px) saturate(160%);border:1px solid rgba(255,255,255,.75);box-shadow:inset 0 1px 0 rgba(255,255,255,.9),0 10px 30px rgba(15,15,20,.06);display:flex;gap:12px}
 .abody{min-width:0}
 .badge{display:block;font-size:13px;color:var(--muted);margin-bottom:6px}
 .badge b{color:var(--red)}
@@ -87,87 +86,150 @@ main.shell{flex:1;display:flex;flex-direction:column;min-height:0;padding-top:14
 .stars span.on{color:var(--red)}
 
 #composer{display:flex;gap:10px;margin-top:12px;padding:12px 14px;border-radius:20px}
-#composer input{flex:1;border:1px solid rgba(230,230,233,.7);border-radius:15px;padding:14px 17px;font-size:16px;outline:none;transition:.2s;background:rgba(255,255,255,.75)}
+#composer input{flex:1;border:1px solid rgba(230,230,233,.7);border-radius:15px;padding:14px 17px;font-size:16px;outline:none;transition:.2s;background:rgba(255,255,255,.78);cursor:text}
 #composer input:focus{border-color:var(--red);box-shadow:0 0 0 4px rgba(227,6,17,.08)}
 #composer button{width:50px;height:50px;border-radius:50%;border:none;background:var(--red);color:#fff;font-size:18px;transition:.2s cubic-bezier(.25,.9,.3,1.1);box-shadow:0 6px 18px rgba(227,6,17,.28)}
 #composer button:hover{background:var(--red-d);transform:translateY(-2px) scale(1.05)}
 #composer button:active{transform:scale(.92)}
 
-/* ===== АКТИ v10: штриховые состояния как в бренд-буке ===== */
-.akti{flex:none}
-.akti svg{width:100%;height:100%;display:block;overflow:visible;transform-origin:50% 78%}
-.akti line,.akti .a-ring{stroke:var(--red);stroke-width:3;stroke-linecap:round;fill:none}
-.akti .a-glow{fill:var(--red);opacity:.12;filter:blur(8px);transform-box:fill-box;transform-origin:center;transition:opacity .5s;animation:k-glowmorph 4.2s ease-in-out infinite}
-.akti .a-rays,.akti .a-burst,.akti .a-scatter,.akti .a-ring,.akti .a-star,.akti .a-tear{transform-box:fill-box;transform-origin:center;transition:opacity .4s ease}
-.akti .a-ring{stroke-dasharray:5 9;opacity:0}
-.akti .a-burst,.akti .a-scatter{opacity:0}
-.akti .a-star{fill:var(--red);stroke:none;opacity:0}
-.akti .a-tear{fill:var(--pink);opacity:0}
-.akti .a-q{fill:var(--red);font-family:-apple-system,"Segoe UI",sans-serif;font-weight:900;font-size:34px;text-anchor:middle;dominant-baseline:central;opacity:0;transform-box:fill-box;transform-origin:center;transition:opacity .3s,transform .4s cubic-bezier(.3,1.4,.4,1)}
-.akti.logo{width:34px;height:34px}
-.akti.logo .a-ring,.akti.logo .a-star,.akti.logo .a-tear,.akti.logo .a-q,.akti.logo .a-scatter{display:none}
-.hero-akti-wrap{perspective:600px;width:150px;height:150px;margin:0 auto;position:relative}
+/* ===== АКТИ: возвращённый маскот (сплошная искра + глаза) ===== */
+.akti{flex:none;--ex:0px;--ey:0px}
+.akti svg{width:100%;height:100%;display:block;overflow:visible;transform-origin:50% 80%}
+.akti .a-glow{fill:var(--red);opacity:.14;filter:blur(9px);transform-box:fill-box;transform-origin:center;transition:opacity .5s ease;animation:k-glowmorph 4.2s ease-in-out infinite}
+.akti .a-core{fill:var(--red);transform-box:fill-box;transform-origin:center;transition:transform .55s cubic-bezier(.34,1.4,.44,1),filter .5s ease,opacity .5s ease;filter:drop-shadow(0 0 5px rgba(227,6,17,.45)) drop-shadow(0 0 15px rgba(227,6,17,.2))}
+.akti .a-halo{fill:none;stroke:var(--red);stroke-width:2.5;stroke-dasharray:3 11;stroke-linecap:round;opacity:0;transform-box:fill-box;transform-origin:center;transition:opacity .5s}
+.akti .a-mini{fill:var(--red);opacity:0;transform-box:fill-box;transform-origin:center;transition:opacity .4s}
+.akti .a-body,.akti .a-s,.akti .a-faceg,.akti .a-face,.akti .a-eye,.akti .a-tear{transform-box:fill-box;transform-origin:center}
+.akti .a-s{fill:var(--red);opacity:0}
+.akti .s1{animation:k-star 4.2s ease-in-out infinite .6s}
+.akti .s2{animation:k-star 5.4s ease-in-out infinite 2s}
+.akti .s3{animation:k-star 4.8s ease-in-out infinite 3s}
+.akti .s4{animation:k-star 6.2s ease-in-out infinite 1.2s}
+.akti .a-q{fill:var(--red);font-family:-apple-system,"Segoe UI",sans-serif;font-weight:900;font-size:56px;text-anchor:middle;dominant-baseline:central;opacity:0;transform-box:fill-box;transform-origin:center;transition:opacity .3s,transform .45s cubic-bezier(.3,1.4,.4,1);filter:drop-shadow(0 0 8px rgba(227,6,17,.5))}
+.akti .a-eye{fill:#fff;transition:transform .3s ease}
+.akti .a-face{transform:translate(var(--ex),var(--ey));transition:transform .45s ease}
+.akti .a-faceg{transition:transform .4s cubic-bezier(.34,1.4,.44,1)}
+.akti .a-blush{fill:var(--pink);filter:blur(2.6px);opacity:0;transition:opacity .6s ease,transform .6s ease;transform-box:fill-box;transform-origin:center}
+.akti .a-tear{fill:var(--pink);opacity:0;filter:blur(.4px)}
+.akti.logo{width:36px;height:36px}
+.akti.logo svg{animation:k-sway 7s ease-in-out infinite}
+.akti.logo .a-s,.akti.logo .a-mini,.akti.logo .a-halo,.akti.logo .a-face,.akti.logo .a-tear,.akti.logo .a-q{display:none}
+.hero-akti-wrap{perspective:600px;width:160px;height:160px;margin:0 auto;position:relative}
 .hero-akti{width:100%;height:100%;transition:transform .35s cubic-bezier(.25,.9,.3,1.1);transform-style:preserve-3d;will-change:transform}
-.msg .akti{width:42px;height:42px}
-/* hover: пластичная деформация штрихов + сияние */
-.akti:hover .a-rays,.akti:hover .a-burst{animation:k-squish 1.8s ease-in-out infinite}
-.akti:hover .a-glow{opacity:.35;animation:k-glowmorph 1.6s ease-in-out infinite}
-/* состояния */
+.hero-akti .a-s.s1{transform:translateZ(40px)}
+.hero-akti .a-s.s2{transform:translateZ(60px)}
+.hero-akti .a-s.s3{transform:translateZ(30px)}
+.hero-akti .a-s.s4{transform:translateZ(50px)}
+.msg .akti{width:46px;height:46px}
+.akti:hover .a-body{animation:k-squish 1.8s ease-in-out infinite}
+.akti:hover .a-core{filter:hue-rotate(16deg) drop-shadow(0 0 9px rgba(227,6,17,.65)) drop-shadow(0 0 24px rgba(227,6,17,.35))}
+.akti:hover .a-glow{opacity:.42;animation:k-glowmorph 1.6s ease-in-out infinite}
+.akti:hover .a-faceg{transform:scale(1.1)}
+.akti:hover .a-blush{opacity:.4}
+.akti:hover .a-eye.el,.akti:hover .a-eye.er{animation:e-hover 2.2s ease-in-out infinite}
 .akti[data-state="idle"] svg{animation:k-sway 5.2s ease-in-out infinite}
-.akti[data-state="idle"] .a-rays{animation:k-rays-pulse 3.4s ease-in-out infinite}
-.akti[data-state="thinking"] svg{animation:k-sway 2.4s ease-in-out infinite}
-.akti[data-state="thinking"] .a-rays{opacity:.2}
-.akti[data-state="thinking"] .a-ring{opacity:1;animation:k-spin 2.6s linear infinite}
+.akti[data-state="idle"] .a-body{animation:k-float 5.5s ease-in-out infinite}
+.akti[data-state="idle"] .a-eye.el,.akti[data-state="idle"] .a-eye.er{animation:e-idle 4.8s ease-in-out infinite}
+.akti[data-state="thinking"]{--ey:-2px}
+.akti[data-state="thinking"] svg{animation:k-sway 2.3s ease-in-out infinite}
+.akti[data-state="thinking"] .a-body{animation:k-float 2.6s ease-in-out infinite}
 .akti[data-state="thinking"] .a-glow{animation:k-glowmorph 1.7s ease-in-out infinite}
+.akti[data-state="thinking"] .a-halo{opacity:.7;animation:k-spin 4s linear infinite reverse}
+.akti[data-state="thinking"] .a-eye.el{animation:e-think-l 3.6s ease-in-out infinite}
+.akti[data-state="thinking"] .a-eye.er{animation:e-think-r 3.6s ease-in-out infinite}
+.akti[data-state="question"]{--ey:-1px}
 .akti[data-state="question"] svg{animation:k-sway 3.4s ease-in-out infinite}
-.akti[data-state="question"] .a-rays{animation:k-rays-pulse 2.6s ease-in-out infinite}
-.akti[data-state="question"] .a-star{opacity:1;animation:k-twinkle 1.5s ease-in-out infinite}
-.akti[data-state="solution"] svg{animation:k-sway 1.6s ease-in-out infinite}
-.akti[data-state="solution"] .a-rays{opacity:0}
-.akti[data-state="solution"] .a-burst{opacity:1;animation:k-burst-pulse 1.1s ease-in-out infinite}
-.akti[data-state="solution"] .a-glow{opacity:.26;animation:k-glowmorph 1.2s ease-in-out infinite}
-.akti[data-state="success"] svg{animation:k-wiggle .95s cubic-bezier(.3,1.4,.4,1) 1,k-sway 1.5s ease-in-out infinite .95s}
-.akti[data-state="success"] .a-rays{opacity:0}
-.akti[data-state="success"] .a-burst{opacity:1;animation:k-burst-pulse .9s ease-in-out infinite}
-.akti[data-state="success"] .a-scatter{opacity:1;animation:k-scatter 1s ease-out forwards}
-.akti[data-state="success"] .a-ring{opacity:1;animation:k-halo 1s ease-out forwards}
+.akti[data-state="question"] .a-faceg{transform:scale(1.08)}
+.akti[data-state="question"] .s2{animation:k-star 1.8s ease-in-out infinite}
+.akti[data-state="question"] .a-mini{opacity:1;animation:k-twinkle 1.8s ease-in-out infinite}
+.akti[data-state="question"] .a-eye.el{animation:e-cur-l 5s ease-in-out infinite}
+.akti[data-state="question"] .a-eye.er{animation:e-cur-r 5s ease-in-out infinite}
+.akti[data-state="solution"]{--ey:-1px}
+.akti[data-state="solution"] svg{animation:k-sway 1.5s ease-in-out infinite}
+.akti[data-state="solution"] .a-body{animation:k-joy 1.3s ease-in-out infinite}
+.akti[data-state="solution"] .a-eye.el{animation:e-happy-l 1.6s ease-in-out infinite}
+.akti[data-state="solution"] .a-eye.er{animation:e-happy-r 1.6s ease-in-out infinite}
+.akti[data-state="solution"] .a-blush{opacity:.55;transform:scale(1.1)}
+.akti[data-state="solution"] .a-glow{opacity:.3;animation:k-glowmorph 1.2s ease-in-out infinite}
+.akti[data-state="solution"] .a-s{animation:k-star 1.6s ease-in-out infinite}
+.akti[data-state="success"]{--ey:-1px}
+.akti[data-state="success"] svg{animation:k-wiggle .95s cubic-bezier(.3,1.4,.4,1) 1,k-sway 1.4s ease-in-out infinite .95s}
+.akti[data-state="success"] .a-body{animation:k-joy 1.3s ease-in-out infinite,k-joybig .85s cubic-bezier(.3,1.5,.4,1) 1}
+.akti[data-state="success"] .a-eye.el{animation:e-happy-l 1.2s ease-in-out infinite}
+.akti[data-state="success"] .a-eye.er{animation:e-happy-r 1.2s ease-in-out infinite}
+.akti[data-state="success"] .a-blush{opacity:.7;transform:scale(1.2)}
 .akti[data-state="success"] .a-glow{animation:k-flare 1s ease-out forwards}
-.akti[data-state="escalation"],.akti[data-state="slow"]{--sad:1}
+.akti[data-state="success"] .a-halo{opacity:1;animation:k-halo 1s ease-out forwards}
+.akti[data-state="success"] .s1{animation:k-fly1 1s ease-out forwards}
+.akti[data-state="success"] .s2{animation:k-fly2 1s ease-out forwards}
+.akti[data-state="success"] .s3{animation:k-fly3 1s ease-out forwards}
+.akti[data-state="success"] .s4{animation:k-fly4 1s ease-out forwards}
+.akti[data-state="escalation"],.akti[data-state="slow"]{--ey:2.5px}
 .akti[data-state="escalation"] svg,.akti[data-state="slow"] svg{animation:k-sway-sad 9s ease-in-out infinite}
-.akti[data-state="escalation"] .a-rays,.akti[data-state="slow"] .a-rays{opacity:.42;transform:scale(.85);animation:k-rays-pulse 5s ease-in-out infinite}
-.akti[data-state="escalation"] .a-glow,.akti[data-state="slow"] .a-glow{opacity:.05;animation:k-glowmorph 7s ease-in-out infinite}
+.akti[data-state="escalation"] .a-body,.akti[data-state="slow"] .a-body{animation:k-droop 4.5s ease-in-out infinite}
+.akti[data-state="escalation"] .a-core,.akti[data-state="slow"] .a-core{filter:saturate(.55) brightness(.88) drop-shadow(0 0 4px rgba(227,6,17,.22))}
+.akti[data-state="escalation"] .a-s,.akti[data-state="slow"] .a-s{animation:none;opacity:0}
+.akti[data-state="escalation"] .a-eye.el,.akti[data-state="slow"] .a-eye.el{animation:e-sad-l 6s ease-in-out infinite}
+.akti[data-state="escalation"] .a-eye.er,.akti[data-state="slow"] .a-eye.er{animation:e-sad-r 6s ease-in-out infinite}
+.akti[data-state="escalation"] .a-glow,.akti[data-state="slow"] .a-glow{opacity:.06;animation:k-glowmorph 7s ease-in-out infinite}
 .akti[data-state="escalation"] .a-tear,.akti[data-state="slow"] .a-tear{animation:k-tear 2.4s ease-in infinite}
 .akti[data-state="escalation"] .a-tear.tr,.akti[data-state="slow"] .a-tear.tr{animation-delay:1.2s}
 .akti[data-state="slow"] svg{animation-duration:12s}
-.akti[data-mood="shy"] svg{animation:k-shy 2.4s ease-in-out infinite}
-.akti[data-mood="shy"] .a-glow{opacity:.2}
-/* typing */
-.hero-akti[data-typing="true"] .a-rays{opacity:.35;transform:scale(.55)}
-.hero-akti[data-typing="true"] .a-glow{opacity:.07}
+.akti[data-mood="shy"]{--ex:3px;--ey:1px}
+.akti[data-mood="shy"] .a-body{animation:k-shy 2.4s ease-in-out infinite}
+.akti[data-mood="shy"] .a-core{filter:hue-rotate(-14deg) drop-shadow(0 0 7px rgba(255,138,146,.6))}
+.akti[data-mood="shy"] .a-blush{opacity:.75;transform:scale(1.25)}
+.akti[data-mood="shy"] .a-eye.el{animation:e-shy-l 2.4s ease-in-out infinite}
+.akti[data-mood="shy"] .a-eye.er{animation:e-shy-r 2.4s ease-in-out infinite}
+.akti[data-mood="wink"] .a-eye.er{animation:e-wink .8s ease-in-out 1}
+.hero-akti[data-typing="true"] .a-core{transform:scale(.45);opacity:.4}
+.hero-akti[data-typing="true"] .a-glow{opacity:.08}
+.hero-akti[data-typing="true"] .a-s{animation:none;opacity:0}
+.hero-akti[data-typing="true"] .a-mini{opacity:0}
+.hero-akti[data-typing="true"] .a-face{opacity:.25}
 .hero-akti[data-typing="true"] .a-q{opacity:1;animation:k-q-pulse 1.4s ease-in-out infinite}
 
 @keyframes k-spin{to{transform:rotate(360deg)}}
 @keyframes k-sway{0%,100%{transform:rotate(-5deg)}50%{transform:rotate(5deg)}}
 @keyframes k-sway-sad{0%,100%{transform:rotate(-2.5deg) translateY(1px)}50%{transform:rotate(2.5deg) translateY(2px)}}
 @keyframes k-wiggle{0%{transform:rotate(0deg)}25%{transform:rotate(-11deg)}50%{transform:rotate(9deg)}75%{transform:rotate(-5deg)}100%{transform:rotate(0deg)}}
-@keyframes k-shy{0%,100%{transform:rotate(-4deg) scale(.97)}50%{transform:rotate(-7deg) scale(.95)}}
-@keyframes k-glowmorph{0%,100%{transform:scale(1,1) rotate(0deg);opacity:.11}33%{transform:scale(1.22,.82) rotate(9deg);opacity:.2}66%{transform:scale(.88,1.16) rotate(-7deg);opacity:.15}}
-@keyframes k-rays-pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.09)}}
-@keyframes k-burst-pulse{0%,100%{transform:scale(1)}45%{transform:scale(1.16)}}
-@keyframes k-scatter{0%{opacity:0;transform:scale(.4)}25%{opacity:1}100%{opacity:0;transform:scale(1.55)}}
-@keyframes k-twinkle{0%,100%{transform:scale(.6);opacity:.5}50%{transform:scale(1.15);opacity:1}}
+@keyframes k-glowmorph{0%,100%{transform:scale(1,1) rotate(0deg);opacity:.13}33%{transform:scale(1.22,.82) rotate(9deg);opacity:.22}66%{transform:scale(.88,1.16) rotate(-7deg);opacity:.17}}
+@keyframes k-float{0%,100%{transform:translateY(0) scale(1) rotate(0deg)}50%{transform:translateY(-3px) scale(1.03) rotate(1.5deg)}}
 @keyframes k-squish{0%,100%{transform:scale(1,1) rotate(0deg)}25%{transform:scale(1.14,.86) rotate(3deg)}50%{transform:scale(.9,1.12) rotate(-3deg)}75%{transform:scale(1.08,.92) rotate(2deg)}}
-@keyframes k-halo{0%{transform:scale(.55);opacity:1}100%{transform:scale(1.3);opacity:0}}
-@keyframes k-flare{0%{opacity:.35;transform:scale(1,1)}35%{opacity:.55;transform:scale(1.4,1.15)}100%{opacity:0;transform:scale(1.8,1.5)}}
-@keyframes k-tear{0%{opacity:0;transform:translateY(0) scale(.5)}18%{opacity:.85}100%{opacity:0;transform:translateY(11px) scale(1.05)}}
-@keyframes k-q-pulse{0%,100%{transform:scale(1) rotate(-5deg)}50%{transform:scale(1.12) rotate(4deg)}}
+@keyframes k-joy{0%,100%{transform:translateY(0) scale(1)}30%{transform:translateY(-6px) scale(.95,1.07) rotate(-3deg)}55%{transform:translateY(0) scale(1.08,.92)}75%{transform:translateY(-3px) scale(.98,1.03) rotate(2deg)}}
+@keyframes k-joybig{0%{transform:translateY(0) scale(1)}35%{transform:translateY(-14px) scale(.9,1.15) rotate(-8deg)}60%{transform:translateY(0) scale(1.15,.85)}80%{transform:translateY(-4px) scale(.98,1.04)}100%{transform:translateY(0) scale(1)}}
+@keyframes k-droop{0%,100%{transform:translateY(2px) scale(1.06,.86)}50%{transform:translateY(4px) scale(1.1,.82)}}
+@keyframes k-tear{0%{opacity:0;transform:translateY(0) scale(.5)}18%{opacity:.85}100%{opacity:0;transform:translateY(15px) scale(1.05)}}
+@keyframes k-shy{0%,100%{transform:rotate(-4deg) scale(.97)}50%{transform:rotate(-7deg) scale(.95)}}
+@keyframes k-twinkle{0%,100%{transform:scale(.6);opacity:.5}50%{transform:scale(1.08);opacity:1}}
+@keyframes k-star{0%,100%{opacity:0;transform:scale(.25) rotate(0deg)}15%{opacity:1;transform:scale(1.1) rotate(20deg)}35%{opacity:0;transform:scale(.35) rotate(45deg)}}
+@keyframes k-halo{0%{transform:scale(.55);opacity:1}100%{transform:scale(1.25);opacity:0}}
+@keyframes k-flare{0%{opacity:.4;transform:scale(1,1)}35%{opacity:.6;transform:scale(1.4,1.15)}100%{opacity:0;transform:scale(1.8,1.5)}}
+@keyframes k-fly1{0%{opacity:0;transform:translate(0,0) scale(.3)}25%{opacity:1}100%{opacity:0;transform:translate(-16px,-16px) scale(1.05) rotate(80deg)}}
+@keyframes k-fly2{0%{opacity:0;transform:translate(0,0) scale(.3)}25%{opacity:1}100%{opacity:0;transform:translate(16px,-14px) scale(.95) rotate(-70deg)}}
+@keyframes k-fly3{0%{opacity:0;transform:translate(0,0) scale(.3)}25%{opacity:1}100%{opacity:0;transform:translate(-14px,15px) scale(.85) rotate(60deg)}}
+@keyframes k-fly4{0%{opacity:0;transform:translate(0,0) scale(.3)}25%{opacity:1}100%{opacity:0;transform:translate(15px,14px) scale(.8) rotate(-80deg)}}
+@keyframes k-q-pulse{0%,100%{transform:scale(1) rotate(-5deg)}50%{transform:scale(1.1) rotate(4deg)}}
+@keyframes e-idle{0%,88%,100%{transform:scale(1)}92%{transform:scaleY(.1)}96%{transform:scale(1)}}
+@keyframes e-think-l{0%,84%,100%{transform:scaleY(.78) translateY(-1px)}88%{transform:scaleY(.1)}92%{transform:scaleY(.78) translateY(-1px)}}
+@keyframes e-think-r{0%,84%,100%{transform:scaleY(1.1) translateY(-1.6px)}88%{transform:scaleY(.1)}92%{transform:scaleY(1.1) translateY(-1.6px)}}
+@keyframes e-cur-l{0%,90%,100%{transform:scale(1.22) rotate(7deg)}94%{transform:scaleY(.12)}97%{transform:scale(1.22) rotate(7deg)}}
+@keyframes e-cur-r{0%,90%,100%{transform:scale(1.22) rotate(-7deg)}94%{transform:scaleY(.12)}97%{transform:scale(1.22) rotate(-7deg)}}
+@keyframes e-happy-l{0%,100%{transform:scaleY(.36) rotate(10deg) translateY(-1px)}50%{transform:scaleY(.46) rotate(8deg) translateY(-1.5px)}}
+@keyframes e-happy-r{0%,100%{transform:scaleY(.36) rotate(-10deg) translateY(-1px)}50%{transform:scaleY(.46) rotate(-8deg) translateY(-1.5px)}}
+@keyframes e-sad-l{0%,90%,100%{transform:scaleY(.52) translateY(2px) rotate(-7deg)}94%{transform:scaleY(.1)}97%{transform:scaleY(.52) translateY(2px) rotate(-7deg)}}
+@keyframes e-sad-r{0%,90%,100%{transform:scaleY(.52) translateY(2px) rotate(7deg)}94%{transform:scaleY(.1)}97%{transform:scaleY(.52) translateY(2px) rotate(7deg)}}
+@keyframes e-shy-l{0%,100%{transform:scale(1.05) translateX(2.5px)}}
+@keyframes e-shy-r{0%,100%{transform:scaleY(.68) translateX(2.5px)}}
+@keyframes e-hover{0%,70%,100%{transform:scale(1.18)}76%{transform:scaleY(.12)}82%{transform:scale(1.18)}88%{transform:scaleY(.12)}94%{transform:scale(1.18)}}
+@keyframes e-wink{0%,100%{transform:scale(1)}45%,60%{transform:scaleY(.08)}}
 
 .salut-p{position:fixed;width:var(--size,6px);height:var(--size,6px);background:var(--c,var(--red));pointer-events:none;z-index:100;animation:salut-fly 1.15s cubic-bezier(.2,.7,.4,1) forwards;box-shadow:0 0 10px currentColor;border-radius:50% 10% 50% 10%;transform:translate(-50%,-50%);color:var(--c,var(--red))}
 @keyframes salut-fly{0%{opacity:1;transform:translate(-50%,-50%) scale(.2) rotate(0)}60%{opacity:1}100%{opacity:0;transform:translate(calc(-50% + var(--dx)),calc(-50% + var(--dy) + 60px)) scale(1.15) rotate(var(--rot))}}
 
 .panel{position:fixed;inset:0;background:rgba(20,20,22,.3);backdrop-filter:blur(2px);display:none;z-index:10}
 .panel.open{display:block}
-.panel .box{position:absolute;right:0;top:0;bottom:0;width:min(520px,100%);padding:20px;overflow-y:auto;border-radius:26px 0 0 26px;animation:slide .3s cubic-bezier(.2,.9,.3,1.1);background:rgba(255,255,255,.8);backdrop-filter:blur(24px) saturate(170%);-webkit-backdrop-filter:blur(24px) saturate(170%);border:1px solid rgba(255,255,255,.75);box-shadow:inset 0 1px 0 rgba(255,255,255,.9),-20px 0 60px rgba(15,15,20,.12)}
+.panel .box{position:absolute;right:0;top:0;bottom:0;width:min(520px,100%);padding:20px;overflow-y:auto;border-radius:26px 0 0 26px;animation:slide .3s cubic-bezier(.2,.9,.3,1.1);background:rgba(255,255,255,.82);backdrop-filter:blur(24px) saturate(170%);-webkit-backdrop-filter:blur(24px) saturate(170%);border:1px solid rgba(255,255,255,.75);box-shadow:inset 0 1px 0 rgba(255,255,255,.9),-20px 0 60px rgba(15,15,20,.12)}
 @keyframes slide{from{transform:translateX(30px);opacity:0}}
 .panel input{width:100%;border:1px solid #e6e6e9;border-radius:14px;padding:12px 14px;margin:10px 0;font-size:15px;outline:none;background:rgba(255,255,255,.85)}
 .panel input:focus{border-color:var(--red)}
@@ -175,18 +237,16 @@ table{width:100%;border-collapse:collapse;font-size:14px}
 td,th{padding:10px 7px;border-bottom:1px solid #f0f0f2;text-align:left}
 th{color:var(--muted);font-weight:600}
 
-@media (prefers-reduced-motion:reduce){.akti svg,.akti .a-rays,.akti .a-burst,.akti .a-scatter,.akti .a-ring,.akti .a-star,.akti .a-glow,.akti .a-tear,.msg,.hero,.salut-p,.glass-bg i{animation:none !important;transition:none !important}}
-@media (max-width:640px){.hero-akti-wrap{width:120px;height:120px}.msg{font-size:15px}#chat{padding:16px}}
+@media (prefers-reduced-motion:reduce){.akti svg,.akti .a-body,.akti .a-core,.akti .a-mini,.akti .a-halo,.akti .a-glow,.akti .a-s,.akti .a-q,.akti .a-eye,.akti .a-tear,.msg,.hero,.salut-p,.glass-bg i{animation:none !important;transition:none !important}}
+@media (max-width:640px){.hero-akti-wrap{width:125px;height:125px}.msg{font-size:15px}#chat{padding:16px}}
 </style>
 </head>
 <body>
 <div class="glass-bg" aria-hidden="true"><i class="r1"></i><i class="r2"></i></div>
-<header>
-  <div class="shell head-in">
+<header id="hdr">
+  <div class="head-row">
     <div class="akti logo" id="logo" data-state="idle"></div>
-    <b>Актион Ассист
-      <span class="brand-tip glass-rib"><b>Актион Ассист</b> — ИИ-помощник технической поддержки экосистемы Актион. Понимает проблему своими словами, определяет категорию и уверенность, задаёт минимум уточнений, даёт пошаговые решения из базы знаний и передаёт специалисту карточку диагностики, если не справился.</span>
-    </b>
+    <b class="brand" id="brand">Актион Ассист</b>
     <span class="tag">AI</span>
     <nav>
       <button onclick="openPanel('history')">История</button>
@@ -194,9 +254,10 @@ th{color:var(--muted);font-weight:600}
       <button onclick="openPanel('support')">Специалисту</button>
     </nav>
   </div>
+  <div class="brand-tip"><b>Актион Ассист</b> — ИИ-помощник технической поддержки экосистемы Актион. Понимает проблему своими словами, определяет категорию и уверенность, задаёт минимум уточнений, даёт пошаговые решения из базы знаний и передаёт специалисту карточку диагностики, если не справился.</div>
 </header>
 <main class="shell">
-  <div class="chat-card glass-rib">
+  <div class="chat-card glass">
     <div id="chat">
       <div class="hero" id="hero">
         <div class="hero-akti-wrap">
@@ -207,7 +268,7 @@ th{color:var(--muted);font-weight:600}
       </div>
     </div>
   </div>
-  <form id="composer" class="glass-rib">
+  <form id="composer" class="glass">
     <input id="input" placeholder="" autocomplete="off">
     <button type="submit" aria-label="Отправить">↑</button>
   </form>
@@ -226,22 +287,30 @@ let ticketId=null,pending=null;
 const chat=document.getElementById('chat');
 const esc=s=>String(s??'').replace(/[<>&]/g,c=>({'<':'&lt;','>':'&gt;','&':'&amp;'}[c]));
 
-/* ===== SVG Акти v10: штрихи как в бренд-буке ===== */
-const RAYS=[0,45,90,135,180,225,270,315].map(a=>`<line x1="32" y1="13" x2="32" y2="21" transform="rotate(${a} 32 32)"/>`).join('');
-const BURST=[0,30,60,90,120,150,180,210,240,270,300,330].map((a,i)=>`<line x1="32" y1="${i%2?10:7}" x2="32" y2="${i%2?24:26}" transform="rotate(${a} 32 32)"/>`).join('');
-const SCATTER=[15,40,65,90,115,140,165,190,215,240,265,290,315,340].map((a,i)=>`<line x1="32" y1="3" x2="32" y2="${i%3?8:10}" transform="rotate(${a} 32 32)"/>`).join('');
-const STAR="M40 18 Q41.3 22.7 46 24 Q41.3 25.3 40 30 Q38.7 25.3 34 24 Q38.7 22.7 40 18 Z";
-const TEAR="M0 0 c1.8 3 1.8 5.2 0 6.8 c-1.8 -1.6 -1.8 -3.8 0 -6.8Z";
-function aktiSVG(){return `<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-<ellipse class="a-glow" cx="32" cy="32" rx="20" ry="15"/>
-<g class="a-rays">${RAYS}</g>
-<circle class="a-ring" cx="32" cy="32" r="13"/>
-<g class="a-burst">${BURST}</g>
-<g class="a-scatter">${SCATTER}</g>
-<path class="a-star" d="${STAR}"/>
-<g transform="translate(24 38)"><path class="a-tear tl" d="${TEAR}"/></g>
-<g transform="translate(37 38)"><path class="a-tear tr" d="${TEAR}"/></g>
-<text class="a-q" x="32" y="34">?</text>
+/* ===== SVG Акти (возвращённый) ===== */
+const SPARK="M96 50 60.6 52.8 70.8 62 57.4 56.7 72.9 82.8 53.8 60.3 51.9 71.9 48.6 59.9 34.9 91.3 43.7 59 30.1 66.7 41.2 54.7 13.3 59.8 39 50 28.7 44.3 41.1 45.5 14.8 20.4 43.7 41 41.8 27.4 48.6 40.1 53.5 10.2 53.8 39.7 64.9 28.7 57.9 43.8Z";
+const STAR="M10 0 Q11.6 6.8 20 10 Q11.6 13.2 10 20 Q8.4 13.2 0 10 Q8.4 6.8 10 0Z";
+const TEAR="M0 0 c2.6 4.2 2.6 7.4 0 9.6 c-2.6 -2.2 -2.6 -5.4 0 -9.6Z";
+function aktiSVG(){return `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+<ellipse class="a-glow" cx="50" cy="50" rx="30" ry="23"/>
+<circle class="a-halo" cx="50" cy="50" r="45"/>
+<g class="a-body">
+  <path class="a-core" d="${SPARK}"/>
+  <g class="a-faceg"><g class="a-face">
+    <ellipse class="a-eye el" cx="41" cy="45" rx="4.8" ry="6.4"/>
+    <ellipse class="a-eye er" cx="59" cy="45" rx="4.8" ry="6.4"/>
+    <circle class="a-blush" cx="32.5" cy="54.5" r="4.6"/>
+    <circle class="a-blush" cx="67.5" cy="54.5" r="4.6"/>
+  </g></g>
+  <g transform="translate(38 56)"><path class="a-tear tl" d="${TEAR}"/></g>
+  <g transform="translate(60 56)"><path class="a-tear tr" d="${TEAR}"/></g>
+  <g transform="translate(74 6) scale(.3)"><path class="a-mini" d="${SPARK}"/></g>
+</g>
+<g transform="translate(6 12) scale(.8)"><path class="a-s s1" d="${STAR}"/></g>
+<g transform="translate(78 18) scale(.6)"><path class="a-s s2" d="${STAR}"/></g>
+<g transform="translate(10 74) scale(.7)"><path class="a-s s3" d="${STAR}"/></g>
+<g transform="translate(76 70) scale(.5)"><path class="a-s s4" d="${STAR}"/></g>
+<text class="a-q" x="50" y="52">?</text>
 </svg>`;}
 function akti(state){const d=document.createElement('div');d.className='akti';d.dataset.state=state||'idle';d.innerHTML=aktiSVG();return d;}
 function setAkti(bubble,state){const a=bubble&&bubble.querySelector('.akti');if(a)a.dataset.state=state;}
@@ -251,6 +320,13 @@ const heroAkti=document.getElementById('heroAkti');
 const heroWrap=document.querySelector('.hero-akti-wrap');
 const setHeader=s=>{logo.dataset.state=s;};
 
+/* описание помощника: раскрывается внутри шапки, не перекрывает чат */
+const hdr=document.getElementById('hdr'),brand=document.getElementById('brand');
+brand.addEventListener('mouseenter',()=>hdr.classList.add('tip-open'));
+brand.addEventListener('mouseleave',()=>hdr.classList.remove('tip-open'));
+brand.addEventListener('focus',()=>hdr.classList.add('tip-open'));
+brand.addEventListener('blur',()=>hdr.classList.remove('tip-open'));
+
 /* параллакс hero */
 let rafId=null;
 heroWrap.addEventListener('mousemove',e=>{
@@ -258,17 +334,21 @@ heroWrap.addEventListener('mousemove',e=>{
   const x=(e.clientX-rect.left)/rect.width-.5;
   const y=(e.clientY-rect.top)/rect.height-.5;
   if(rafId)cancelAnimationFrame(rafId);
-  rafId=requestAnimationFrame(()=>{heroAkti.style.transform=`rotateY(${x*24}deg) rotateX(${-y*20}deg) translate(${x*8}px,${y*8}px)`;});
+  rafId=requestAnimationFrame(()=>{
+    heroAkti.style.transform=`rotateY(${x*24}deg) rotateX(${-y*20}deg) translate(${x*8}px,${y*8}px)`;
+    heroAkti.style.setProperty('--ex',(x*4).toFixed(1)+'px');
+    heroAkti.style.setProperty('--ey',(y*3).toFixed(1)+'px');
+  });
 });
-heroWrap.addEventListener('mouseleave',()=>{heroAkti.style.transform='';});
+heroWrap.addEventListener('mouseleave',()=>{heroAkti.style.transform='';heroAkti.style.removeProperty('--ex');heroAkti.style.removeProperty('--ey');});
 
 /* typing */
 const inputEl=document.getElementById('input');
 inputEl.addEventListener('input',()=>{heroAkti.dataset.typing=inputEl.value.trim()?'true':'false';});
 
-/* ===== живой плейсхолдер: фразы печатаются и стираются сами, с заглавной ===== */
+/* живой плейсхолдер с заглавной буквы */
 const PHRASES=['Опишите вашу проблему…','Чем я могу помочь?','Что случилось?','Не можете войти в Актион 360?','Какая ошибка на экране?','Расскажите своими словами…','Нужна подсказка по продукту?'];
-let phI=0,phBusy=false;
+let phI=0;
 function cyclePlaceholder(){
   setTimeout(()=>{
     if(document.activeElement===inputEl||inputEl.value){cyclePlaceholder();return;}
@@ -292,11 +372,14 @@ function cyclePlaceholder(){
 }
 cyclePlaceholder();
 
-/* режиссёр настроений (смущение-наклон) */
+/* режиссёр настроений */
 setInterval(()=>{
   if(heroAkti.dataset.state!=='idle'||heroAkti.dataset.typing==='true')return;
-  if(Math.random()<.35){heroAkti.dataset.mood='shy';setTimeout(()=>{if(heroAkti.dataset.mood==='shy')heroAkti.dataset.mood='';},2400);}
-},7000);
+  const roll=Math.random();
+  if(roll<.22){heroAkti.dataset.mood='wink';setTimeout(()=>{if(heroAkti.dataset.mood==='wink')heroAkti.dataset.mood='';},900);}
+  else if(roll<.45){heroAkti.dataset.mood='shy';setTimeout(()=>{if(heroAkti.dataset.mood==='shy')heroAkti.dataset.mood='';},2400);}
+  else if(roll<.75){const dx=(Math.random()<.5?-2.5:2.5);heroAkti.style.setProperty('--ex',dx+'px');setTimeout(()=>{if(!heroAkti.matches(':hover'))heroAkti.style.removeProperty('--ex');},1600);}
+},6500);
 
 /* салют */
 function burstSalut(origin,count=18){
@@ -383,6 +466,7 @@ async function resolve(){
   try{await api(`/tickets/${ticketId}/resolve`,{method:'POST'});}catch(e){}
   const c=addBot(`✓ Проблема решена. Обращение #${ticketId} закрыто.\nПомог ли вам Акти?`,'success');
   setTimeout(()=>burstSalut(c.parentElement,24),80);
+  setTimeout(()=>{const a=c.parentElement.querySelector('.akti');if(a){a.dataset.mood='wink';setTimeout(()=>{a.dataset.mood='';},900);}},700);
   setTimeout(()=>setAkti(c.parentElement,'idle'),2200);
   stars(c);
 }
@@ -404,7 +488,7 @@ function stars(c){
       }else if(r.status==='already'){
         addBot('Вы уже оценили это обращение — спасибо!');
       }else{
-        addBot('Спасибо за оценку! Чем ещё помочь?','idle');
+        addBot('Спасибо за оценку! Чем ещё помочь?');
       }};
     w.appendChild(s);}
   c.appendChild(w);
