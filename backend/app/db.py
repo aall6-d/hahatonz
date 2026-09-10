@@ -26,6 +26,8 @@ def init_db():
         scenario_id TEXT, question_index INTEGER DEFAULT 0,
         answers TEXT DEFAULT '[]', confidence REAL DEFAULT 0,
         alt_used INTEGER DEFAULT 0,
+        retry_count INTEGER DEFAULT 0,
+        pending_category TEXT,
         created_at TEXT, updated_at TEXT
     );
     CREATE TABLE IF NOT EXISTS messages (
@@ -40,6 +42,10 @@ def init_db():
     try:
         conn.execute(
             "ALTER TABLE tickets ADD COLUMN alt_used INTEGER DEFAULT 0")
+        conn.execute(
+            "ALTER TABLE tickets ADD COLUMN retry_count INTEGER DEFAULT 0")
+        conn.execute(
+            "ALTER TABLE tickets ADD COLUMN pending_category TEXT")
     except Exception:
         pass
     conn.commit()
@@ -52,7 +58,7 @@ def now():
 
 ALLOWED = {"category", "title", "problem_text", "status", "state",
            "scenario_id", "question_index", "answers", "confidence",
-           "alt_used"}
+           "alt_used", "retry_count", "pending_category"}
 
 
 def create_ticket(problem_text):
