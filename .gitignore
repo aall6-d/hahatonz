@@ -4,3 +4,15 @@ __pycache__/
 .env
 backend/data/*.db
 .DS_Store
+.vs/
+Debug/
+Release/
+node_modules/
+.next/
+out/
+__pycache__/
+*.pyc
+venv/
+.venv/
+.env
+.env.local
