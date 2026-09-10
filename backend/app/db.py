@@ -39,15 +39,15 @@ def init_db():
         ticket_id INTEGER, rating INTEGER, comment TEXT, created_at TEXT
     );
     """)
-    try:
-        conn.execute(
-            "ALTER TABLE tickets ADD COLUMN alt_used INTEGER DEFAULT 0")
-        conn.execute(
-            "ALTER TABLE tickets ADD COLUMN retry_count INTEGER DEFAULT 0")
-        conn.execute(
-            "ALTER TABLE tickets ADD COLUMN pending_category TEXT")
-    except Exception:
-        pass
+    for ddl in (
+        "ALTER TABLE tickets ADD COLUMN alt_used INTEGER DEFAULT 0",
+        "ALTER TABLE tickets ADD COLUMN retry_count INTEGER DEFAULT 0",
+        "ALTER TABLE tickets ADD COLUMN pending_category TEXT",
+    ):
+        try:
+            conn.execute(ddl)
+        except Exception:
+            pass
     conn.commit()
     conn.close()
 
@@ -133,13 +133,6 @@ def add_feedback(ticket_id, rating, comment):
     conn.commit()
     conn.close()
 
-def get_feedback(ticket_id):
-    conn = get_db()
-    rows = conn.execute(
-        "SELECT rating, comment, created_at FROM feedback "
-        "WHERE ticket_id=?", (ticket_id,)).fetchall()
-    conn.close()
-    return [dict(r) for r in rows]    
 
 def get_feedback(ticket_id):
     conn = get_db()
@@ -147,4 +140,4 @@ def get_feedback(ticket_id):
         "SELECT rating, comment, created_at FROM feedback "
         "WHERE ticket_id=?", (ticket_id,)).fetchall()
     conn.close()
-    return [dict(r) for r in rows]   
+    return [dict(r) for r in rows]

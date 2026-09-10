@@ -30,6 +30,9 @@ PROBLEM_MARKERS = (
     "закончил", "нет доступа", "не отображается", "не слышат",
 )
 
+REFUSAL_WORDS = ("не хочу", "не буду", "не стану", "не собираюсь",
+                 "отказываюсь", "мне некогда", "не хочу выполнять")
+
 
 # ---------- анализ текста ----------
 
@@ -38,15 +41,24 @@ def has_problem_marker(text: str) -> bool:
     return any(m in t for m in PROBLEM_MARKERS)
 
 
+def is_refusal(text: str) -> bool:
+    t = (text or "").strip().lower()
+    return any(w in t for w in REFUSAL_WORDS)
+
+
 def is_no(text: str) -> bool:
     t = (text or "").strip().lower()
     return (t.startswith("нет") or "не помогло" in t
-            or "не решено" in t or "осталась" in t)
+            or "не решено" in t or "осталась" in t
+            or "не получилось" in t or "не вышло" in t
+            or "безрезультатно" in t)
 
 
 def is_yes(text: str) -> bool:
     t = (text or "").strip().lower()
-    if is_no(t):
+    if is_no(t) or is_refusal(t):
+        return False
+    if t.startswith("да") and " но " in f" {t} ":
         return False
     return (t.startswith("да") or "помогло" in t
             or "решено" in t or "получилось" in t)
@@ -385,6 +397,15 @@ def chat(payload: ChatRequest):
     if state == "awaiting_result":
         ticket = db.get_ticket(ticket_id)
         cat, conf = ticket["category"], ticket["confidence"]
+        if is_refusal(text):
+            db.update_ticket(ticket_id, state="escalation_offer")
+            return respond(ticket_id, "question",
+                           "Понимаю: выполнять шаги не всегда удобно. "
+                           "Могу передать обращение специалисту — "
+                           "он поможет удалённо. Передать?",
+                           cat, conf,
+                           options=["Да, передать специалисту",
+                                    "Попробую ещё раз"])
         if is_no(text):
             scenario = knowledge.get_by_id(ticket["scenario_id"])
             alt = (scenario or {}).get("alt_steps") or []
@@ -421,16 +442,18 @@ def chat(payload: ChatRequest):
                        cat, conf, options=["Да", "Нет"])
 
     if state == "escalation_offer":
-        if is_yes(text):
+        if is_yes(text) or "передать" in text.lower():
             card, reason = escalate_ticket(ticket_id)
             return respond(ticket_id, "escalated",
                            f"Обращение #{ticket_id} передано специалисту. "
                            f"Причина: {reason}",
                            None, None, status="escalated")
-        db.update_ticket(ticket_id, state="new")
-        return respond(ticket_id, "clarification",
-                       "Опишите, что именно происходит сейчас — "
-                       "я попробую подобрать другой способ.", None, None)
+        db.update_ticket(ticket_id, state="awaiting_result")
+        return respond(ticket_id, "question",
+                       "Хорошо, продолжаем. Подскажите, получилось "
+                       "выполнить шаги? Ответьте «да» или «нет».",
+                       ticket["category"], ticket["confidence"],
+                       options=["Да", "Нет"])
 
     db.update_ticket(ticket_id, state="new")
     return respond(ticket_id, "clarification",

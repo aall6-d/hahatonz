@@ -13,44 +13,42 @@ def load_kb():
         return json.load(f)
 
 
-def get_by_id(item_id):
-    if not item_id:
-        return None
+def get_by_id(scenario_id):
     for item in load_kb():
-        if item["id"] == item_id:
+        if item.get("id") == scenario_id:
             return item
     return None
 
 
-def match_category_button(text: str):
-    t = text.strip().lower()
+def find_scenario(category, text):
+    text = (text or "").lower()
+    best, best_score = None, 0
+    for item in load_kb():
+        if item.get("category") != category:
+            continue
+        score = sum(1 for kw in item.get("keywords", []) if kw in text)
+        if score > best_score:
+            best, best_score = item, score
+    return best if best_score > 0 else None
+
+
+def match_category_button(text):
+    t = (text or "").strip().lower()
     for cat in CATEGORIES:
         if t == cat.lower():
             return cat
     return None
 
 
-def find_scenario(category: str, text: str):
-    items = [i for i in load_kb() if i["category"] == category]
-    if not items:
-        return None
-    t = text.lower()
-
-    def score(item):
-        return sum(1 for kw in item.get("keywords", []) if kw in t)
-
-    return max(items, key=score)
-
-
-def search(query: str, limit: int = 5):
-    t = query.lower()
-    results = []
+def search(q):
+    q = (q or "").lower().strip()
+    if not q:
+        return []
+    out = []
     for item in load_kb():
-        s = sum(1 for kw in item.get("keywords", []) if kw in t)
-        if t and t in item["title"].lower():
-            s += 3
-        if s > 0:
-            results.append((s, item))
-    results.sort(key=lambda x: -x[0])
-    return [{"id": i["id"], "title": i["title"], "category": i["category"],
-             "steps": i["steps"]} for _, i in results[:limit]]
+        if (q in item.get("title", "").lower()
+                or any(q in kw for kw in item.get("keywords", []))):
+            out.append({"id": item.get("id"), "title": item.get("title"),
+                        "category": item.get("category"),
+                        "steps": item.get("steps", [])})
+    return out
