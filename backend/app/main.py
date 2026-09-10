@@ -21,8 +21,22 @@ OTHER_WORDS = {"другое", "другой", "не знаю", "сложно с
                "затрудняюсь ответить"}
 MAX_RETRIES = 2
 
+PROBLEM_MARKERS = (
+    "не ", "нет ", "не могу", "не работает", "не открывается",
+    "не загружается", "не приходит", "не удается", "невозможно",
+    "ошибка", "сломал", "пропал", "пропала", "исчез", "тормозит",
+    "виснет", "зависает", "медленно", "не видно", "не слышно",
+    "забыл", "забыла", "неверный", "отключ", "блокиру", "не пускает",
+    "закончил", "нет доступа", "не отображается", "не слышат",
+)
+
 
 # ---------- анализ текста ----------
+
+def has_problem_marker(text: str) -> bool:
+    t = (text or "").lower()
+    return any(m in t for m in PROBLEM_MARKERS)
+
 
 def is_no(text: str) -> bool:
     t = (text or "").strip().lower()
@@ -228,6 +242,16 @@ def chat(payload: ChatRequest):
                 "Я хочу убедиться, что правильно понял проблему. "
                 "Выберите категорию или опишите проблему подробнее:",
                 cat, conf, options=knowledge.CATEGORIES)
+        if not picked and not has_problem_marker(text):
+            from app import llm
+            if llm.is_real_problem(text) is not True:
+                db.update_ticket(ticket_id, state="clarification",
+                                 category=cat, confidence=conf)
+                return respond(
+                    ticket_id, "clarification",
+                    "Похоже, это не описание технической проблемы 🙂 "
+                    "Расскажите, что не работает, или выберите категорию:",
+                    cat, conf, options=knowledge.CATEGORIES)
         return start_diagnosis(ticket_id, text, cat, conf)
 
     if state == "awaiting_question":
@@ -246,6 +270,9 @@ def chat(payload: ChatRequest):
         cat, conf = ticket["category"], ticket["confidence"]
 
         matched = match_option(text, options)
+        if matched is None:
+            from app import llm
+            matched = llm.interpret(text, options)
 
         if matched is None:
             cat2, conf2 = classifier.classify(text)
