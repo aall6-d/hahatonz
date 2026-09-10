@@ -6,139 +6,138 @@
 <title>Актион Ассист — техническая поддержка</title>
 <link rel="icon" href='data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><path fill="%23E30611" d="M96 50 60.6 52.8 70.8 62 57.4 56.7 72.9 82.8 53.8 60.3 51.9 71.9 48.6 59.9 34.9 91.3 43.7 59 30.1 66.7 41.2 54.7 13.3 59.8 39 50 28.7 44.3 41.1 45.5 14.8 20.4 43.7 41 41.8 27.4 48.6 40.1 53.5 10.2 53.8 39.7 64.9 28.7 57.9 43.8Z"/></svg>'>
 <style>
-:root{--red:#E30611;--red-d:#B00500;--pink:#FF8A92;--pup:#8A0310;--bg:#fff;--gray:#f5f5f7;--text:#1d1d1f;--muted:#86868b;--r:20px;--sh:0 8px 30px rgba(0,0,0,.06)}
+:root{--red:#E30611;--red-d:#B00500;--pink:#FF8A92;--bg:#fff;--gray:#f5f5f7;--text:#1d1d1f;--muted:#86868b;--r:24px;--sh:0 10px 36px rgba(0,0,0,.07)}
 *{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth}
 body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Roboto,sans-serif;background:var(--bg);color:var(--text);display:flex;flex-direction:column;height:100dvh;-webkit-font-smoothing:antialiased}
 ::selection{background:rgba(227,6,17,.14)}
 
-/* ===== ЖИДКОЕ СТЕКЛО НА ФОНЕ: нейтральное, медленное, не сбивает фокус ===== */
+/* ===== ЖИДКОЕ СТЕКЛО: нейтральные стеклянные облака, видимые всегда ===== */
 .glass-bg{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
-.glass-bg i{position:absolute;display:block;backdrop-filter:blur(18px) saturate(1.12);-webkit-backdrop-filter:blur(18px) saturate(1.12);background:linear-gradient(135deg,rgba(255,255,255,.55),rgba(243,243,245,.3));box-shadow:inset 0 1px 1px rgba(255,255,255,.65),0 12px 44px rgba(20,20,25,.045);opacity:.5;border:1px solid rgba(255,255,255,.35)}
-.glass-bg .g1{width:52vw;height:38vw;left:-12vw;top:-9vw;animation:g-drift1 46s ease-in-out infinite,g-morph 23s ease-in-out infinite}
-.glass-bg .g2{width:44vw;height:34vw;right:-11vw;top:30vh;animation:g-drift2 52s ease-in-out infinite,g-morph 29s ease-in-out infinite reverse}
-.glass-bg .g3{width:30vw;height:26vw;left:22vw;bottom:-11vh;background:linear-gradient(135deg,rgba(250,248,246,.5),rgba(240,240,242,.26));animation:g-drift3 58s ease-in-out infinite,g-morph 31s ease-in-out infinite}
+.glass-bg i{position:absolute;display:block;backdrop-filter:blur(20px) saturate(1.15);-webkit-backdrop-filter:blur(20px) saturate(1.15);box-shadow:inset 0 1px 1px rgba(255,255,255,.8),inset 0 -2px 6px rgba(255,255,255,.4),0 16px 50px rgba(20,20,25,.05);opacity:.75;border:1px solid rgba(255,255,255,.55)}
+.glass-bg .g1{width:58vw;height:42vw;left:-14vw;top:-10vw;background:linear-gradient(145deg,rgba(236,236,240,.6),rgba(248,248,250,.25));animation:g-drift1 46s ease-in-out infinite,g-morph 23s ease-in-out infinite}
+.glass-bg .g2{width:50vw;height:38vw;right:-12vw;top:28vh;background:linear-gradient(145deg,rgba(243,240,238,.55),rgba(250,249,247,.22));animation:g-drift2 52s ease-in-out infinite,g-morph 29s ease-in-out infinite reverse}
+.glass-bg .g3{width:36vw;height:30vw;left:24vw;bottom:-12vh;background:linear-gradient(145deg,rgba(238,241,244,.5),rgba(248,250,251,.2));animation:g-drift3 58s ease-in-out infinite,g-morph 31s ease-in-out infinite}
 @keyframes g-morph{0%,100%{border-radius:58% 42% 55% 45%/52% 48% 52% 48%}33%{border-radius:45% 55% 48% 52%/58% 42% 55% 45%}66%{border-radius:52% 48% 42% 58%/45% 55% 45% 55%}}
 @keyframes g-drift1{0%,100%{transform:translate(0,0) rotate(0deg)}50%{transform:translate(6vw,4vh) rotate(9deg)}}
 @keyframes g-drift2{0%,100%{transform:translate(0,0) rotate(0deg)}50%{transform:translate(-5vw,-6vh) rotate(-7deg)}}
 @keyframes g-drift3{0%,100%{transform:translate(0,0) rotate(0deg)}50%{transform:translate(4vw,-5vh) rotate(6deg)}}
-@media (max-width:768px){.glass-bg i{backdrop-filter:none;-webkit-backdrop-filter:none;opacity:.4}}
+@media (max-width:768px){.glass-bg i{backdrop-filter:none;-webkit-backdrop-filter:none;opacity:.55}}
 
-header{display:flex;align-items:center;gap:10px;padding:12px 16px;border-bottom:1px solid #f0f0f2;background:rgba(255,255,255,.82);backdrop-filter:saturate(1.4) blur(10px);position:sticky;top:0;z-index:5}
-header b{font-size:17px;letter-spacing:-.01em}
-header .tag{font-size:11px;color:var(--muted);border:1px solid #e6e6e9;border-radius:6px;padding:1px 6px}
-header nav{margin-left:auto;display:flex;gap:8px}
-header nav button{border:none;background:var(--gray);border-radius:12px;padding:9px 13px;font-size:13px;cursor:pointer;transition:.2s}
+/* ===== КРУПНЫЙ ИНТЕРФЕЙС ===== */
+header{display:flex;align-items:center;gap:12px;padding:15px 22px;border-bottom:1px solid #f0f0f2;background:rgba(255,255,255,.82);backdrop-filter:saturate(1.4) blur(10px);position:sticky;top:0;z-index:5}
+header b{font-size:19px;letter-spacing:-.01em}
+header .tag{font-size:12px;color:var(--muted);border:1px solid #e6e6e9;border-radius:7px;padding:2px 7px}
+header nav{margin-left:auto;display:flex;gap:9px}
+header nav button{border:none;background:var(--gray);border-radius:13px;padding:11px 16px;font-size:14px;cursor:pointer;transition:.2s}
 header nav button:hover{background:#ececef;transform:translateY(-1px)}
-#chat{flex:1;overflow-y:auto;padding:20px 16px;max-width:780px;width:100%;margin:0 auto;display:flex;flex-direction:column;gap:14px;position:relative;z-index:1}
-#chat::-webkit-scrollbar{width:8px}
+#chat{flex:1;overflow-y:auto;padding:28px 22px;max-width:980px;width:100%;margin:0 auto;display:flex;flex-direction:column;gap:16px;position:relative;z-index:1}
+#chat::-webkit-scrollbar{width:9px}
 #chat::-webkit-scrollbar-thumb{background:#e3e3e6;border-radius:8px}
-.hero{text-align:center;padding:26px 0 6px;transition:opacity .45s,transform .45s;animation:pop .6s cubic-bezier(.2,.9,.3,1.15)}
+.hero{text-align:center;padding:34px 0 8px;transition:opacity .45s,transform .45s;animation:pop .6s cubic-bezier(.2,.9,.3,1.15)}
 .hero.hide{opacity:0;transform:translateY(-10px);height:0;padding:0;overflow:hidden;pointer-events:none}
-.hero h1{font-size:clamp(28px,6vw,44px);letter-spacing:-.03em;font-weight:700;margin-top:10px}
+.hero h1{font-size:clamp(32px,6.5vw,52px);letter-spacing:-.03em;font-weight:700;margin-top:14px}
 .hero h1 b{color:var(--red)}
-.hero p{color:var(--muted);font-size:15px;margin-top:6px}
-.msg{max-width:88%;padding:13px 15px;border-radius:var(--r);font-size:15px;line-height:1.5;white-space:pre-wrap;animation:pop .35s cubic-bezier(.2,.9,.3,1.2)}
+.hero p{color:var(--muted);font-size:17px;margin-top:8px}
+.msg{max-width:90%;padding:16px 19px;border-radius:var(--r);font-size:16.5px;line-height:1.55;white-space:pre-wrap;animation:pop .35s cubic-bezier(.2,.9,.3,1.2)}
 @keyframes pop{from{opacity:0;transform:translateY(8px) scale(.97)}}
-.msg.user{align-self:flex-end;background:rgba(245,245,247,.9)}
-.msg.bot{align-self:flex-start;background:rgba(255,255,255,.86);border:1px solid #ededf0;box-shadow:var(--sh);display:flex;gap:11px;backdrop-filter:blur(6px)}
+.msg.user{align-self:flex-end;background:rgba(245,245,247,.92)}
+.msg.bot{align-self:flex-start;background:rgba(255,255,255,.88);border:1px solid #ededf0;box-shadow:var(--sh);display:flex;gap:13px;backdrop-filter:blur(6px)}
 .abody{min-width:0}
-.badge{display:block;font-size:12px;color:var(--muted);margin-bottom:6px}
+.badge{display:block;font-size:13px;color:var(--muted);margin-bottom:7px}
 .badge b{color:var(--red)}
-.opts{display:flex;flex-wrap:wrap;gap:8px;margin-top:11px}
-.opts button{border:1px solid #e6e6e9;background:#fff;border-radius:14px;padding:11px 15px;font-size:14px;cursor:pointer;min-height:44px;transition:.18s}
+.opts{display:flex;flex-wrap:wrap;gap:9px;margin-top:13px}
+.opts button{border:1px solid #e6e6e9;background:#fff;border-radius:15px;padding:13px 18px;font-size:15px;cursor:pointer;min-height:48px;transition:.18s}
 .opts button:hover{border-color:var(--red);color:var(--red);transform:translateY(-1px);box-shadow:0 6px 16px rgba(227,6,17,.12)}
 .opts button:active{transform:scale(.97)}
 .opts button.primary{background:var(--red);border-color:var(--red);color:#fff}
 .opts button.primary:hover{background:var(--red-d)}
-.steps{list-style:none;margin:9px 0 4px;counter-reset:s}
-.steps li{counter-increment:s;padding:11px 13px;border:1px solid #ededf0;border-radius:14px;margin-bottom:7px;font-size:14px;transition:.18s;background:#fff}
+.steps{list-style:none;margin:11px 0 5px;counter-reset:s}
+.steps li{counter-increment:s;padding:13px 15px;border:1px solid #ededf0;border-radius:16px;margin-bottom:8px;font-size:15.5px;transition:.18s;background:#fff}
 .steps li:hover{border-color:rgba(227,6,17,.35)}
-.steps li::before{content:counter(s);display:inline-block;width:22px;height:22px;border-radius:50%;background:var(--gray);color:var(--red);font-weight:700;text-align:center;line-height:22px;margin-right:9px;font-size:12px}
-.stars{font-size:27px;cursor:pointer;letter-spacing:5px;color:#d6d6da;margin-top:7px}
+.steps li::before{content:counter(s);display:inline-block;width:24px;height:24px;border-radius:50%;background:var(--gray);color:var(--red);font-weight:700;text-align:center;line-height:24px;margin-right:10px;font-size:13px}
+.stars{font-size:30px;cursor:pointer;letter-spacing:6px;color:#d6d6da;margin-top:8px}
 .stars span{transition:.15s}
 .stars span:hover{transform:scale(1.2)}
 .stars span.on{color:var(--red)}
-#composer{display:flex;gap:9px;padding:13px 16px;border-top:1px solid #f0f0f2;max-width:780px;width:100%;margin:0 auto;background:rgba(255,255,255,.9);backdrop-filter:blur(8px);position:relative;z-index:2}
-#composer input{flex:1;border:1px solid #e6e6e9;border-radius:16px;padding:13px 15px;font-size:15px;outline:none;transition:.2s}
+#composer{display:flex;gap:10px;padding:15px 22px;border-top:1px solid #f0f0f2;max-width:980px;width:100%;margin:0 auto;background:rgba(255,255,255,.9);backdrop-filter:blur(8px);position:relative;z-index:2}
+#composer input{flex:1;border:1px solid #e6e6e9;border-radius:18px;padding:15px 18px;font-size:16px;outline:none;transition:.2s}
 #composer input:focus{border-color:var(--red);box-shadow:0 0 0 4px rgba(227,6,17,.08)}
-#composer button{width:48px;height:48px;border-radius:50%;border:none;background:var(--red);color:#fff;font-size:18px;cursor:pointer;transition:.18s;box-shadow:0 6px 18px rgba(227,6,17,.28)}
+#composer button{width:52px;height:52px;border-radius:50%;border:none;background:var(--red);color:#fff;font-size:19px;cursor:pointer;transition:.18s;box-shadow:0 6px 18px rgba(227,6,17,.28)}
 #composer button:hover{background:var(--red-d);transform:translateY(-1px)}
 #composer button:active{transform:scale(.94)}
 
 /* =========================================================
-   АКТИ v7 — раскачивание, живые глаза, стекло-свечение
+   АКТИ v8 — мимика ТОЛЬКО белыми глазами
    ========================================================= */
-.akti{flex:none;--ex:0px;--ey:0px;--ps:1}
+.akti{flex:none;--ex:0px;--ey:0px}
 .akti svg{width:100%;height:100%;display:block;overflow:visible;transform-origin:50% 80%}
-/* деформированное свечение-клякса */
 .akti .a-glow{fill:var(--red);opacity:.14;filter:blur(9px);transform-box:fill-box;transform-origin:center;transition:opacity .5s ease;animation:k-glowmorph 4.2s ease-in-out infinite}
 .akti .a-core{fill:var(--red);transform-box:fill-box;transform-origin:center;transition:transform .55s cubic-bezier(.34,1.4,.44,1),filter .5s ease,opacity .5s ease;filter:drop-shadow(0 0 5px rgba(227,6,17,.45)) drop-shadow(0 0 15px rgba(227,6,17,.2))}
 .akti .a-halo{fill:none;stroke:var(--red);stroke-width:2.5;stroke-dasharray:3 11;stroke-linecap:round;opacity:0;transform-box:fill-box;transform-origin:center;transition:opacity .5s}
 .akti .a-mini{fill:var(--red);opacity:0;transform-box:fill-box;transform-origin:center;transition:opacity .4s}
-.akti .a-body,.akti .a-s,.akti .a-faceg,.akti .a-face,.akti .a-eye,.akti .a-mouth,.akti .a-tear{transform-box:fill-box;transform-origin:center}
+.akti .a-body,.akti .a-s,.akti .a-faceg,.akti .a-face,.akti .a-eye,.akti .a-tear{transform-box:fill-box;transform-origin:center}
 .akti .a-s{fill:var(--red);opacity:0}
 .akti .s1{animation:k-star 4.2s ease-in-out infinite .6s}
 .akti .s2{animation:k-star 5.4s ease-in-out infinite 2s}
 .akti .s3{animation:k-star 4.8s ease-in-out infinite 3s}
 .akti .s4{animation:k-star 6.2s ease-in-out infinite 1.2s}
 .akti .a-q{fill:var(--red);font-family:-apple-system,"Segoe UI",sans-serif;font-weight:900;font-size:56px;text-anchor:middle;dominant-baseline:central;opacity:0;transform-box:fill-box;transform-origin:center;transition:opacity .3s,transform .45s cubic-bezier(.3,1.4,.4,1);filter:drop-shadow(0 0 8px rgba(227,6,17,.5))}
-/* глаза v2: белок + зрачок + блик */
-.akti .a-wh{fill:#fff}
-.akti .a-pup{fill:var(--pup)}
-.akti .a-glint{fill:#fff;opacity:.9}
-.akti .a-pup,.akti .a-glint{transform:translate(calc(var(--ex)*.7),calc(var(--ey)*.7)) scale(var(--ps));transition:transform .3s ease}
-.akti .a-eye{animation:k-blink 4.6s ease-in-out infinite;transition:transform .3s ease}
+/* белые глаза */
+.akti .a-eye{fill:#fff;transition:transform .3s ease}
 .akti .a-face{transform:translate(var(--ex),var(--ey));transition:transform .45s ease}
 .akti .a-faceg{transition:transform .4s cubic-bezier(.34,1.4,.44,1)}
-/* натуральный румянец: размытые пятна */
 .akti .a-blush{fill:var(--pink);filter:blur(2.6px);opacity:0;transition:opacity .6s ease,transform .6s ease;transform-box:fill-box;transform-origin:center}
-.akti .a-mouth{fill:none;stroke:#fff;stroke-width:3.2;stroke-linecap:round;opacity:0;transition:opacity .4s ease,transform .45s cubic-bezier(.34,1.4,.44,1)}
 .akti .a-tear{fill:var(--pink);opacity:0;filter:blur(.4px)}
 
-/* логотип в шапке: тихое покачивание и свечение, без лица */
-.akti.logo{width:34px;height:34px}
+/* логотип: покачивание + свечение, без лица */
+.akti.logo{width:36px;height:36px}
 .akti.logo svg{animation:k-sway 7s ease-in-out infinite}
 .akti.logo .a-s,.akti.logo .a-mini,.akti.logo .a-halo,.akti.logo .a-face,.akti.logo .a-tear,.akti.logo .a-q{display:none}
 
-/* hero */
-.hero-akti-wrap{perspective:600px;width:150px;height:150px;margin:0 auto;position:relative}
+/* hero крупнее */
+.hero-akti-wrap{perspective:600px;width:180px;height:180px;margin:0 auto;position:relative}
 .hero-akti{width:100%;height:100%;transition:transform .35s cubic-bezier(.25,.9,.3,1.1);transform-style:preserve-3d;will-change:transform}
 .hero-akti .a-s.s1{transform:translateZ(40px)}
 .hero-akti .a-s.s2{transform:translateZ(60px)}
 .hero-akti .a-s.s3{transform:translateZ(30px)}
 .hero-akti .a-s.s4{transform:translateZ(50px)}
-.msg .akti{width:38px;height:38px}
+.msg .akti{width:46px;height:46px}
 
-/* hover: деформация + оттенок + сияние + распахнутые глаза */
+/* hover */
 .akti:hover .a-body{animation:k-squish 1.8s ease-in-out infinite}
 .akti:hover .a-core{filter:hue-rotate(16deg) drop-shadow(0 0 9px rgba(227,6,17,.65)) drop-shadow(0 0 24px rgba(227,6,17,.35))}
 .akti:hover .a-glow{opacity:.42;animation:k-glowmorph 1.6s ease-in-out infinite}
 .akti:hover .a-faceg{transform:scale(1.1)}
-.akti:hover{--ps:1.18}
 .akti:hover .a-blush{opacity:.4}
+.akti:hover .a-eye.el,.akti:hover .a-eye.er{animation:e-hover 2.2s ease-in-out infinite}
 
-/* ===== СОСТОЯНИЯ: раскачивание вместо вращения ===== */
+/* ===== СОСТОЯНИЯ ТЕЛА ===== */
 .akti[data-state="idle"] svg{animation:k-sway 5.2s ease-in-out infinite}
 .akti[data-state="idle"] .a-body{animation:k-float 5.5s ease-in-out infinite}
+.akti[data-state="idle"] .a-eye.el,.akti[data-state="idle"] .a-eye.er{animation:e-idle 4.8s ease-in-out infinite}
 
 .akti[data-state="thinking"]{--ey:-2px}
 .akti[data-state="thinking"] svg{animation:k-sway 2.3s ease-in-out infinite}
 .akti[data-state="thinking"] .a-body{animation:k-float 2.6s ease-in-out infinite}
 .akti[data-state="thinking"] .a-glow{animation:k-glowmorph 1.7s ease-in-out infinite}
 .akti[data-state="thinking"] .a-halo{opacity:.7;animation:k-spin 4s linear infinite reverse}
+.akti[data-state="thinking"] .a-eye.el{animation:e-think-l 3.6s ease-in-out infinite}
+.akti[data-state="thinking"] .a-eye.er{animation:e-think-r 3.6s ease-in-out infinite}
 
 .akti[data-state="question"]{--ey:-1px}
 .akti[data-state="question"] svg{animation:k-sway 3.4s ease-in-out infinite}
 .akti[data-state="question"] .a-faceg{transform:scale(1.08)}
 .akti[data-state="question"] .s2{animation:k-star 1.8s ease-in-out infinite}
 .akti[data-state="question"] .a-mini{opacity:1;animation:k-twinkle 1.8s ease-in-out infinite}
+.akti[data-state="question"] .a-eye.el{animation:e-cur-l 5s ease-in-out infinite}
+.akti[data-state="question"] .a-eye.er{animation:e-cur-r 5s ease-in-out infinite}
 
 .akti[data-state="solution"]{--ey:-1px}
 .akti[data-state="solution"] svg{animation:k-sway 1.5s ease-in-out infinite}
 .akti[data-state="solution"] .a-body{animation:k-joy 1.3s ease-in-out infinite}
-.akti[data-state="solution"] .a-eye{animation:none;transform:scaleY(.5)}
-.akti[data-state="solution"] .a-mouth{opacity:1}
+.akti[data-state="solution"] .a-eye.el{animation:e-happy-l 1.6s ease-in-out infinite}
+.akti[data-state="solution"] .a-eye.er{animation:e-happy-r 1.6s ease-in-out infinite}
 .akti[data-state="solution"] .a-blush{opacity:.55;transform:scale(1.1)}
 .akti[data-state="solution"] .a-glow{opacity:.3;animation:k-glowmorph 1.2s ease-in-out infinite}
 .akti[data-state="solution"] .a-s{animation:k-star 1.6s ease-in-out infinite}
@@ -146,8 +145,8 @@ header nav button:hover{background:#ececef;transform:translateY(-1px)}
 .akti[data-state="success"]{--ey:-1px}
 .akti[data-state="success"] svg{animation:k-wiggle .95s cubic-bezier(.3,1.4,.4,1) 1,k-sway 1.4s ease-in-out infinite .95s}
 .akti[data-state="success"] .a-body{animation:k-joy 1.3s ease-in-out infinite,k-joybig .85s cubic-bezier(.3,1.5,.4,1) 1}
-.akti[data-state="success"] .a-eye{animation:none;transform:scaleY(.45)}
-.akti[data-state="success"] .a-mouth{opacity:1;transform:scale(1.25)}
+.akti[data-state="success"] .a-eye.el{animation:e-happy-l 1.2s ease-in-out infinite}
+.akti[data-state="success"] .a-eye.er{animation:e-happy-r 1.2s ease-in-out infinite}
 .akti[data-state="success"] .a-blush{opacity:.7;transform:scale(1.2)}
 .akti[data-state="success"] .a-glow{animation:k-flare 1s ease-out forwards}
 .akti[data-state="success"] .a-halo{opacity:1;animation:k-halo 1s ease-out forwards}
@@ -156,29 +155,30 @@ header nav button:hover{background:#ececef;transform:translateY(-1px)}
 .akti[data-state="success"] .s3{animation:k-fly3 1s ease-out forwards}
 .akti[data-state="success"] .s4{animation:k-fly4 1s ease-out forwards}
 
-/* грусть (любимая): оседает, плачет, тяжёлое покачивание */
+/* грусть: глаза полуприкрыты и опущены */
 .akti[data-state="escalation"],.akti[data-state="slow"]{--ey:2.5px}
 .akti[data-state="escalation"] svg,.akti[data-state="slow"] svg{animation:k-sway-sad 9s ease-in-out infinite}
 .akti[data-state="escalation"] .a-body,.akti[data-state="slow"] .a-body{animation:k-droop 4.5s ease-in-out infinite}
 .akti[data-state="escalation"] .a-core,.akti[data-state="slow"] .a-core{filter:saturate(.55) brightness(.88) drop-shadow(0 0 4px rgba(227,6,17,.22))}
 .akti[data-state="escalation"] .a-s,.akti[data-state="slow"] .a-s{animation:none;opacity:0}
-.akti[data-state="escalation"] .a-eye,.akti[data-state="slow"] .a-eye{animation:none;transform:scaleY(.62)}
-.akti[data-state="escalation"] .a-mouth,.akti[data-state="slow"] .a-mouth{opacity:1;transform:scaleY(-1) translateY(-3px)}
+.akti[data-state="escalation"] .a-eye.el,.akti[data-state="slow"] .a-eye.el{animation:e-sad-l 6s ease-in-out infinite}
+.akti[data-state="escalation"] .a-eye.er,.akti[data-state="slow"] .a-eye.er{animation:e-sad-r 6s ease-in-out infinite}
 .akti[data-state="escalation"] .a-glow,.akti[data-state="slow"] .a-glow{opacity:.06;animation:k-glowmorph 7s ease-in-out infinite}
 .akti[data-state="escalation"] .a-tear,.akti[data-state="slow"] .a-tear{animation:k-tear 2.4s ease-in infinite}
 .akti[data-state="escalation"] .a-tear.tr,.akti[data-state="slow"] .a-tear.tr{animation-delay:1.2s}
 .akti[data-state="slow"] svg{animation-duration:12s}
 
-/* смущение */
+/* смущение: косят в сторону */
 .akti[data-mood="shy"]{--ex:3px;--ey:1px}
 .akti[data-mood="shy"] .a-body{animation:k-shy 2.4s ease-in-out infinite}
 .akti[data-mood="shy"] .a-core{filter:hue-rotate(-14deg) drop-shadow(0 0 7px rgba(255,138,146,.6))}
 .akti[data-mood="shy"] .a-blush{opacity:.75;transform:scale(1.25)}
-.akti[data-mood="shy"] .a-mouth{opacity:1;transform:scale(.8)}
+.akti[data-mood="shy"] .a-eye.el{animation:e-shy-l 2.4s ease-in-out infinite}
+.akti[data-mood="shy"] .a-eye.er{animation:e-shy-r 2.4s ease-in-out infinite}
 /* подмигивание */
-.akti[data-mood="wink"] .a-eye.er{animation:k-wink .8s ease-in-out 1}
+.akti[data-mood="wink"] .a-eye.er{animation:e-wink .8s ease-in-out 1}
 
-/* typing → "?" */
+/* typing */
 .hero-akti[data-typing="true"] .a-core{transform:scale(.45);opacity:.4}
 .hero-akti[data-typing="true"] .a-glow{opacity:.08}
 .hero-akti[data-typing="true"] .a-s{animation:none;opacity:0}
@@ -186,15 +186,13 @@ header nav button:hover{background:#ececef;transform:translateY(-1px)}
 .hero-akti[data-typing="true"] .a-face{opacity:.25}
 .hero-akti[data-typing="true"] .a-q{opacity:1;animation:k-q-pulse 1.4s ease-in-out infinite}
 
-/* ===== ключевые кадры ===== */
+/* ===== кадры тела ===== */
 @keyframes k-spin{to{transform:rotate(360deg)}}
 @keyframes k-sway{0%,100%{transform:rotate(-5deg)}50%{transform:rotate(5deg)}}
 @keyframes k-sway-sad{0%,100%{transform:rotate(-2.5deg) translateY(1px)}50%{transform:rotate(2.5deg) translateY(2px)}}
 @keyframes k-wiggle{0%{transform:rotate(0deg)}25%{transform:rotate(-11deg)}50%{transform:rotate(9deg)}75%{transform:rotate(-5deg)}100%{transform:rotate(0deg)}}
 @keyframes k-glowmorph{0%,100%{transform:scale(1,1) rotate(0deg);opacity:.13}33%{transform:scale(1.22,.82) rotate(9deg);opacity:.22}66%{transform:scale(.88,1.16) rotate(-7deg);opacity:.17}}
 @keyframes k-float{0%,100%{transform:translateY(0) scale(1) rotate(0deg)}50%{transform:translateY(-3px) scale(1.03) rotate(1.5deg)}}
-@keyframes k-blink{0%,91%,100%{transform:scaleY(1)}95%{transform:scaleY(.12)}}
-@keyframes k-wink{0%,100%{transform:scaleY(1)}45%,60%{transform:scaleY(.1)}}
 @keyframes k-squish{0%,100%{transform:scale(1,1) rotate(0deg)}25%{transform:scale(1.14,.86) rotate(3deg)}50%{transform:scale(.9,1.12) rotate(-3deg)}75%{transform:scale(1.08,.92) rotate(2deg)}}
 @keyframes k-joy{0%,100%{transform:translateY(0) scale(1)}30%{transform:translateY(-6px) scale(.95,1.07) rotate(-3deg)}55%{transform:translateY(0) scale(1.08,.92)}75%{transform:translateY(-3px) scale(.98,1.03) rotate(2deg)}}
 @keyframes k-joybig{0%{transform:translateY(0) scale(1)}35%{transform:translateY(-14px) scale(.9,1.15) rotate(-8deg)}60%{transform:translateY(0) scale(1.15,.85)}80%{transform:translateY(-4px) scale(.98,1.04)}100%{transform:translateY(0) scale(1)}}
@@ -211,6 +209,21 @@ header nav button:hover{background:#ececef;transform:translateY(-1px)}
 @keyframes k-fly4{0%{opacity:0;transform:translate(0,0) scale(.3)}25%{opacity:1}100%{opacity:0;transform:translate(15px,14px) scale(.8) rotate(-80deg)}}
 @keyframes k-q-pulse{0%,100%{transform:scale(1) rotate(-5deg)}50%{transform:scale(1.1) rotate(4deg)}}
 
+/* ===== кадры ГЛАЗ (вся мимика) ===== */
+@keyframes e-idle{0%,88%,100%{transform:scale(1)}92%{transform:scaleY(.1)}96%{transform:scale(1)}}
+@keyframes e-think-l{0%,84%,100%{transform:scaleY(.78) translateY(-1px)}88%{transform:scaleY(.1)}92%{transform:scaleY(.78) translateY(-1px)}}
+@keyframes e-think-r{0%,84%,100%{transform:scaleY(1.1) translateY(-1.6px)}88%{transform:scaleY(.1)}92%{transform:scaleY(1.1) translateY(-1.6px)}}
+@keyframes e-cur-l{0%,90%,100%{transform:scale(1.22) rotate(7deg)}94%{transform:scaleY(.12)}97%{transform:scale(1.22) rotate(7deg)}}
+@keyframes e-cur-r{0%,90%,100%{transform:scale(1.22) rotate(-7deg)}94%{transform:scaleY(.12)}97%{transform:scale(1.22) rotate(-7deg)}}
+@keyframes e-happy-l{0%,100%{transform:scaleY(.36) rotate(10deg) translateY(-1px)}50%{transform:scaleY(.46) rotate(8deg) translateY(-1.5px)}}
+@keyframes e-happy-r{0%,100%{transform:scaleY(.36) rotate(-10deg) translateY(-1px)}50%{transform:scaleY(.46) rotate(-8deg) translateY(-1.5px)}}
+@keyframes e-sad-l{0%,90%,100%{transform:scaleY(.52) translateY(2px) rotate(-7deg)}94%{transform:scaleY(.1)}97%{transform:scaleY(.52) translateY(2px) rotate(-7deg)}}
+@keyframes e-sad-r{0%,90%,100%{transform:scaleY(.52) translateY(2px) rotate(7deg)}94%{transform:scaleY(.1)}97%{transform:scaleY(.52) translateY(2px) rotate(7deg)}}
+@keyframes e-shy-l{0%,100%{transform:scale(1.05) translateX(2.5px)}}
+@keyframes e-shy-r{0%,100%{transform:scaleY(.68) translateX(2.5px)}}
+@keyframes e-hover{0%,70%,100%{transform:scale(1.18)}76%{transform:scaleY(.12)}82%{transform:scale(1.18)}88%{transform:scaleY(.12)}94%{transform:scale(1.18)}}
+@keyframes e-wink{0%,100%{transform:scale(1)}45%,60%{transform:scaleY(.08)}}
+
 /* салют */
 .salut-p{position:fixed;width:var(--size,6px);height:var(--size,6px);background:var(--c,var(--red));pointer-events:none;z-index:100;animation:salut-fly 1.15s cubic-bezier(.2,.7,.4,1) forwards;box-shadow:0 0 10px currentColor;border-radius:50% 10% 50% 10%;transform:translate(-50%,-50%);color:var(--c,var(--red))}
 @keyframes salut-fly{0%{opacity:1;transform:translate(-50%,-50%) scale(.2) rotate(0)}60%{opacity:1}100%{opacity:0;transform:translate(calc(-50% + var(--dx)),calc(-50% + var(--dy) + 60px)) scale(1.15) rotate(var(--rot))}}
@@ -218,16 +231,16 @@ header nav button:hover{background:#ececef;transform:translateY(-1px)}
 /* панели */
 .panel{position:fixed;inset:0;background:rgba(20,20,22,.35);backdrop-filter:blur(2px);display:none;z-index:10}
 .panel.open{display:block}
-.panel .box{position:absolute;right:0;top:0;bottom:0;width:min(450px,100%);background:#fff;padding:18px;overflow-y:auto;box-shadow:-20px 0 60px rgba(0,0,0,.12);border-radius:24px 0 0 24px;animation:slide .3s cubic-bezier(.2,.9,.3,1.1)}
+.panel .box{position:absolute;right:0;top:0;bottom:0;width:min(520px,100%);background:#fff;padding:20px;overflow-y:auto;box-shadow:-20px 0 60px rgba(0,0,0,.12);border-radius:26px 0 0 26px;animation:slide .3s cubic-bezier(.2,.9,.3,1.1)}
 @keyframes slide{from{transform:translateX(30px);opacity:0}}
-.panel input{width:100%;border:1px solid #e6e6e9;border-radius:14px;padding:11px 13px;margin:10px 0;font-size:14px;outline:none}
+.panel input{width:100%;border:1px solid #e6e6e9;border-radius:14px;padding:12px 14px;margin:10px 0;font-size:15px;outline:none}
 .panel input:focus{border-color:var(--red)}
-table{width:100%;border-collapse:collapse;font-size:13px}
-td,th{padding:9px 6px;border-bottom:1px solid #f0f0f2;text-align:left}
+table{width:100%;border-collapse:collapse;font-size:14px}
+td,th{padding:10px 7px;border-bottom:1px solid #f0f0f2;text-align:left}
 th{color:var(--muted);font-weight:600}
 
 @media (prefers-reduced-motion:reduce){.akti svg,.akti .a-body,.akti .a-core,.akti .a-mini,.akti .a-halo,.akti .a-glow,.akti .a-s,.akti .a-q,.akti .a-eye,.akti .a-tear,.msg,.hero,.salut-p,.glass-bg i{animation:none !important;transition:none !important}}
-@media (max-width:640px){.hero-akti-wrap{width:115px;height:115px}}
+@media (max-width:640px){.hero-akti-wrap{width:130px;height:130px}.msg{font-size:15.5px}}
 </style>
 </head>
 <body>
@@ -268,23 +281,20 @@ let ticketId=null,pending=null;
 const chat=document.getElementById('chat');
 const esc=s=>String(s??'').replace(/[<>&]/g,c=>({'<':'&lt;','>':'&gt;','&':'&amp;'}[c]));
 
-/* ===== SVG Акти v7 ===== */
+/* ===== SVG Акти v8: только белые глаза ===== */
 const SPARK="M96 50 60.6 52.8 70.8 62 57.4 56.7 72.9 82.8 53.8 60.3 51.9 71.9 48.6 59.9 34.9 91.3 43.7 59 30.1 66.7 41.2 54.7 13.3 59.8 39 50 28.7 44.3 41.1 45.5 14.8 20.4 43.7 41 41.8 27.4 48.6 40.1 53.5 10.2 53.8 39.7 64.9 28.7 57.9 43.8Z";
 const STAR="M10 0 Q11.6 6.8 20 10 Q11.6 13.2 10 20 Q8.4 13.2 0 10 Q8.4 6.8 10 0Z";
 const TEAR="M0 0 c2.6 4.2 2.6 7.4 0 9.6 c-2.6 -2.2 -2.6 -5.4 0 -9.6Z";
-function eye(cx){return `<g class="a-eye"><ellipse class="a-wh" cx="${cx}" cy="45" rx="4.8" ry="6.4"/><circle class="a-pup" cx="${cx+.5}" cy="46" r="2.3"/><circle class="a-glint" cx="${cx+1.6}" cy="44.2" r="1"/></g>`;}
 function aktiSVG(){return `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
 <ellipse class="a-glow" cx="50" cy="50" rx="30" ry="23"/>
 <circle class="a-halo" cx="50" cy="50" r="45"/>
 <g class="a-body">
   <path class="a-core" d="${SPARK}"/>
   <g class="a-faceg"><g class="a-face">
-    <g class="a-eye el">${''}</g>
-    ${eye(41).replace('class="a-eye"','class="a-eye el"')}
-    ${eye(59).replace('class="a-eye"','class="a-eye er"')}
+    <ellipse class="a-eye el" cx="41" cy="45" rx="4.8" ry="6.4"/>
+    <ellipse class="a-eye er" cx="59" cy="45" rx="4.8" ry="6.4"/>
     <circle class="a-blush" cx="32.5" cy="54.5" r="4.6"/>
     <circle class="a-blush" cx="67.5" cy="54.5" r="4.6"/>
-    <path class="a-mouth" d="M43 57 Q50 63 57 57"/>
   </g></g>
   <g transform="translate(38 56)"><path class="a-tear tl" d="${TEAR}"/></g>
   <g transform="translate(60 56)"><path class="a-tear tr" d="${TEAR}"/></g>
@@ -333,7 +343,7 @@ window.addEventListener('deviceorientation',e=>{
 const inputEl=document.getElementById('input');
 inputEl.addEventListener('input',()=>{heroAkti.dataset.typing=inputEl.value.trim()?'true':'false';});
 
-/* режиссёр настроений: смущение, взгляды, подмигивания */
+/* режиссёр настроений */
 setInterval(()=>{
   if(heroAkti.dataset.state!=='idle'||heroAkti.dataset.typing==='true')return;
   const roll=Math.random();
@@ -427,20 +437,27 @@ async function resolve(){
   try{await api(`/tickets/${ticketId}/resolve`,{method:'POST'});}catch(e){}
   const c=addBot(`✓ Проблема решена. Обращение #${ticketId} закрыто.\nПомог ли вам Акти?`,'success');
   setTimeout(()=>burstSalut(c.parentElement,24),80);
-  /* победное подмигивание */
   setTimeout(()=>{const a=c.parentElement.querySelector('.akti');if(a){a.dataset.mood='wink';setTimeout(()=>{a.dataset.mood='';},900);}},700);
   setTimeout(()=>setAkti(c.parentElement,'idle'),2200);
   stars(c);
 }
 
+/* ===== ВАША stars(): одноразовая оценка + already + support ===== */
 function stars(c){
   const w=document.createElement('div');w.className='stars';
+  let done=false;
   for(let i=1;i<=5;i++){const s=document.createElement('span');s.textContent='★';
-    s.onclick=async()=>{[...w.children].forEach((el,idx)=>el.className=idx<i?'on':'');
+    s.onclick=async()=>{
+      if(done)return;
+      done=true;
+      [...w.children].forEach((el,idx)=>{el.className=idx<i?'on':'';el.onclick=null;});
+      w.style.cursor='default';
       let r={};
       try{r=await api('/feedback',{method:'POST',body:JSON.stringify({ticket_id:ticketId,rating:i})});}catch(e){}
       if(r.support){
         addBot('Сожалею, что не смог помочь 😔 Ваша оценка и вся история диалога переданы в поддержку: специалист изучит обращение и свяжется с вами. Номер обращения #'+ticketId+'.','slow');
+      }else if(r.status==='already'){
+        addBot('Вы уже оценили это обращение — спасибо!');
       }else{
         addBot('Спасибо за оценку! Чем ещё помочь?','idle');
       }};
