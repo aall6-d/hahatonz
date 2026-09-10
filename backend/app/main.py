@@ -265,7 +265,21 @@ def feedback(payload: FeedbackRequest):
         raise HTTPException(status_code=400,
                             detail="Оценка должна быть от 1 до 5")
     db.add_feedback(payload.ticket_id, payload.rating, payload.comment or "")
-    return {"status": "saved"}
+    support = False
+    if payload.rating <= 2:
+        ticket = db.get_ticket(payload.ticket_id)
+        if ticket and ticket["status"] != "escalated":
+            reason = (f"Низкая оценка ({payload.rating}/5): "
+                      "пользователь не удовлетворён решением")
+            if payload.comment:
+                reason += ". Комментарий: " + payload.comment
+            db.update_ticket(payload.ticket_id, status="escalated",
+                             state="escalated")
+            db.add_message(payload.ticket_id, "system",
+                           "Автоэскалация по оценке: " + reason)
+            support = True
+    return {"status": "saved", "support": support,
+            "ticket_id": payload.ticket_id}
 
 
 @app.get("/api/knowledge/search")
