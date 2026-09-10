@@ -140,3 +140,11 @@ def get_feedback(ticket_id):
         "WHERE ticket_id=?", (ticket_id,)).fetchall()
     conn.close()
     return [dict(r) for r in rows]    
+
+def get_feedback(ticket_id):
+    conn = get_db()
+    rows = conn.execute(
+        "SELECT rating, comment, created_at FROM feedback "
+        "WHERE ticket_id=?", (ticket_id,)).fetchall()
+    conn.close()
+    return [dict(r) for r in rows]   
