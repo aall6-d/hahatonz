@@ -132,3 +132,11 @@ def add_feedback(ticket_id, rating, comment):
         "VALUES (?,?,?,?)", (ticket_id, rating, comment, now()))
     conn.commit()
     conn.close()
+
+def get_feedback(ticket_id):
+    conn = get_db()
+    rows = conn.execute(
+        "SELECT rating, comment, created_at FROM feedback "
+        "WHERE ticket_id=?", (ticket_id,)).fetchall()
+    conn.close()
+    return [dict(r) for r in rows]    

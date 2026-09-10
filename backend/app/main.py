@@ -456,6 +456,9 @@ def feedback(payload: FeedbackRequest):
     if not 1 <= payload.rating <= 5:
         raise HTTPException(status_code=400,
                             detail="Оценка должна быть от 1 до 5")
+    if db.get_feedback(payload.ticket_id):
+        return {"status": "already", "support": False,
+                "ticket_id": payload.ticket_id}
     db.add_feedback(payload.ticket_id, payload.rating, payload.comment or "")
     support = False
     if payload.rating <= 2:
