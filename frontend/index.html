@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Актион Ассист — техническая поддержка</title>
+<style>
+:root{--red:#E30611;--bg:#fff;--gray:#f5f5f7;--text:#1d1d1f;--muted:#86868b;--r:18px}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Roboto,sans-serif;background:var(--bg);color:var(--text);display:flex;flex-direction:column;height:100dvh}
+header{display:flex;align-items:center;gap:10px;padding:12px 16px;border-bottom:1px solid #eee;background:#fff}
+header b{font-size:17px}
+header .tag{font-size:11px;color:var(--muted);border:1px solid #e0e0e0;border-radius:6px;padding:1px 6px}
+header nav{margin-left:auto;display:flex;gap:8px}
+header nav button{border:none;background:var(--gray);border-radius:10px;padding:8px 12px;font-size:13px;cursor:pointer}
+#chat{flex:1;overflow-y:auto;padding:16px;max-width:760px;width:100%;margin:0 auto;display:flex;flex-direction:column;gap:12px}
+.msg{max-width:88%;padding:12px 14px;border-radius:var(--r);font-size:15px;line-height:1.45;white-space:pre-wrap}
+.msg.user{align-self:flex-end;background:var(--gray)}
+.msg.bot{align-self:flex-start;background:#fff;border:1px solid #ececec;box-shadow:0 2px 8px rgba(0,0,0,.04);display:flex;gap:10px}
+.badge{display:block;font-size:12px;color:var(--muted);margin-bottom:6px}
+.badge b{color:var(--red)}
+.opts{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.opts button{border:1px solid #e3e3e3;background:#fff;border-radius:12px;padding:10px 14px;font-size:14px;cursor:pointer;min-height:44px}
+.opts button:hover{border-color:var(--red);color:var(--red)}
+.opts button.primary{background:var(--red);border-color:var(--red);color:#fff}
+.steps{list-style:none;margin:8px 0 4px;counter-reset:s}
+.steps li{counter-increment:s;padding:10px 12px;border:1px solid #ececec;border-radius:12px;margin-bottom:6px;font-size:14px}
+.steps li::before{content:counter(s);display:inline-block;width:22px;height:22px;border-radius:50%;background:var(--gray);color:var(--red);font-weight:600;text-align:center;line-height:22px;margin-right:8px;font-size:12px}
+.stars{font-size:26px;cursor:pointer;letter-spacing:4px;color:#d0d0d0;margin-top:6px}
+.stars span.on{color:var(--red)}
+#composer{display:flex;gap:8px;padding:12px 16px;border-top:1px solid #eee;max-width:760px;width:100%;margin:0 auto}
+#composer input{flex:1;border:1px solid #e3e3e3;border-radius:14px;padding:12px 14px;font-size:15px;outline:none}
+#composer input:focus{border-color:var(--red)}
+#composer button{width:46px;height:46px;border-radius:50%;border:none;background:var(--red);color:#fff;font-size:18px;cursor:pointer}
+.sparks{position:relative;width:34px;height:34px;flex:none;animation:spin 6s linear infinite}
+.sparks i{position:absolute;left:50%;top:50%;width:2px;height:8px;background:var(--red);border-radius:2px}
+.sparks.think{animation-duration:1.2s}
+.sparks.slow{animation-duration:12s;opacity:.55}
+@keyframes spin{to{transform:rotate(360deg)}}
+.panel{position:fixed;inset:0;background:rgba(0,0,0,.35);display:none;z-index:10}
+.panel.open{display:block}
+.panel .box{position:absolute;right:0;top:0;bottom:0;width:min(440px,100%);background:#fff;padding:16px;overflow-y:auto}
+.panel input{width:100%;border:1px solid #e3e3e3;border-radius:12px;padding:10px 12px;margin:10px 0;font-size:14px}
+table{width:100%;border-collapse:collapse;font-size:13px}
+td,th{padding:8px 6px;border-bottom:1px solid #eee;text-align:left}
+</style>
+</head>
+<body>
+<header>
+  <div class="sparks" id="logo"></div>
+  <b>Актион Ассист</b><span class="tag">AI</span>
+  <nav>
+    <button onclick="openPanel('history')">История</button>
+    <button onclick="openPanel('kb')">База знаний</button>
+    <button onclick="openPanel('support')">Специалисту</button>
+  </nav>
+</header>
+<div id="chat"></div>
+<form id="composer">
+  <input id="input" placeholder="Например: не могу войти в Актион 360" autocomplete="off">
+  <button type="submit" aria-label="Отправить">↑</button>
+</form>
+<div class="panel" id="panel"><div class="box">
+  <div style="display:flex;justify-content:space-between;align-items:center">
+    <b id="panelTitle"></b>
+    <button onclick="closePanel()" style="border:none;background:none;font-size:20px;cursor:pointer">×</button>
+  </div>
+  <div id="panelBody"></div>
+</div></div>
+
+<script>
+/* Если поля в Swagger (/api/docs) отличаются — правьте только send(), resolve(), notHelped(), stars() */
+const API='/api';
+let ticketId=null;
+const chat=document.getElementById('chat');
+const esc=s=>String(s??'').replace(/[<>&]/g,c=>({'<':'&lt;','>':'&gt;','&':'&amp;'}[c]));
+
+function fillSparks(el){for(let k=0;k<8;k++){const i=document.createElement('i');i.style.transform=`rotate(${k*45}deg) translateY(-13px)`;el.appendChild(i);}}
+fillSparks(document.getElementById('logo'));
+function sparks(cls){const d=document.createElement('div');d.className='sparks '+(cls||'');fillSparks(d);return d;}
+
+function addUser(t){const m=document.createElement('div');m.className='msg user';m.textContent=t;chat.appendChild(m);chat.scrollTop=chat.scrollHeight;}
+function addBot(html,cls){const m=document.createElement('div');m.className='msg bot';m.appendChild(sparks(cls));const c=document.createElement('div');c.innerHTML=html;m.appendChild(c);chat.appendChild(m);chat.scrollTop=chat.scrollHeight;return c;}
+function buttons(container,list,cb,primary){const w=document.createElement('div');w.className='opts';list.forEach((o,i)=>{const b=document.createElement('button');if(i===primary)b.className='primary';b.textContent=o;b.onclick=()=>{w.remove();cb(o);};w.appendChild(b);});container.appendChild(w);}
+
+async function api(path,opts={}){const r=await fetch(API+path,{headers:{'Content-Type':'application/json'},...opts});if(!r.ok)throw new Error('HTTP '+r.status);return r.json();}
+const badge=r=>r.category?`<span class="badge">Категория: <b>${esc(r.category)}</b>${r.confidence!=null?` · уверенность ${Math.round(r.confidence*100)}%`:''}</span>`:'';
+
+async function send(text){
+  addUser(text);
+  let r;
+  try{r=await api('/chat',{method:'POST',body:JSON.stringify({ticket_id:ticketId,message:text})});}
+  catch(e){addBot('Не удалось получить ответ прямо сейчас. Попробуйте ещё раз или передайте обращение специалисту.','slow');return;}
+  if(r.ticket_id)ticketId=r.ticket_id;
+  render(r);
+}
+
+function render(r){
+  const c=addBot(badge(r)+esc(r.message||''), r.type==='solution'?'':(r.type==='escalation'?'slow':'think'));
+  if((r.type==='question'||r.type==='clarification')&&r.options&&r.options.length){buttons(c,r.options,o=>send(o));return;}
+  if(r.type==='solution'&&r.steps&&r.steps.length){
+    const ol=document.createElement('ol');ol.className='steps';
+    r.steps.forEach(s=>{const li=document.createElement('li');li.textContent=s;ol.appendChild(li);});
+    c.appendChild(ol);
+    buttons(c,['Выполнил(а) шаги'],()=>{
+      const q=addBot(esc(r.success_question||'Проблема решена?'));
+      buttons(q,['Да, проблема решена','Нет, проблема осталась'],a=>a.startsWith('Да')?resolve():notHelped());
+    },0);
+    return;
+  }
+  if(r.type==='escalation'){notHelped(true);}
+}
+
+async function resolve(){
+  try{await api(`/tickets/${ticketId}/resolve`,{method:'POST'});}catch(e){}
+  const c=addBot(`✓ Проблема решена. Обращение #${ticketId} закрыто.<br>Помог ли вам Акти?`);
+  stars(c);
+}
+
+function notHelped(fromServer){
+  const c=addBot(fromServer?esc('Я выполнил доступные шаги, но проблема сохраняется.'): 'Похоже, стандартные способы не помогли.');
+  buttons(c,['Передать специалисту'],async()=>{
+    try{
+      await api(`/tickets/${ticketId}/escalate`,{method:'POST'});
+      addBot(`Я передал обращение специалисту. Номер: #${ticketId}. Карточка с категорией, вашими ответами и выполненными шагами уже в кабинете поддержки.`,'slow');
+    }catch(e){addBot('Не удалось создать обращение. Попробуйте ещё раз.','slow');}
+  },0);
+}
+
+function stars(c){
+  const w=document.createElement('div');w.className='stars';
+  for(let i=1;i<=5;i++){const s=document.createElement('span');s.textContent='★';
+    s.onclick=async()=>{[...w.children].forEach((el,idx)=>el.className=idx<i?'on':'');
+      try{await api('/feedback',{method:'POST',body:JSON.stringify({ticket_id:ticketId,rating:i})});}catch(e){}
+      addBot('Спасибо за оценку! Чем ещё помочь?');};
+    w.appendChild(s);}
+  c.appendChild(w);
+}
+
+document.getElementById('composer').onsubmit=e=>{e.preventDefault();const v=document.getElementById('input').value.trim();if(!v)return;document.getElementById('input').value='';send(v);};
+
+async function openPanel(kind){
+  const p=document.getElementById('panel');p.classList.add('open');
+  const body=document.getElementById('panelBody');body.innerHTML='Загрузка…';
+  try{
+    if(kind==='history'){
+      document.getElementById('panelTitle').textContent='История обращений';
+      const list=await api('/tickets');
+      body.innerHTML=Array.isArray(list)&&list.length?table(list,['id','category','status']):'<p>Пока обращений нет.</p>';
+    }else if(kind==='support'){
+      document.getElementById('panelTitle').textContent='Кабинет специалиста';
+      const list=await api('/support/tickets');
+      body.innerHTML=Array.isArray(list)&&list.length?table(list,['id','category','status','confidence']):'<p>Очередь пуста.</p>';
+    }else{
+      document.getElementById('panelTitle').textContent='Поиск по базе знаний';
+      body.innerHTML='<input id="kbq" placeholder="Например: не приходит письмо"><div id="kbr"></div>';
+      document.getElementById('kbq').oninput=async e=>{
+        const q=e.target.value.trim();if(q.length<3)return;
+        try{const res=await api('/knowledge/search?q='+encodeURIComponent(q));
+          const list=Array.isArray(res)?res:(res.results||[]);
+          document.getElementById('kbr').innerHTML=list.length?table(list,['title','category']):'<p>Ничего не найдено.</p>';
+        }catch(err){document.getElementById('kbr').innerHTML='<p>Поиск временно недоступен.</p>';}
+      };
+    }
+  }catch(e){body.innerHTML='Не удалось загрузить данные.';}
+}
+function table(rows,cols){return '<table><tr>'+cols.map(c=>'<th>'+c+'</th>').join('')+'</tr>'+rows.map(r=>'<tr>'+cols.map(c=>'<td>'+esc(r[c])+'</td>').join('')+'</tr>').join('')+'</table>';}
+function closePanel(){document.getElementById('panel').classList.remove('open');}
+
+/* Приветствие */
+(async()=>{
+  const c=addBot('Привет! Я Акти. Опишите проблему своими словами — я помогу разобраться.');
+  buttons(c,['Не могу войти в Актион 360','Не приходит письмо','Не открывается страница','Нет звука на вебинаре'],o=>send(o));
+})();
+</script>
+</body>
+</html>
