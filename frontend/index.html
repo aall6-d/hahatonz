@@ -347,7 +347,7 @@ function aktiSVG(){return `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2
 function akti(state){const d=document.createElement('div');d.className='akti';d.dataset.state=state||'idle';d.innerHTML=aktiSVG();return d;}
 function setAkti(b,state){const a=b&&b.querySelector('.akti');if(a)a.dataset.state=state;}
 document.querySelectorAll('.akti').forEach(el=>el.innerHTML=aktiSVG());
-const heroAkti=document.getElementById('heroAkti');
+let heroAkti=document.getElementById('heroAkti');
 const setHeader=s=>{document.getElementById('logo').dataset.state=s;};
 
 // ===== СЕТЬ С ПОВТОРНЫМИ ПОПЫТКАМИ =====
@@ -447,8 +447,12 @@ const stateFor=r=>r.type==='solution'?'solution':(r.type==='escalation'?'escalat
 async function send(text){
   if(!text.trim())return;
   addUser(text);
-  heroAkti.dataset.typing='false';
-  document.getElementById('hero').classList.add('hide');
+  
+  // ИСПРАВЛЕНИЕ: Безопасное обращение к элементам, чтобы избежать крашей
+  if(heroAkti) heroAkti.dataset.typing='false';
+  const heroEl = document.getElementById('hero');
+  if(heroEl) heroEl.classList.add('hide');
+  
   pending=addBot('Разбираюсь в проблеме…','thinking');
   setHeader('thinking');
   let r;
@@ -946,7 +950,20 @@ function newConversation(){
   stopUserPolling();
   lastMsgId=0;
   localStorage.removeItem('chat_'+CLIENT);
-  chat.innerHTML='';
+  
+  // ИСПРАВЛЕНИЕ: Восстанавливаем блок hero, так как простая очистка innerHTML 
+  // удаляла его из DOM, что приводило к крашу функции send()
+  chat.innerHTML = `
+    <div class="hero" id="hero">
+      <div class="hero-akti-wrap"><div class="akti hero-akti" id="heroAkti" data-state="idle"></div></div>
+      <h1>Привет! Я <b>Акти</b></h1>
+      <p>Решаю технические проблемы с продуктами Актиона — быстро и по-человечески.</p>
+    </div>
+  `;
+  
+  // Обновляем глобальную ссылку на только что созданный DOM-элемент
+  heroAkti = document.getElementById('heroAkti');
+  
   addSys('── Новый чат: опишите следующую проблему ──');
   const c=addBot('Я здесь! Расскажите, что случилось на этот раз.','idle');
   buttons(c,['Не могу войти в Актион 360','Не приходит письмо','Не открывается страница','Нет звука на вебинаре'],o=>send(o));
