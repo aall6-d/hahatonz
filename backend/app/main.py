@@ -99,6 +99,28 @@ def match_option(answer, options):
     return None
 
 
+def safe_classify(text):
+    try:
+        cat, conf = classifier.classify(text)
+        if cat and conf and conf >= 0.5:
+            return cat, conf
+    except Exception:
+        pass
+    return knowledge.fallback_classify(text)
+
+
+def detect_new_problem(ticket, text):
+    """Похоже ли сообщение на НОВУЮ проблему (другая категория)."""
+    if not ticket:
+        return False
+    if not has_problem_marker(text):
+        return False
+    cat2, conf2 = safe_classify(text)
+    if not cat2 or conf2 < 0.6:
+        return False
+    return cat2 != ticket.get("category")
+
+
 # ---------- ответы и ветки ----------
 
 def respond(ticket_id, type_, message, category=None, confidence=None,
@@ -216,16 +238,6 @@ def escalate_ticket(ticket_id):
     return card, reason
 
 
-def safe_classify(text):
-    try:
-        cat, conf = classifier.classify(text)
-        if cat and conf and conf >= 0.5:
-            return cat, conf
-    except Exception:
-        pass
-    return knowledge.fallback_classify(text)
-
-
 # ---------- запуск ----------
 
 @app.on_event("startup")
@@ -268,16 +280,42 @@ def chat(payload: ChatRequest, x_client_id: str = Header(default=None)):
         ticket_id = db.create_ticket(text, client_id=client)
         state = "new"
 
-    db.add_message(ticket_id, "user", text)
-
     cur = db.get_ticket(ticket_id)
+
+    # Обращение у специалиста: либо новое обращение, либо реплика в тред
     if (cur["status"] in ("escalated", "in_progress")
             and state not in ("new", "clarification")):
+        if detect_new_problem(cur, text):
+            old_id = ticket_id
+            new_id = db.create_ticket(text, client_id=client)
+            db.add_message(old_id, "system",
+                           f"Пользователь начал новое обращение #{new_id}")
+            db.add_message(new_id, "ai",
+                           f"Завёл новое обращение #{new_id} по этой "
+                           f"проблеме. Прежнее обращение остаётся "
+                           f"у специалиста.")
+            return chat(ChatRequest(ticket_id=new_id, message=text),
+                        x_client_id)
+        db.add_message(ticket_id, "user", text)
         return respond(ticket_id, "question",
                        "Обращение передано специалисту и в работе. "
-                       "Ваше сообщение добавлено в диалог — "
-                       "ответ придёт в этот чат.",
+                       "Ваше сообщение добавлено в диалог — ответ придёт "
+                       "в этот чат. Если у вас новая проблема — нажмите "
+                       "«Новый чат» в шапке.",
                        cur["category"], cur["confidence"])
+
+    # Ждём результат, но пользователь описывает ДРУГУЮ проблему -> новый тикет
+    if state == "awaiting_result" and detect_new_problem(cur, text):
+        old_id = ticket_id
+        new_id = db.create_ticket(text, parent_id=old_id, client_id=client)
+        db.add_message(old_id, "system",
+                       f"Пользователь начал новое обращение #{new_id}")
+        db.add_message(new_id, "ai",
+                       f"Завёл новое обращение #{new_id} по этой проблеме.")
+        return chat(ChatRequest(ticket_id=new_id, message=text),
+                    x_client_id)
+
+    db.add_message(ticket_id, "user", text)
 
     if state in ("new", "clarification"):
         scen = knowledge.find_by_title(text)
