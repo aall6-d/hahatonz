@@ -1,6 +1,6 @@
 # Актион Ассист - Виртуальный помощник технической поддержки
 
-> **Кейс 2 «Помоги мне» · Хакатон · Команда: [Название команды]**
+> **Кейс 2 «Помоги мне» · Хакатон · Команда: [#SWAG]**
 > 
 > **Развёрнутый MVP:** [http://159.194.247.71]
 
@@ -51,32 +51,32 @@
 
 ### Архитектура
 
-Решение построено по классической клиент-серверной архитектуре:
 ┌─────────────────────────────────────────────────────────────┐
-│ HTTP/JSON │
-│ ┌──────────────┐ ┌──────────────┐ │
-│ │ Frontend │◄────────────────────────►│ Backend │ │
-│ │ │ │ │ │
-│ │ Vanilla JS │ │FastAPI+Python│ │
-│ │ SPA │ │ │ │
-│ │ │ │ │ │
-│ │• Чат-интерфейс│ POST /api/chat │• Classifier │ │
-│ │• Маскот «Акти»│ GET /api/tickets │• Knowledge │ │
-│ │• Панели │ POST /api/feedback │ Engine │ │
-│ │ (История, │ GET /api/search │• LLM │ │
-│ │ База, │ │ (YandexGPT) │ │
-│ │ Специалист)│ │• SQLite │ │
-│ └──────────────┘ │ (CRUD) │ │
-│ └──────────────┘ │
+│                        HTTP/JSON                            │
+│                                                             │
+│  ┌───────────────┐                       ┌───────────────┐  │
+│  │   Frontend    │ ◄───────────────────► │    Backend    │  │
+│  │               │                       │               │  │
+│  │  Vanilla JS   │                       │ FastAPI+Python│  │
+│  │     SPA       │                       │               │  │
+│  └───────────────┘                       └───────────────┘  │
+│                                                             │
+│  • Чат-интерфейс │ POST /api/chat   │ Classifier           │
+│  • Маскот «Акти» │ GET /api/tickets │ Knowledge            │
+│  • Панели        │ POST /api/feedback│ Engine              │
+│    (История,     │ GET /api/search  │ LLM (YandexGPT)      │
+│     База,        │                  │                      │
+│     Специалист)  │                  │                      │
+│                  │                  │ SQLite (CRUD)        │
 └─────────────────────────────────────────────────────────────┘
-▼
-┌──────────────────────────┐
-│ SQLite (data/) │
-│ │
-│ • tickets │
-│ • messages │
-│ • feedback │
-└──────────────────────────┘
+
+┌─────────────────────┐
+│   SQLite (data/)    │
+│                     │
+│  • tickets          │
+│  • messages         │
+│  • feedback         │
+└─────────────────────┘
 
 
 Фронтенд полностью статичен (один HTML-файл) и раздаётся самим FastAPI через `StaticFiles`, что позволяет развернуть всё приложение одним процессом без отдельного веб-сервера.
@@ -248,7 +248,7 @@
 
 ### 1. Клонирование репозитория
 ```bash
-git clone <ссылка_на_ваш_репозиторий>
+git clone <https://github.com/aall6-d/hahatonz>
 cd <название_папки_проекта>
 ```
 
@@ -278,18 +278,18 @@ Swagger UI (API-документация): http://127.0.0.1:8000/docs
 .
 ├── backend/
 │   ├── app/
-│   │   ├── main.py             # Точка входа FastAPI, вся логика чата и роутинг
-│   │   ├── db.py               # Инициализация SQLite, CRUD-операции
-│   │   ├── classifier.py       # Словарная классификация (7 категорий, ~60 ключевых слов)
-│   │   ├── knowledge.py        # Загрузка JSON-базы знаний, поиск сценариев
-│   │   ├── llm.py              # Обёртка для YandexGPT API (опционально)
-│   │   └── schemas.py          # Pydantic-модели: ChatRequest, ChatResponse, FeedbackRequest
+│   │   ├── main.py            # Точка входа FastAPI, вся логика чата и роутинг
+│   │   ├── db.py              # Инициализация SQLite, CRUD-операции
+│   │   ├── classifier.py      # Словарная классификация (7 категорий, ~60 ключевых слов)
+│   │   ├── knowledge.py       # Загрузка JSON-базы знаний, поиск сценариев
+│   │   ├── llm.py             # Обёртка для YandexGPT API (опционально)
+│   │   └── schemas.py         # Pydantic-модели: ChatRequest, ChatResponse, FeedbackRequest
 │   ├── data/
-│   │   ├── assist.db           # База данных (создаётся автоматически)
-│   │   └── knowledge_items.json # 13 диагностических сценариев с ветвлениями
-│   └── requirements.txt        # Зависимости: fastapi, uvicorn, pydantic
+│   │   ├── assist.db          # База данных (создаётся автоматически)
+│   │   └── knowledge_items.json  # 13 диагностических сценариев с ветвлениями
+│   └── requirements.txt       # Зависимости: fastapi, uvicorn, pydantic
 ├── frontend/
-│   └── index.html              # Единый SPA-файл: HTML + CSS + JavaScript
+│   └── index.html             # Единый SPA-файл: HTML + CSS + JavaScript
 └── README.md
 
 ### API-эндпоинты
