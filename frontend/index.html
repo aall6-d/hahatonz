@@ -8,9 +8,9 @@
 <style>
 :root{--red:#E30611;--red-d:#B00500;--pink:#FF8A92;--bg:#fff;--gray:#f5f5f7;--text:#1d1d1f;--muted:#86868b;--sh:0 16px 44px rgba(15,15,20,.06)}
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-html{overflow-x:hidden;overflow-x:clip;cursor:default}
-body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Roboto,sans-serif;background:var(--bg);color:var(--text);display:flex;flex-direction:column;height:100dvh;-webkit-font-smoothing:antialiased;overflow-x:hidden;overflow-x:clip;cursor:default}
-button{appearance:none;-webkit-appearance:none;font:inherit;color:inherit;background:none;border:none;cursor:pointer}
+html{overflow-x:hidden;overflow-x:clip;cursor:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48"><defs><linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:%23E30611;stop-opacity:1"/><stop offset="100%" style="stop-color:%23FFB800;stop-opacity:1"/></linearGradient></defs><path fill="none" stroke="url(%23grad)" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" d="M8 8 L28 28 L20 28 L26 40 L18 42 L12 30 L8 34 Z"/></svg>') 24 24, default}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Roboto,sans-serif;background:var(--bg);color:var(--text);display:flex;flex-direction:column;height:100dvh;-webkit-font-smoothing:antialiased;overflow-x:hidden;overflow-x:clip;cursor:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48"><defs><linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:%23E30611;stop-opacity:1"/><stop offset="100%" style="stop-color:%23FFB800;stop-opacity:1"/></linearGradient></defs><path fill="none" stroke="url(%23grad)" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" d="M8 8 L28 28 L20 28 L26 40 L18 42 L12 30 L8 34 Z"/></svg>') 24 24, default}
+button{appearance:none;-webkit-appearance:none;font:inherit;color:inherit;background:none;border:none;cursor:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48"><defs><linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:%23E30611;stop-opacity:1"/><stop offset="100%" style="stop-color:%23FFB800;stop-opacity:1"/></linearGradient></defs><path fill="none" stroke="url(%23grad)" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" d="M8 8 L28 28 L20 28 L26 40 L18 42 L12 30 L8 34 Z"/></svg>') 24 24, pointer}
 input,textarea{cursor:text;font:inherit;color:inherit}
 ::selection{background:rgba(227,6,17,.14)}
 .glass{position:relative;background:linear-gradient(135deg,rgba(255,255,255,.68),rgba(255,255,255,.44) 45%,rgba(246,246,248,.42));backdrop-filter:blur(20px) saturate(170%) brightness(1.03);-webkit-backdrop-filter:blur(20px) saturate(170%) brightness(1.03);border:1px solid rgba(255,255,255,.68);box-shadow:inset 0 1px 0 rgba(255,255,255,.9),inset 0 -1px 0 rgba(255,255,255,.4),var(--sh)}
@@ -79,6 +79,8 @@ main.shell{flex:1;display:flex;flex-direction:column;min-height:0;padding-top:14
 #gate button.spec{background:var(--red);border-color:var(--red);color:#fff}
 #gate input{width:100%;padding:12px 14px;border-radius:14px;border:1px solid #e3e3e6;margin-top:8px;outline:none;display:none}
 #gate .err{color:var(--red);font-size:13px;margin-top:8px;display:none}
+#gate .hint{background:rgba(227,6,17,.08);border:1px solid rgba(227,6,17,.2);border-radius:10px;padding:10px 14px;margin-top:16px;font-size:12.5px;color:var(--text)}
+#gate .hint b{color:var(--red);font-family:monospace}
 /* кабинет специалиста */
 #specShell{display:none;flex-direction:column;gap:14px}
 body.mode-spec #specShell{display:flex}
@@ -119,7 +121,9 @@ body.mode-spec #userShell{display:none}
 .chips{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0 4px}
 .chip{border:1px solid rgba(230,230,233,.9);background:rgba(255,255,255,.9);color:var(--text);border-radius:999px;padding:8px 14px;font-size:13px;transition:.2s}
 .chip.on{background:var(--red);border-color:var(--red);color:#fff}
-.kb-item{padding:11px 13px;border:1px solid rgba(20,20,25,.1);border-radius:14px;margin-bottom:8px;background:rgba(255,255,255,.85)}
+.kb-item{padding:11px 13px;border:1px solid rgba(20,20,25,.1);border-radius:14px;margin-bottom:8px;background:rgba(255,255,255,.85);transition:.18s}
+.kb-item:hover{border-color:rgba(227,6,17,.3);transform:translateX(2px)}
+.kb-item a{text-decoration:none;color:inherit;display:block}
 .kb-item b{font-size:14px;display:block}
 .kb-item span{display:block;font-size:12px;color:var(--muted);margin-top:3px}
 .panel{position:fixed;inset:0;background:rgba(20,20,22,.3);backdrop-filter:blur(2px);display:none;z-index:10}
@@ -157,6 +161,8 @@ th{color:var(--muted);font-weight:600}
 .akti:hover .a-body{animation:k-squish 1.8s ease-in-out infinite}
 .akti:hover .a-core{filter:hue-rotate(16deg) drop-shadow(0 0 9px rgba(227,6,17,.65))}
 .akti:hover .a-glow{opacity:.42}
+.akti:hover .a-faceg{transform:scale(1.1)}
+.akti:hover .a-blush{opacity:.4}
 .akti[data-state="idle"] svg{animation:k-sway 5.2s ease-in-out infinite}
 .akti[data-state="idle"] .a-body{animation:k-float 5.5s ease-in-out infinite}
 .akti[data-state="idle"] .a-eye.el,.akti[data-state="idle"] .a-eye.er{animation:e-idle 4.8s ease-in-out infinite}
@@ -233,6 +239,7 @@ th{color:var(--muted);font-weight:600}
     <button id="gateSpec" class="spec">Я специалист поддержки</button>
     <input id="gateCode" placeholder="Демо-код специалиста" autocomplete="off">
     <div class="err" id="gateErr">Неверный код</div>
+    <div class="hint"><b>Подсказка:</b> введите код <b>hacaton</b> для входа за специалиста</div>
   </div>
 </div>
 
@@ -249,6 +256,7 @@ th{color:var(--muted);font-weight:600}
     </nav>
     <nav id="navSpec" style="display:none">
       <button onclick="loadStats()">Обновить аналитику</button>
+      <button onclick="openArchive()">Архив</button>
       <button onclick="exitSpec()">Выйти</button>
     </nav>
   </div>
@@ -327,7 +335,7 @@ function aktiSVG(){return `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2
 <g transform="translate(10 74) scale(.7)"><path class="a-s s3" d="${STAR}"/></g><g transform="translate(76 70) scale(.5)"><path class="a-s s4" d="${STAR}"/></g>
 <text class="a-q" x="50" y="52">?</text></svg>`;}
 function akti(state){const d=document.createElement('div');d.className='akti';d.dataset.state=state||'idle';d.innerHTML=aktiSVG();return d;}
-function setAkti(b,state){const a=b&&b.querySelector('.akti');if(a)a.dataset.state=b;}
+function setAkti(b,state){const a=b&&b.querySelector('.akti');if(a)a.dataset.state=state;}
 document.querySelectorAll('.akti').forEach(el=>el.innerHTML=aktiSVG());
 const heroAkti=document.getElementById('heroAkti');
 const setHeader=s=>{document.getElementById('logo').dataset.state=s;};
@@ -431,6 +439,11 @@ document.getElementById('gateSpec').onclick=()=>{const i=document.getElementById
 document.getElementById('gateCode').addEventListener('keydown',async e=>{
   if(e.key!=='Enter')return;
   const code=e.target.value.trim();
+  if(code!=='hacaton'){
+    const er=document.getElementById('gateErr');er.style.display='block';
+    setTimeout(()=>er.style.display='none',3000);
+    return;
+  }
   sessionStorage.setItem('support_code',code);
   try{await specFetch('/support/queue');gate.style.display='none';enterSpec();}
   catch(err){sessionStorage.removeItem('support_code');
@@ -467,7 +480,7 @@ async function loadQueue(){
       <div class="txt">${esc((t.last_user_text||'').slice(0,120))}</div>
       ${t.status==='escalated'?`<button onclick="takeTicket(${t.id})">Взять</button>`:`<span style="font-size:12px;color:var(--muted)">в работе</span>`}
       <button class="ghost" onclick="openThread(${t.id})">Открыть</button></div>`).join('')
-      :'<p style="color:var(--muted);font-size:13px">Очередь пуста 🎉</p>';
+      :'<p style="color:var(--muted);font-size:13px">Очередь пуста </p>';
   }catch(e){if(String(e.message)==='401')exitSpec();}
 }
 async function takeTicket(id){
@@ -521,6 +534,36 @@ document.querySelectorAll('.period button').forEach(b=>b.onclick=()=>{
   b.classList.add('on');statPeriod=b.dataset.p;loadStats();
 });
 
+/* ===== АРХИВ ===== */
+async function openArchive(){
+  panel.classList.add('open');document.body.classList.add('panel-open');
+  document.getElementById('panelTitle').textContent='Архив решённых обращений';
+  const body=document.getElementById('panelBody');body.innerHTML='Загрузка…';
+  try{
+    const list=await specFetch('/support/archive');
+    body.innerHTML=(list.length?list.map(t=>`
+      <div class="q-card" style="margin-bottom:8px">
+        <b>#${t.id} · ${esc(t.category||'—')} · ${esc(t.status)}</b>
+        <div class="meta">обновлено ${esc(t.updated_at||'')}</div>
+        <div class="txt">${esc((t.title||t.problem_text||'').slice(0,120))}</div>
+        <button onclick="deleteTicket(${t.id})">Удалить</button>
+      </div>`).join(''):'<p style="color:var(--muted);font-size:13px">Архив пуст 🎉</p>')
+      +`<button style="margin-top:12px;padding:10px 14px;border-radius:12px;border:1px solid #e3e3e6;background:#fff;font-size:13px" onclick="cleanupOld()"> Очистить решённые старше 7 дней</button>`;
+  }catch(e){body.innerHTML='<p style="color:var(--muted)">Не удалось загрузить архив.</p>';}
+}
+async function deleteTicket(id){
+  if(!confirm('Удалить обращение #'+id+' безвозвратно?'))return;
+  try{await specFetch('/support/tickets/'+id,{method:'DELETE'});openArchive();}
+  catch(e){alert('Это обращение ещё в работе — удалять нельзя.');}
+}
+async function cleanupOld(){
+  if(!confirm('Удалить ВСЕ решённые обращения старше 7 дней?'))return;
+  try{
+    const r=await specFetch('/support/cleanup',{method:'POST',body:JSON.stringify({days:7})});
+    alert('Удалено обращений: '+r.removed);openArchive();
+  }catch(e){alert('Ошибка очистки.');}
+}
+
 /* ===== панели (история, БЗ с фильтрами) ===== */
 const panel=document.getElementById('panel');
 panel.addEventListener('click',e=>{if(e.target===panel)closePanel();});
@@ -536,7 +579,12 @@ function kbMatch(it){
 }
 function renderKbList(list){
   const f=list.filter(kbMatch);
-  document.getElementById('kbr').innerHTML=f.length?f.map(it=>`<div class="kb-item"><b>${esc(it.title)}</b><span>${esc(it.category||'')}</span></div>`).join(''):'<p>Ничего не найдено.</p>';
+  document.getElementById('kbr').innerHTML=f.length?f.map(it=>`<div class="kb-item"><a href="#" onclick="quickSearch('${esc(it.title)}');return false;"><b>${esc(it.title)}</b><span>${esc(it.category||'')}</span></a></div>`).join(''):'<p>Ничего не найдено.</p>';
+}
+async function quickSearch(term){
+  closePanel();
+  document.getElementById('input').value=term;
+  send(term);
 }
 async function refreshKb(){
   if(kbCache&&kbCache.length){renderKbList(kbCache);return;}
