@@ -448,7 +448,7 @@ async function send(text){
   if(!text.trim())return;
   addUser(text);
   
-  // ИСПРАВЛЕНИЕ: Безопасное обращение к элементам, чтобы избежать крашей
+  // ИСПРАВЛЕНИЕ: безопасное обращение к элементам, чтобы избежать крашей
   if(heroAkti) heroAkti.dataset.typing='false';
   const heroEl = document.getElementById('hero');
   if(heroEl) heroEl.classList.add('hide');
@@ -645,7 +645,9 @@ function loadChatState(){
     }
     if(data.messages&&data.messages.length>0){
       chat.innerHTML='';
-      document.getElementById('hero').classList.add('hide');
+      // ИСПРАВЛЕНИЕ: безопасное скрытие hero, если он ещё существует в DOM
+      const heroEl = document.getElementById('hero');
+      if(heroEl) heroEl.classList.add('hide');
       data.messages.forEach(m=>{
         const div=document.createElement('div');
         div.className=m.className;
@@ -963,6 +965,8 @@ function newConversation(){
   
   // Обновляем глобальную ссылку на только что созданный DOM-элемент
   heroAkti = document.getElementById('heroAkti');
+  // Переинициализируем SVG маскота в новом элементе
+  if(heroAkti) heroAkti.innerHTML = aktiSVG();
   
   addSys('── Новый чат: опишите следующую проблему ──');
   const c=addBot('Я здесь! Расскажите, что случилось на этот раз.','idle');
@@ -1081,7 +1085,7 @@ function closePanel(){
 // ===== ПЛЕЙСХОЛДЕР И НАСТРОЕНИЯ =====
 const inputEl=document.getElementById('input');
 inputEl.addEventListener('input',()=>{
-  heroAkti.dataset.typing=inputEl.value.trim()?'true':'false';
+  if(heroAkti) heroAkti.dataset.typing=inputEl.value.trim()?'true':'false';
 });
 
 const PHRASES=['Опишите вашу проблему…','Чем я могу помочь?','Что случилось?','Не можете войти в Актион 360?','Какая ошибка на экране?'];
@@ -1124,14 +1128,14 @@ let phI=0;
 })();
 
 setInterval(()=>{
-  if(heroAkti.dataset.state!=='idle'||heroAkti.dataset.typing==='true')return;
+  if(!heroAkti || heroAkti.dataset.state!=='idle' || heroAkti.dataset.typing==='true')return;
   const r=Math.random();
   if(r<.25){
     heroAkti.dataset.mood='wink';
-    setTimeout(()=>heroAkti.dataset.mood='',900);
+    setTimeout(()=>{ if(heroAkti) heroAkti.dataset.mood=''; },900);
   }else if(r<.5){
     heroAkti.dataset.mood='shy';
-    setTimeout(()=>heroAkti.dataset.mood='',2400);
+    setTimeout(()=>{ if(heroAkti) heroAkti.dataset.mood=''; },2400);
   }
 },6500);
 
