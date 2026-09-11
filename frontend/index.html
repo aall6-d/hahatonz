@@ -8,27 +8,10 @@
 <style>
 :root{--red:#E30611;--red-d:#B00500;--pink:#FF8A92;--bg:#fff;--gray:#f5f5f7;--text:#1d1d1f;--muted:#86868b;--sh:0 16px 44px rgba(15,15,20,.06)}
 
-/* ===== КАСТОМНЫЙ КУРСОР ===== */
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-
-/* Обычный курсор — чёрная стрелка с лучами, hotspot на острие (2,2) */
-html,body{
-  cursor:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48"><g fill="%231d1d1f"><circle cx="24" cy="6" r="2.5"/><circle cx="36" cy="12" r="2.5"/><circle cx="40" cy="24" r="2.5"/><circle cx="34" cy="36" r="2.5"/><circle cx="20" cy="40" r="2.5"/><circle cx="10" cy="32" r="2.5"/><circle cx="8" cy="20" r="2.5"/><path d="M2 2 L2 28 L9 21 L16 36 L22 33 L15 18 L24 18 Z" stroke="%231d1d1f" stroke-width="1.5" stroke-linejoin="round"/></g></svg>') 2 2, auto;
-}
-
-/* Hover курсор — красная стрелка с лучами и свечением */
-button,a,input,textarea,.stars span,.chip,.kb-item,.q-card button,.spec-reply button,.period button,#gate button{
-  cursor:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48"><defs><filter id="glow"><feGaussianBlur stdDeviation="1.5" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs><g fill="%23E30611" filter="url(%23glow)"><circle cx="24" cy="6" r="2.5"/><circle cx="36" cy="12" r="2.5"/><circle cx="40" cy="24" r="2.5"/><circle cx="34" cy="36" r="2.5"/><circle cx="20" cy="40" r="2.5"/><circle cx="10" cy="32" r="2.5"/><circle cx="8" cy="20" r="2.5"/><path d="M2 2 L2 28 L9 21 L16 36 L22 33 L15 18 L24 18 Z" stroke="%23E30611" stroke-width="1.5" stroke-linejoin="round"/></g></svg>') 2 2, pointer;
-}
-
-/* Для текстовых полей — курсор-палочка */
-input[type="text"],textarea{
-  cursor:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M12 4 L12 20 M8 6 L16 6 M8 18 L16 18" stroke="%23E30611" stroke-width="2" stroke-linecap="round"/></svg>') 12 12, text;
-}
-
 html{overflow-x:hidden;overflow-x:clip}
 body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Roboto,sans-serif;background:var(--bg);color:var(--text);display:flex;flex-direction:column;height:100dvh;-webkit-font-smoothing:antialiased;overflow-x:hidden;overflow-x:clip}
-button{appearance:none;-webkit-appearance:none;font:inherit;color:inherit;background:none;border:none}
+button{appearance:none;-webkit-appearance:none;font:inherit;color:inherit;background:none;border:none;cursor:pointer}
 input,textarea{cursor:text;font:inherit;color:inherit}
 ::selection{background:rgba(227,6,17,.14)}
 .glass{position:relative;background:linear-gradient(135deg,rgba(255,255,255,.68),rgba(255,255,255,.44) 45%,rgba(246,246,248,.42));backdrop-filter:blur(20px) saturate(170%) brightness(1.03);-webkit-backdrop-filter:blur(20px) saturate(170%) brightness(1.03);border:1px solid rgba(255,255,255,.68);box-shadow:inset 0 1px 0 rgba(255,255,255,.9),inset 0 -1px 0 rgba(255,255,255,.4),var(--sh)}
@@ -88,7 +71,6 @@ main.shell{flex:1;display:flex;flex-direction:column;min-height:0;padding-top:14
 #composer input{flex:1;border:1px solid rgba(230,230,233,.7);border-radius:15px;padding:14px 17px;font-size:16px;outline:none;background:rgba(255,255,255,.78);caret-color:var(--red);min-width:0}
 #composer input:focus{border-color:var(--red);box-shadow:0 0 0 4px rgba(227,6,17,.08)}
 #composer button{width:50px;height:50px;min-width:50px;border-radius:50%;background:var(--red);color:#fff;font-size:18px;box-shadow:0 6px 18px rgba(227,6,17,.28)}
-/* гейт ролей */
 #gate{position:fixed;inset:0;z-index:60;background:rgba(255,255,255,.75);backdrop-filter:blur(14px);display:flex;align-items:center;justify-content:center}
 #gate .card{width:min(420px,92vw);padding:28px;border-radius:26px;text-align:center}
 #gate h2{font-size:24px;margin-bottom:6px}
@@ -99,7 +81,6 @@ main.shell{flex:1;display:flex;flex-direction:column;min-height:0;padding-top:14
 #gate .err{color:var(--red);font-size:13px;margin-top:8px;display:none}
 #gate .hint{background:rgba(227,6,17,.08);border:1px solid rgba(227,6,17,.2);border-radius:10px;padding:10px 14px;margin-top:16px;font-size:12.5px;color:var(--text)}
 #gate .hint b{color:var(--red);font-family:monospace}
-/* кабинет специалиста */
 #specShell{display:none;flex-direction:column;gap:14px}
 body.mode-spec #specShell{display:flex}
 body.mode-spec #userShell{display:none}
@@ -135,7 +116,6 @@ body.mode-spec #userShell{display:none}
 .period{display:flex;gap:6px;margin-bottom:8px}
 .period button{padding:6px 12px;border-radius:999px;font-size:12px;border:1px solid #e3e3e6;background:#fff}
 .period button.on{background:var(--red);border-color:var(--red);color:#fff}
-/* плашки БЗ, панели, маскот, салют */
 .chips{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0 4px}
 .chip{border:1px solid rgba(230,230,233,.9);background:rgba(255,255,255,.9);color:var(--text);border-radius:999px;padding:8px 14px;font-size:13px;transition:.2s}
 .chip.on{background:var(--red);border-color:var(--red);color:#fff}
@@ -269,6 +249,7 @@ th{color:var(--muted);font-weight:600}
     </b>
     <span class="tag">AI</span>
     <nav id="navUser">
+      <button onclick="newConversation()">Новый чат</button>
       <button onclick="openPanel('history')">История</button>
       <button onclick="openPanel('kb')">База знаний</button>
     </nav>
@@ -338,7 +319,6 @@ const chat=document.getElementById('chat');
 const esc=s=>String(s??'').replace(/[<>&]/g,c=>({'<':'&lt;','>':'&gt;','&':'&amp;'}[c]));
 const fmtTime=iso=>iso?new Date(iso).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}):'';
 
-/* ===== маскот ===== */
 const SPARK="M96 50 60.6 52.8 70.8 62 57.4 56.7 72.9 82.8 53.8 60.3 51.9 71.9 48.6 59.9 34.9 91.3 43.7 59 30.1 66.7 41.2 54.7 13.3 59.8 39 50 28.7 44.3 41.1 45.5 14.8 20.4 43.7 41 41.8 27.4 48.6 40.1 53.5 10.2 53.8 39.7 64.9 28.7 57.9 43.8Z";
 const STAR="M10 0 Q11.6 6.8 20 10 Q11.6 13.2 10 20 Q8.4 13.2 0 10 Q8.4 6.8 10 0Z";
 const TEAR="M0 0 c2.6 4.2 2.6 7.4 0 9.6 c-2.6 -2.2 -2.6 -5.4 0 -9.6Z";
@@ -359,11 +339,9 @@ document.querySelectorAll('.akti').forEach(el=>el.innerHTML=aktiSVG());
 const heroAkti=document.getElementById('heroAkti');
 const setHeader=s=>{document.getElementById('logo').dataset.state=s;};
 
-/* ===== сеть ===== */
 async function api(path,opts={}){const r=await fetch(API+path,{headers:{'Content-Type':'application/json','X-Client-Id':CLIENT},...opts});if(!r.ok)throw new Error('HTTP '+r.status);return r.json();}
 function specFetch(path,opts={}){const h={'Content-Type':'application/json','X-Support-Code':sessionStorage.getItem('support_code')||'','X-Support-Agent':'specialist-1'};return fetch(API+path,{headers:h,...opts}).then(r=>{if(r.status===401)throw new Error('401');if(!r.ok)throw new Error('HTTP '+r.status);return r.json();});}
 
-/* ===== чат пользователя ===== */
 function addUser(t){const m=document.createElement('div');m.className='msg user';m.textContent=t;chat.appendChild(m);chat.scrollTop=chat.scrollHeight;}
 function addBot(html,state,spec){const m=document.createElement('div');m.className='msg bot'+(spec?' spec':'');m.appendChild(akti(state));const c=document.createElement('div');c.className='abody';c.innerHTML=html;m.appendChild(c);chat.appendChild(m);chat.scrollTop=chat.scrollHeight;return c;}
 function addSys(t){const m=document.createElement('div');m.className='msg sys';m.textContent=t;chat.appendChild(m);chat.scrollTop=chat.scrollHeight;}
@@ -400,10 +378,13 @@ function render(r){
   if(r.type==='escalation')escalateButtons(c);
 }
 function escalateButtons(c){
-  buttons(c,['Передать специалисту'],async()=>{
-    try{await api(`/tickets/${ticketId}/escalate`,{method:'POST'});
+  buttons(c,['Передать специалисту','Начать новое обращение'],async(o)=>{
+    if(o==='Начать новое обращение'){newConversation();return;}
+    try{
+      await api(`/tickets/${ticketId}/escalate`,{method:'POST'});
       addBot(`Обращение #${ticketId} передано специалисту. Ответ придёт в этот чат.`,'escalation');
       addSys('Специалист на связи скоро');
+      offerNewTicket();
       startUserPolling(ticketId);
     }catch(e){addBot('Не удалось передать обращение.','escalation');}
   },0);
@@ -432,7 +413,6 @@ function stars(c){
   c.appendChild(w);
 }
 
-/* поллинг сообщений специалиста */
 async function startUserPolling(tid){
   stopUserPolling();
   try{const msgs=await api(`/tickets/${tid}/messages`);
@@ -451,7 +431,6 @@ async function startUserPolling(tid){
 }
 function stopUserPolling(){if(pollTimer){clearInterval(pollTimer);pollTimer=null;}}
 
-/* ===== гейт ролей ===== */
 const gate=document.getElementById('gate');
 document.getElementById('gateUser').onclick=()=>{gate.style.display='none';bootUser();};
 document.getElementById('gateSpec').onclick=()=>{const i=document.getElementById('gateCode');i.style.display=i.style.display==='block'?'none':'block';i.focus();};
@@ -468,14 +447,25 @@ document.getElementById('gateCode').addEventListener('keydown',async e=>{
   catch(err){sessionStorage.removeItem('support_code');
     const er=document.getElementById('gateErr');er.style.display='block';}
 });
-function bootUser(){
+
+async function bootUser(){
   document.body.classList.remove('mode-spec');
   document.getElementById('navUser').style.display='flex';
   document.getElementById('navSpec').style.display='none';
-  if(ticketId)startUserPolling(ticketId);
+  if(ticketId){
+    try{
+      const t=await api('/tickets/'+ticketId);
+      if(t&&(t.status==='escalated'||t.status==='in_progress')){
+        addSys('Обращение #'+ticketId+' у специалиста — ответ придёт в этот чат.');
+        offerNewTicket();
+        startUserPolling(ticketId);
+        return;
+      }
+    }catch(e){}
+    ticketId=null;sessionStorage.removeItem('ticket_id');
+  }
 }
 
-/* ===== кабинет специалиста ===== */
 let activeTicket=null, queueTimer=null, threadTimer=null, lastThreadId=0, statPeriod='day';
 function enterSpec(){
   document.body.classList.add('mode-spec');
@@ -553,7 +543,6 @@ document.querySelectorAll('.period button').forEach(b=>b.onclick=()=>{
   b.classList.add('on');statPeriod=b.dataset.p;loadStats();
 });
 
-/* ===== АРХИВ ===== */
 async function openArchive(){
   panel.classList.add('open');document.body.classList.add('panel-open');
   document.getElementById('panelTitle').textContent='Архив решённых обращений';
@@ -583,7 +572,18 @@ async function cleanupOld(){
   }catch(e){alert('Ошибка очистки.');}
 }
 
-/* ===== панели (история, БЗ с фильтрами) ===== */
+function newConversation(){
+  ticketId=null;sessionStorage.removeItem('ticket_id');
+  stopUserPolling();lastMsgId=0;
+  addSys('── Новый чат: опишите следующую проблему ──');
+  const c=addBot('Я здесь! Расскажите, что случилось на этот раз.','idle');
+  buttons(c,['Не могу войти в Актион 360','Не приходит письмо','Не открывается страница','Нет звука на вебинаре'],o=>send(o));
+}
+function offerNewTicket(){
+  const c=addBot('Пока специалист работает с этим обращением, вы можете начать новый чат по другой проблеме.','idle');
+  buttons(c,['Начать новое обращение'],()=>newConversation());
+}
+
 const panel=document.getElementById('panel');
 panel.addEventListener('click',e=>{if(e.target===panel)closePanel();});
 const KB_CHIPS=['Все','Доступы','Письма','Страницы','Вебинары','Ошибки'];
@@ -634,7 +634,6 @@ async function openPanel(kind){
 function table(rows,cols){return '<table><tr>'+cols.map(c=>'<th>'+c+'</th>').join('')+'</tr>'+rows.map(r=>'<tr>'+cols.map(c=>'<td>'+esc(r[c])+'</td>').join('')+'</tr>').join('')+'</table>';}
 function closePanel(){panel.classList.remove('open');document.body.classList.remove('panel-open');}
 
-/* ===== живой плейсхолдер, typing, настроения ===== */
 const inputEl=document.getElementById('input');
 inputEl.addEventListener('input',()=>{heroAkti.dataset.typing=inputEl.value.trim()?'true':'false';});
 const PHRASES=['Опишите вашу проблему…','Чем я могу помочь?','Что случилось?','Не можете войти в Актион 360?','Какая ошибка на экране?'];
@@ -658,13 +657,10 @@ setInterval(()=>{
 
 document.getElementById('composer').onsubmit=e=>{e.preventDefault();const v=inputEl.value.trim();if(!v)return;inputEl.value='';send(v);};
 
-/* авто-вход при возвращении */
 (async()=>{
   const code=sessionStorage.getItem('support_code');
   if(code){try{await specFetch('/support/queue');gate.style.display='none';enterSpec();return;}catch(e){sessionStorage.removeItem('support_code');}}
   gate.style.display='flex';
-  const c=addBot('Опишите проблему своими словами — я помогу разобраться.','idle');
-  buttons(c,['Не могу войти в Актион 360','Не приходит письмо','Не открывается страница','Нет звука на вебинаре'],o=>send(o));
 })();
 </script>
 </body>
