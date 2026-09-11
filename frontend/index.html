@@ -41,36 +41,24 @@ main.shell{flex:1;display:flex;flex-direction:column;min-height:0;padding-top:14
 #chat::-webkit-scrollbar{width:10px}
 #chat::-webkit-scrollbar-thumb{background:rgba(20,20,25,.14);border-radius:8px;border:3px solid transparent;background-clip:content-box}
 
-/* ===== HERO С МАСКОТОМ ===== */
+/* ===== HERO С МАСКОТОМ - ПРОСТО СВЕРХУ ===== */
 .hero{
   text-align:center;
   padding:40px 20px 20px;
   animation:pop .6s cubic-bezier(.2,.9,.3,1.15);
   cursor:pointer;
   user-select:none;
-  position:sticky;
-  top:0;
-  background:linear-gradient(180deg, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.85) 70%, rgba(255,255,255,0) 100%);
-  z-index:2;
-  border-radius:28px 28px 0 0;
-  transition:opacity .4s, transform .4s, padding .4s;
+  border-bottom:1px solid rgba(240,240,242,.6);
+  margin-bottom:10px;
 }
-.hero.collapsed{
-  padding:10px 20px;
-  cursor:default;
-}
-.hero.collapsed .hero-akti-wrap{width:60px;height:60px;margin-bottom:0}
-.hero.collapsed h1,.hero.collapsed p,.hero.collapsed .hero-hint,.hero.collapsed .hero-quick{
-  display:none;
-}
-.hero.hide{opacity:0;transform:translateY(-10px);height:0;padding:0;overflow:hidden;pointer-events:none}
+.hero.hide{display:none}
 .hero-akti-wrap{
   perspective:600px;
   width:180px;
   height:180px;
   margin:0 auto 24px;
   position:relative;
-  transition:transform .3s, width .4s, height .4s, margin .4s;
+  transition:transform .3s;
 }
 .hero-akti-wrap:hover{transform:scale(1.05)}
 .hero-akti{width:100%;height:100%;transition:transform .35s;transform-style:preserve-3d;will-change:transform}
@@ -359,8 +347,10 @@ th{color:var(--muted);font-weight:600}
 const API='/api';
 let ticketId=parseInt(sessionStorage.getItem('ticket_id')||'0')||null;
 const CLIENT=(()=>{let c=localStorage.getItem('client_id');if(!c){c='c'+Date.now().toString(36)+Math.random().toString(36).slice(2,8);localStorage.setItem('client_id',c);}return c;})();
-let pending=null, pollTimer=null, lastMsgId=0, chatStarted=false;
+let pending=null, pollTimer=null, lastMsgId=0;
 const chat=document.getElementById('chat');
+const hero=document.getElementById('hero');
+const heroHint=document.getElementById('heroHint');
 const esc=s=>String(s??'').replace(/[<>&]/g,c=>({'<':'&lt;','>':'&gt;','&':'&amp;'}[c]));
 const fmtTime=iso=>iso?new Date(iso).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}):'';
 
@@ -383,8 +373,6 @@ function setAkti(b,state){const a=b&&b.querySelector('.akti');if(a)a.dataset.sta
 document.querySelectorAll('.akti').forEach(el=>el.innerHTML=aktiSVG());
 const heroAkti=document.getElementById('heroAkti');
 const heroWrap=document.getElementById('heroWrap');
-const hero=document.getElementById('hero');
-const heroHint=document.getElementById('heroHint');
 const setHeader=s=>{document.getElementById('logo').dataset.state=s;};
 
 // Интерактивность маскота
@@ -410,15 +398,6 @@ heroWrap.addEventListener('mousemove',e=>{
 });
 heroWrap.addEventListener('mouseleave',()=>{heroAkti.style.transform='';});
 
-// Скролл — сворачиваем hero
-chat.addEventListener('scroll',()=>{
-  if(chat.scrollTop>100){
-    hero.classList.add('collapsed');
-  }else{
-    hero.classList.remove('collapsed');
-  }
-});
-
 async function api(path,opts={},retries=3){
   for(let i=0;i<retries;i++){
     try{
@@ -442,7 +421,7 @@ function specFetch(path,opts={}){
 function addUser(t){const m=document.createElement('div');m.className='msg user';m.textContent=t;chat.appendChild(m);chat.scrollTop=chat.scrollHeight;saveChatState();}
 function addBot(html,state,spec){const m=document.createElement('div');m.className='msg bot'+(spec?' spec':'');m.appendChild(akti(state));const c=document.createElement('div');c.className='abody';c.innerHTML=html;m.appendChild(c);chat.appendChild(m);chat.scrollTop=chat.scrollHeight;return c;}
 function addSys(t){const m=document.createElement('div');m.className='msg sys';m.textContent=t;chat.appendChild(m);chat.scrollTop=chat.scrollHeight;}
-function addError(t){const m=document.createElement('div');m.className='msg error';m.innerHTML='<span style="font-size:18px;margin-right:8px">⚠️</span>'+t;chat.appendChild(m);chat.scrollTop=chat.scrollHeight;}
+function addError(t){const m=document.createElement('div');m.className='msg error';m.innerHTML='<span style="font-size:18px;margin-right:8px">️</span>'+t;chat.appendChild(m);chat.scrollTop=chat.scrollHeight;}
 function buttons(container,list,cb,primary){const w=document.createElement('div');w.className='opts';list.forEach((o,i)=>{const b=document.createElement('button');if(i===primary)b.className='primary';b.textContent=o;b.onclick=()=>{w.remove();cb(o);};w.appendChild(b);});container.appendChild(w);}
 const badge=r=>r.category?`<span class="badge">Категория: <b>${esc(r.category)}</b>${r.confidence!=null?` · уверенность ${Math.round(r.confidence*100)}%`:''}</span>`:'';
 const stateFor=r=>r.type==='solution'?'solution':(r.type==='escalation'?'escalation':((r.type==='question'||r.type==='clarification')?'question':'idle'));
@@ -454,11 +433,8 @@ function quickStart(text){
 
 async function send(text){
   if(!text.trim())return;
-  // Сворачиваем hero при первом сообщении
-  if(!chatStarted){
-    chatStarted=true;
-    hero.classList.add('collapsed');
-  }
+  // Скрываем hero при первом сообщении
+  hero.classList.add('hide');
   addUser(text);
   heroAkti.dataset.typing='false';
   pending=addBot('Разбираюсь в проблеме…','thinking');
@@ -487,13 +463,13 @@ function escalateButtons(c){
 }
 function notHelped(){const c=addBot('Похоже, стандартные способы не помогли.','escalation');escalateButtons(c);}
 async function resolve(){try{await api(`/tickets/${ticketId}/resolve`,{method:'POST'});}catch(e){}const c=addBot(`✓ Проблема решена. Обращение #${ticketId} закрыто.\nПомог ли вам Акти?`,'success');stars(c);}
-function stars(c){const w=document.createElement('div');w.className='stars';let done=false;for(let i=1;i<=5;i++){const s=document.createElement('span');s.textContent='★';s.onclick=async()=>{if(done)return;done=true;[...w.children].forEach((el,idx)=>{el.className=idx<i?'on':'';el.onclick=null;});w.style.cursor='default';let r={};try{r=await api('/feedback',{method:'POST',body:JSON.stringify({ticket_id:ticketId,rating:i})});}catch(e){}if(r.support){addBot('Сожалею, что не смог помочь 😔 Обращение передано в поддержку.','slow');startUserPolling(ticketId);}else if(r.status==='already'){addBot('Вы уже оценили это обращение — спасибо!');}else{addBot('Спасибо за оценку! Чем ещё помочь?');}};w.appendChild(s);}c.appendChild(w);}
+function stars(c){const w=document.createElement('div');w.className='stars';let done=false;for(let i=1;i<=5;i++){const s=document.createElement('span');s.textContent='★';s.onclick=async()=>{if(done)return;done=true;[...w.children].forEach((el,idx)=>{el.className=idx<i?'on':'';el.onclick=null;});w.style.cursor='default';let r={};try{r=await api('/feedback',{method:'POST',body:JSON.stringify({ticket_id:ticketId,rating:i})});}catch(e){}if(r.support){addBot('Сожалею, что не смог помочь  Обращение передано в поддержку.','slow');startUserPolling(ticketId);}else if(r.status==='already'){addBot('Вы уже оценили это обращение — спасибо!');}else{addBot('Спасибо за оценку! Чем ещё помочь?');}};w.appendChild(s);}c.appendChild(w);}
 
 async function startUserPolling(tid){stopUserPolling();try{const msgs=await api(`/tickets/${tid}/messages`);msgs.forEach(m=>{if(m.role==='specialist')addBot(`<span class="badge"><b class="spec">Специалист</b> · ${fmtTime(m.created_at)}</span>`+esc(m.text),'solution',true);else if(m.role==='system')addSys(m.text);});lastMsgId=msgs.length?Math.max(...msgs.map(m=>m.id)):0;}catch(e){lastMsgId=0;}pollTimer=setInterval(async()=>{if(document.hidden)return;try{const msgs=await api(`/tickets/${tid}/messages`);msgs.forEach(m=>{if(m.id>lastMsgId){lastMsgId=m.id;if(m.role==='specialist')addBot(`<span class="badge"><b class="spec">Специалист</b> · ${fmtTime(m.created_at)}</span>`+esc(m.text),'solution',true);else if(m.role==='system')addSys(m.text);}});}catch(e){}},3000);}
 function stopUserPolling(){if(pollTimer){clearInterval(pollTimer);pollTimer=null;}}
 
-function saveChatState(){const messages=[];chat.querySelectorAll('.msg').forEach(m=>{messages.push({className:m.className,text:m.textContent,html:m.querySelector('.abody')?.innerHTML||null});});localStorage.setItem('chat_'+CLIENT,JSON.stringify({ticketId:ticketId,messages:messages,timestamp:Date.now(),chatStarted:chatStarted}));}
-function loadChatState(){const saved=localStorage.getItem('chat_'+CLIENT);if(!saved)return false;try{const data=JSON.parse(saved);if(data.ticketId){ticketId=data.ticketId;sessionStorage.setItem('ticket_id',ticketId);}chatStarted=data.chatStarted||false;if(data.messages&&data.messages.length>0){if(chatStarted){hero.classList.add('collapsed');}data.messages.forEach(m=>{const div=document.createElement('div');div.className=m.className;if(m.className.includes('bot')&&m.html){div.innerHTML=m.html;const abody=div.querySelector('.abody');if(!abody){const newAbody=document.createElement('div');newAbody.className='abody';newAbody.innerHTML=m.html;div.innerHTML='';div.appendChild(akti('idle'));div.appendChild(newAbody);}}else{div.textContent=m.text;}chat.appendChild(div);});chat.scrollTop=chat.scrollHeight;return true;}}catch(e){}return false;}
+function saveChatState(){const messages=[];chat.querySelectorAll('.msg').forEach(m=>{messages.push({className:m.className,text:m.textContent,html:m.querySelector('.abody')?.innerHTML||null});});localStorage.setItem('chat_'+CLIENT,JSON.stringify({ticketId:ticketId,messages:messages,timestamp:Date.now(),heroHidden:hero.classList.contains('hide')}));}
+function loadChatState(){const saved=localStorage.getItem('chat_'+CLIENT);if(!saved)return false;try{const data=JSON.parse(saved);if(data.ticketId){ticketId=data.ticketId;sessionStorage.setItem('ticket_id',ticketId);}if(data.heroHidden){hero.classList.add('hide');}if(data.messages&&data.messages.length>0){data.messages.forEach(m=>{const div=document.createElement('div');div.className=m.className;if(m.className.includes('bot')&&m.html){div.innerHTML=m.html;const abody=div.querySelector('.abody');if(!abody){const newAbody=document.createElement('div');newAbody.className='abody';newAbody.innerHTML=m.html;div.innerHTML='';div.appendChild(akti('idle'));div.appendChild(newAbody);}}else{div.textContent=m.text;}chat.appendChild(div);});chat.scrollTop=chat.scrollHeight;return true;}}catch(e){}return false;}
 
 const gate=document.getElementById('gate');
 document.getElementById('gateUser').onclick=()=>{gate.style.display='none';bootUser();};
@@ -519,25 +495,30 @@ async function deleteTicket(id){if(!confirm('Удалить обращение #
 async function cleanupOld(){if(!confirm('Удалить ВСЕ решённые обращения старше 7 дней?'))return;try{const r=await specFetch('/support/cleanup',{method:'POST',body:JSON.stringify({days:7})});alert('Удалено обращений: '+r.removed);openArchive();}catch(e){alert('Ошибка очистки.');}}
 
 function newConversation(){
+  // Полный сброс
   ticketId=null;
   sessionStorage.removeItem('ticket_id');
   stopUserPolling();
   lastMsgId=0;
-  chatStarted=false;
-  localStorage.removeItem('chat_'+CLIENT);
-  chat.innerHTML='';
-  // Возвращаем hero полностью
-  hero.classList.remove('hide','collapsed');
-  heroHint.textContent='Нажмите на меня или выберите тему ниже';
-  heroHint.style.opacity='1';
   clickCount=0;
+  localStorage.removeItem('chat_'+CLIENT);
+  
+  // Очищаем чат
+  chat.innerHTML='';
+  
+  // Показываем hero с маскотом
+  hero.classList.remove('hide');
+  heroHint.textContent=' Нажмите на меня или выберите тему ниже';
+  heroHint.style.opacity='1';
+  
   // Восстанавливаем кнопки
   document.getElementById('heroQuick').innerHTML=`
-    <button onclick="quickStart('Не могу войти в Актион 360')"> Не могу войти</button>
-    <button onclick="quickStart('Не приходит письмо')"> Не приходит письмо</button>
+    <button onclick="quickStart('Не могу войти в Актион 360')">🔐 Не могу войти</button>
+    <button onclick="quickStart('Не приходит письмо')">📧 Не приходит письмо</button>
     <button onclick="quickStart('Не открывается страница')"> Не открывается страница</button>
-    <button onclick="quickStart('Нет звука на вебинаре')"> Нет звука на вебинаре</button>`;
+    <button onclick="quickStart('Нет звука на вебинаре')">🔊 Нет звука на вебинаре</button>`;
 }
+
 function offerNewTicket(){const c=addBot('Пока специалист работает с этим обращением, вы можете начать новый чат по другой проблеме.','idle');buttons(c,['Начать новое обращение'],()=>newConversation());}
 
 const panel=document.getElementById('panel');panel.addEventListener('click',e=>{if(e.target===panel)closePanel();});
