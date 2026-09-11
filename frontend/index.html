@@ -7,10 +7,28 @@
 <link rel="icon" href='data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><path fill="%23E30611" d="M96 50 60.6 52.8 70.8 62 57.4 56.7 72.9 82.8 53.8 60.3 51.9 71.9 48.6 59.9 34.9 91.3 43.7 59 30.1 66.7 41.2 54.7 13.3 59.8 39 50 28.7 44.3 41.1 45.5 14.8 20.4 43.7 41 41.8 27.4 48.6 40.1 53.5 10.2 53.8 39.7 64.9 28.7 57.9 43.8Z"/></svg>'>
 <style>
 :root{--red:#E30611;--red-d:#B00500;--pink:#FF8A92;--bg:#fff;--gray:#f5f5f7;--text:#1d1d1f;--muted:#86868b;--sh:0 16px 44px rgba(15,15,20,.06)}
+
+/* ===== КАСТОМНЫЙ КУРСОР ===== */
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-html{overflow-x:hidden;overflow-x:clip;cursor:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48"><defs><linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:%23E30611;stop-opacity:1"/><stop offset="100%" style="stop-color:%23FFB800;stop-opacity:1"/></linearGradient></defs><path fill="none" stroke="url(%23grad)" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" d="M8 8 L28 28 L20 28 L26 40 L18 42 L12 30 L8 34 Z"/></svg>') 24 24, default}
-body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Roboto,sans-serif;background:var(--bg);color:var(--text);display:flex;flex-direction:column;height:100dvh;-webkit-font-smoothing:antialiased;overflow-x:hidden;overflow-x:clip;cursor:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48"><defs><linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:%23E30611;stop-opacity:1"/><stop offset="100%" style="stop-color:%23FFB800;stop-opacity:1"/></linearGradient></defs><path fill="none" stroke="url(%23grad)" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" d="M8 8 L28 28 L20 28 L26 40 L18 42 L12 30 L8 34 Z"/></svg>') 24 24, default}
-button{appearance:none;-webkit-appearance:none;font:inherit;color:inherit;background:none;border:none;cursor:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48"><defs><linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:%23E30611;stop-opacity:1"/><stop offset="100%" style="stop-color:%23FFB800;stop-opacity:1"/></linearGradient></defs><path fill="none" stroke="url(%23grad)" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" d="M8 8 L28 28 L20 28 L26 40 L18 42 L12 30 L8 34 Z"/></svg>') 24 24, pointer}
+
+/* Обычный курсор — чёрная стрелка с лучами, hotspot на острие (2,2) */
+html,body{
+  cursor:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48"><g fill="%231d1d1f"><circle cx="24" cy="6" r="2.5"/><circle cx="36" cy="12" r="2.5"/><circle cx="40" cy="24" r="2.5"/><circle cx="34" cy="36" r="2.5"/><circle cx="20" cy="40" r="2.5"/><circle cx="10" cy="32" r="2.5"/><circle cx="8" cy="20" r="2.5"/><path d="M2 2 L2 28 L9 21 L16 36 L22 33 L15 18 L24 18 Z" stroke="%231d1d1f" stroke-width="1.5" stroke-linejoin="round"/></g></svg>') 2 2, auto;
+}
+
+/* Hover курсор — красная стрелка с лучами и свечением */
+button,a,input,textarea,.stars span,.chip,.kb-item,.q-card button,.spec-reply button,.period button,#gate button{
+  cursor:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48"><defs><filter id="glow"><feGaussianBlur stdDeviation="1.5" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs><g fill="%23E30611" filter="url(%23glow)"><circle cx="24" cy="6" r="2.5"/><circle cx="36" cy="12" r="2.5"/><circle cx="40" cy="24" r="2.5"/><circle cx="34" cy="36" r="2.5"/><circle cx="20" cy="40" r="2.5"/><circle cx="10" cy="32" r="2.5"/><circle cx="8" cy="20" r="2.5"/><path d="M2 2 L2 28 L9 21 L16 36 L22 33 L15 18 L24 18 Z" stroke="%23E30611" stroke-width="1.5" stroke-linejoin="round"/></g></svg>') 2 2, pointer;
+}
+
+/* Для текстовых полей — курсор-палочка */
+input[type="text"],textarea{
+  cursor:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M12 4 L12 20 M8 6 L16 6 M8 18 L16 18" stroke="%23E30611" stroke-width="2" stroke-linecap="round"/></svg>') 12 12, text;
+}
+
+html{overflow-x:hidden;overflow-x:clip}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Roboto,sans-serif;background:var(--bg);color:var(--text);display:flex;flex-direction:column;height:100dvh;-webkit-font-smoothing:antialiased;overflow-x:hidden;overflow-x:clip}
+button{appearance:none;-webkit-appearance:none;font:inherit;color:inherit;background:none;border:none}
 input,textarea{cursor:text;font:inherit;color:inherit}
 ::selection{background:rgba(227,6,17,.14)}
 .glass{position:relative;background:linear-gradient(135deg,rgba(255,255,255,.68),rgba(255,255,255,.44) 45%,rgba(246,246,248,.42));backdrop-filter:blur(20px) saturate(170%) brightness(1.03);-webkit-backdrop-filter:blur(20px) saturate(170%) brightness(1.03);border:1px solid rgba(255,255,255,.68);box-shadow:inset 0 1px 0 rgba(255,255,255,.9),inset 0 -1px 0 rgba(255,255,255,.4),var(--sh)}
@@ -313,7 +331,8 @@ th{color:var(--muted);font-weight:600}
 
 <script>
 const API='/api';
-let ticketId=parseInt(localStorage.getItem('ticket_id')||'0')||null;
+let ticketId=parseInt(sessionStorage.getItem('ticket_id')||'0')||null;
+const CLIENT=(()=>{let c=localStorage.getItem('client_id');if(!c){c='c'+Date.now().toString(36)+Math.random().toString(36).slice(2,8);localStorage.setItem('client_id',c);}return c;})();
 let pending=null, pollTimer=null, lastMsgId=0;
 const chat=document.getElementById('chat');
 const esc=s=>String(s??'').replace(/[<>&]/g,c=>({'<':'&lt;','>':'&gt;','&':'&amp;'}[c]));
@@ -341,7 +360,7 @@ const heroAkti=document.getElementById('heroAkti');
 const setHeader=s=>{document.getElementById('logo').dataset.state=s;};
 
 /* ===== сеть ===== */
-async function api(path,opts={}){const r=await fetch(API+path,{headers:{'Content-Type':'application/json'},...opts});if(!r.ok)throw new Error('HTTP '+r.status);return r.json();}
+async function api(path,opts={}){const r=await fetch(API+path,{headers:{'Content-Type':'application/json','X-Client-Id':CLIENT},...opts});if(!r.ok)throw new Error('HTTP '+r.status);return r.json();}
 function specFetch(path,opts={}){const h={'Content-Type':'application/json','X-Support-Code':sessionStorage.getItem('support_code')||'','X-Support-Agent':'specialist-1'};return fetch(API+path,{headers:h,...opts}).then(r=>{if(r.status===401)throw new Error('401');if(!r.ok)throw new Error('HTTP '+r.status);return r.json();});}
 
 /* ===== чат пользователя ===== */
@@ -359,9 +378,9 @@ async function send(text){
   pending=addBot('Разбираюсь в проблеме…','thinking');
   setHeader('thinking');
   let r;
-  try{r=await api('/chat',{method:'POST',body:JSON.stringify({ticket_id:ticketId,message:text})});}
+  try{r=await api('/chat',{method:'POST',body:JSON.stringify({ticket_id:ticketId,message:text,client_id:CLIENT})});}
   catch(e){pending.innerHTML='Не удалось получить ответ. Попробуйте ещё раз.';setAkti(pending.parentElement,'escalation');pending=null;return;}
-  ticketId=r.ticket_id;localStorage.setItem('ticket_id',ticketId);
+  ticketId=r.ticket_id;sessionStorage.setItem('ticket_id',ticketId);
   render(r);
 }
 function render(r){
@@ -413,7 +432,7 @@ function stars(c){
   c.appendChild(w);
 }
 
-/* поллинг сообщений специалиста (пауза при скрытой вкладке) */
+/* поллинг сообщений специалиста */
 async function startUserPolling(tid){
   stopUserPolling();
   try{const msgs=await api(`/tickets/${tid}/messages`);
@@ -480,7 +499,7 @@ async function loadQueue(){
       <div class="txt">${esc((t.last_user_text||'').slice(0,120))}</div>
       ${t.status==='escalated'?`<button onclick="takeTicket(${t.id})">Взять</button>`:`<span style="font-size:12px;color:var(--muted)">в работе</span>`}
       <button class="ghost" onclick="openThread(${t.id})">Открыть</button></div>`).join('')
-      :'<p style="color:var(--muted);font-size:13px">Очередь пуста </p>';
+      :'<p style="color:var(--muted);font-size:13px">Очередь пуста</p>';
   }catch(e){if(String(e.message)==='401')exitSpec();}
 }
 async function takeTicket(id){
@@ -548,7 +567,7 @@ async function openArchive(){
         <div class="txt">${esc((t.title||t.problem_text||'').slice(0,120))}</div>
         <button onclick="deleteTicket(${t.id})">Удалить</button>
       </div>`).join(''):'<p style="color:var(--muted);font-size:13px">Архив пуст 🎉</p>')
-      +`<button style="margin-top:12px;padding:10px 14px;border-radius:12px;border:1px solid #e3e3e6;background:#fff;font-size:13px" onclick="cleanupOld()"> Очистить решённые старше 7 дней</button>`;
+      +`<button style="margin-top:12px;padding:10px 14px;border-radius:12px;border:1px solid #e3e3e6;background:#fff;font-size:13px" onclick="cleanupOld()">🗑 Очистить решённые старше 7 дней</button>`;
   }catch(e){body.innerHTML='<p style="color:var(--muted)">Не удалось загрузить архив.</p>';}
 }
 async function deleteTicket(id){
@@ -597,8 +616,8 @@ async function openPanel(kind){
   const body=document.getElementById('panelBody');body.innerHTML='Загрузка…';
   try{
     if(kind==='history'){
-      document.getElementById('panelTitle').textContent='История обращений';
-      const list=await api('/tickets');
+      document.getElementById('panelTitle').textContent='Мои обращения';
+      const list=await api('/tickets?client_id='+CLIENT);
       body.innerHTML=list.length?table(list,['id','category','status']):'<p>Пока обращений нет.</p>';
     }else{
       document.getElementById('panelTitle').textContent='База знаний';
