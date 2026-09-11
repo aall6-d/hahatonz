@@ -9,8 +9,8 @@ DB_PATH = os.environ.get(
     os.path.join(os.path.dirname(__file__), "..", "data", "assist.db"),
 )
 
-DEMO_SPECIALIST_LOGIN = "support"
-DEMO_SPECIALIST_PASSWORD = "akti2026"
+DEMO_SPECIALIST_LOGIN = "demo"
+DEMO_SPECIALIST_PASSWORD = "hacaton"
 TOKEN_TTL_DAYS = 30
 
 
@@ -79,17 +79,29 @@ def login(role, login_name=None, password=None):
         if ((login_name or "").strip() != DEMO_SPECIALIST_LOGIN
                 or (password or "").strip() != DEMO_SPECIALIST_PASSWORD):
             raise HTTPException(status_code=401,
-                                detail="Неверный логин или пароль специалиста")
+                                detail="Неверный логин или пароль")
         conn = _conn()
         row = conn.execute(
             "SELECT id FROM users WHERE role='specialist' "
             "ORDER BY id LIMIT 1").fetchone()
         conn.close()
         uid = row["id"] if row else create_user("specialist")
-        return {"token": issue_token(uid), "role": "specialist"}
+        return {"token": issue_token(uid), "role": "specialist",
+                "name": "Специалист поддержки"}
     if role == "user":
-        return {"token": issue_token(create_user("user")), "role": "user"}
+        return {"token": issue_token(create_user("user")),
+                "role": "user", "name": "Сотрудник"}
     raise HTTPException(status_code=400, detail="Неизвестная роль")
+
+
+def logout(authorization):
+    token = extract_token(authorization)
+    if not token:
+        return
+    conn = _conn()
+    conn.execute("DELETE FROM sessions WHERE token=?", (token,))
+    conn.commit()
+    conn.close()
 
 
 def extract_token(authorization):

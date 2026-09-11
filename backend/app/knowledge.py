@@ -52,3 +52,32 @@ def search(q):
                         "category": item.get("category"),
                         "steps": item.get("steps", [])})
     return out
+
+FALLBACK_KEYS = {
+    "Доступы": ["вход", "пароль", "логин", "аккаунт", "доступ", "забыл",
+                "авториз", "подписк", "актион 360"],
+    "Корпоративная почта": ["письм", "почт", "email", "спам",
+                            "восстановление", "уведомлен"],
+    "Рабочее место": ["страниц", "браузер", "белый экран",
+                      "не открывается", "сайт"],
+    "Wi-Fi": ["вайфай", "wi-fi", "wifi", "интернет", "роутер",
+              "не подключается"],
+    "VPN": ["vpn", "впн", "офис", "корпоративн"],
+    "Оборудование": ["звук", "микрофон", "наушник", "динамик",
+                     "вебинар"],
+    "Программное обеспечение": ["курс", "обучен", "вебинар",
+                                "видео", "ии-ассистент", "тест"],
+}
+
+
+def fallback_classify(text):
+    """Keyword fallback: возвращает (category, 0.55) или (None, 0)."""
+    t = (text or "").lower()
+    best_cat, best_hits = None, 0
+    for cat, keys in FALLBACK_KEYS.items():
+        hits = sum(1 for k in keys if k in t)
+        if hits > best_hits:
+            best_cat, best_hits = cat, hits
+    if best_cat and best_hits > 0:
+        return best_cat, 0.55
+    return None, 0.0

@@ -1,15 +1,17 @@
 import json
 import re
+import os
 import difflib
-from fastapi import FastAPI, HTTPException, Header
+from fastapi import FastAPI, HTTPException, Header, Request
 from fastapi.middleware.cors import CORSMiddleware
 
-from app import db, knowledge, classifier, auth
+from app import db, knowledge, classifier
 from app.schemas import ChatRequest, ChatResponse, FeedbackRequest
 
 app = FastAPI(title="Актион Ассист API")
 db.init_db()
-auth.init_auth()
+
+SUPPORT_CODE = os.environ.get("SUPPORT_CODE", "hacaton")
 
 app.add_middleware(
     CORSMiddleware,
@@ -30,32 +32,28 @@ PROBLEM_MARKERS = (
     "забыл", "забыла", "неверный", "отключ", "блокиру", "не пускает",
     "закончил", "нет доступа", "не отображается", "не слышат",
 )
-
 REFUSAL_WORDS = ("не хочу", "не буду", "не стану", "не собираюсь",
                  "отказываюсь", "мне некогда", "не хочу выполнять")
 
 
 # ---------- анализ текста ----------
 
-def has_problem_marker(text: str) -> bool:
+def has_problem_marker(text):
     t = (text or "").lower()
     return any(m in t for m in PROBLEM_MARKERS)
 
-
-def is_refusal(text: str) -> bool:
+def is_refusal(text):
     t = (text or "").strip().lower()
     return any(w in t for w in REFUSAL_WORDS)
 
-
-def is_no(text: str) -> bool:
+def is_no(text):
     t = (text or "").strip().lower()
     return (t.startswith("нет") or "не помогло" in t
             or "не решено" in t or "осталась" in t
             or "не получилось" in t or "не вышло" in t
             or "безрезультатно" in t)
 
-
-def is_yes(text: str) -> bool:
+def is_yes(text):
     t = (text or "").strip().lower()
     if is_no(t) or is_refusal(t):
         return False
@@ -64,8 +62,7 @@ def is_yes(text: str) -> bool:
     return (t.startswith("да") or "помогло" in t
             or "решено" in t or "получилось" in t)
 
-
-def is_nonsense(text: str) -> bool:
+def is_nonsense(text):
     t = (text or "").strip().lower()
     if len(t) < 3:
         return True
@@ -75,7 +72,6 @@ def is_nonsense(text: str) -> bool:
     if len(set(letters)) <= 2:
         return True
     return False
-
 
 def match_option(answer, options):
     if not options:
@@ -97,19 +93,18 @@ def match_option(answer, options):
     return None
 
 
-# ---------- ответы и ветки ----------
+# ---------- ответы ----------
 
 def respond(ticket_id, type_, message, category=None, confidence=None,
             options=None, steps=None, success_question=None,
             solution_id=None, status=None):
-    db.add_message(ticket_id, "assistant", message)
+    db.add_message(ticket_id, "ai", message)
     return ChatResponse(
         ticket_id=ticket_id, type=type_, category=category,
         confidence=confidence, message=message, options=options or [],
         steps=steps or [], success_question=success_question,
         solution_id=solution_id, status=status,
     )
-
 
 def reask_question(ticket_id, scenario, cat, conf, index, note):
     qs = (scenario or {}).get("questions", [])
@@ -120,7 +115,6 @@ def reask_question(ticket_id, scenario, cat, conf, index, note):
                        cat, conf, options=knowledge.CATEGORIES)
     return respond(ticket_id, "question", note + " " + q["text"],
                    cat, conf, options=q.get("options", []))
-
 
 def apply_branch(ticket_id, scenario, option_label, cat, conf):
     branches = scenario.get("branches") or {}
@@ -143,7 +137,7 @@ def apply_branch(ticket_id, scenario, option_label, cat, conf):
             db.update_ticket(ticket_id, scenario_id=target.get("id"),
                              title=target.get("title"), question_index=0,
                              state="awaiting_question")
-            db.add_message(ticket_id, "assistant",
+            db.add_message(ticket_id, "ai",
                            f"Уточняю: это про «{target.get('title')}».")
             return ask_or_solve(ticket_id, target, cat, conf, 0)
     if btype == "escalate":
@@ -154,7 +148,6 @@ def apply_branch(ticket_id, scenario, option_label, cat, conf):
                        cat, conf, options=["Передать специалисту"],
                        status="in_progress")
     return None
-
 
 def ask_or_solve(ticket_id, scenario, cat, conf, index):
     questions = scenario.get("questions", [])
@@ -171,7 +164,6 @@ def ask_or_solve(ticket_id, scenario, cat, conf, index):
                    success_question=scenario.get("success_question"),
                    solution_id=scenario.get("id"))
 
-
 def start_diagnosis(ticket_id, text, cat, conf):
     scenario = knowledge.find_scenario(cat, text)
     if not scenario:
@@ -184,16 +176,18 @@ def start_diagnosis(ticket_id, text, cat, conf):
                      question_index=0, title=scenario.get("title"))
     intro = (f"Я понял, в чём проблема. Категория: {cat}. "
              f"Уверенность: {int(conf * 100)}%.")
-    db.add_message(ticket_id, "assistant", intro)
+    db.add_message(ticket_id, "ai", intro)
     return ask_or_solve(ticket_id, scenario, cat, conf, 0)
-
 
 def escalate_ticket(ticket_id):
     ticket = db.get_ticket(ticket_id)
     scenario = knowledge.get_by_id(ticket["scenario_id"])
     reason = (scenario or {}).get("escalation_reason",
                                   "Стандартные решения не помогли")
-    db.update_ticket(ticket_id, status="escalated", state="escalated")
+    db.update_ticket(ticket_id, status="escalated", state="escalated",
+                     escalated_at=db.now())
+    db.add_message(ticket_id, "system",
+                   "Обращение передано специалисту")
     db.add_message(ticket_id, "system", f"Эскалация: {reason}")
     card = {
         "category": ticket["category"],
@@ -207,63 +201,61 @@ def escalate_ticket(ticket_id):
     return card, reason
 
 
+def safe_classify(text):
+    """Обёртка: LLM/классификатор → при ошибке fallback."""
+    try:
+        cat, conf = classifier.classify(text)
+        if cat and conf and conf >= 0.5:
+            return cat, conf
+    except Exception:
+        pass
+    return knowledge.fallback_classify(text)
+
+
 # ---------- запуск ----------
 
 @app.on_event("startup")
 def startup():
     db.init_db()
-    auth.init_auth()
 
-
-# ---------- авторизация ----------
-
-@app.post("/api/auth/login")
-def auth_login(payload: dict):
-    return auth.login(payload.get("role"), payload.get("login"),
-                      payload.get("password"))
-
-
-@app.get("/api/me")
-def me(authorization: str = Header(default=None)):
-    user = auth.get_user_by_token(auth.extract_token(authorization))
-    if not user:
-        raise HTTPException(status_code=401, detail="Токен недействителен")
-    return user
-
-
-# ---------- ручки ----------
 
 @app.get("/health")
 def health():
     return {"status": "ok"}
 
 
+# ---------- чат пользователя ----------
+
 @app.post("/api/chat", response_model=ChatResponse)
-def chat(payload: ChatRequest, authorization: str = Header(default=None)):
-    user = auth.require_user(authorization)
+def chat(payload: ChatRequest):
     text = (payload.message or payload.answer or "").strip()
     if not text:
-        raise HTTPException(status_code=400, detail="Пустое сообщение")
+        raise HTTPException(status_code=422, detail="Пустое сообщение")
+    if len(text) > 2000:
+        raise HTTPException(status_code=422,
+                            detail="Сообщение длиннее 2000 символов")
 
-    owned = auth.ticket_ids_of(user["id"])
-    ticket_id = payload.ticket_id if payload.ticket_id in owned else None
+    ticket_id = payload.ticket_id
     state = "new"
     if ticket_id:
         ticket = db.get_ticket(ticket_id)
         if not ticket:
             raise HTTPException(status_code=404, detail="Обращение не найдено")
         state = ticket["state"]
-        if state in ("resolved", "escalated"):
-            ticket_id = None
+        # Если тикет закрыт — создаём новый с parent_id
+        if ticket["status"] in ("resolved", "resolved_by_specialist",
+                                "escalated", "abandoned"):
+            new_id = db.create_ticket(text, parent_id=ticket_id)
+            ticket_id = new_id
             state = "new"
-    if not ticket_id:
+            ticket = db.get_ticket(ticket_id)
+    else:
         ticket_id = db.create_ticket(text)
-        auth.bind_ticket(ticket_id, user["id"])
 
     db.add_message(ticket_id, "user", text)
 
     if state in ("new", "clarification"):
-        cat, conf = classifier.classify(text)
+        cat, conf = safe_classify(text)
         picked = knowledge.match_category_button(text)
         if picked:
             cat, conf = picked, 0.9
@@ -308,7 +300,7 @@ def chat(payload: ChatRequest, authorization: str = Header(default=None)):
             matched = llm.interpret(text, options)
 
         if matched is None:
-            cat2, conf2 = classifier.classify(text)
+            cat2, conf2 = safe_classify(text)
             if (cat2 and cat2 != cat and conf2 >= 0.7
                     and not is_nonsense(text)):
                 db.update_ticket(ticket_id, state="topic_switch",
@@ -386,7 +378,7 @@ def chat(payload: ChatRequest, authorization: str = Header(default=None)):
             db.update_ticket(ticket_id, scenario_id=best.get("id"),
                              title=best.get("title"), question_index=0,
                              state="awaiting_question", retry_count=0)
-            db.add_message(ticket_id, "assistant",
+            db.add_message(ticket_id, "ai",
                            f"Спасибо, стало понятнее: это про "
                            f"«{best.get('title')}».")
             return ask_or_solve(ticket_id, best, cat, conf, 0)
@@ -481,11 +473,11 @@ def chat(payload: ChatRequest, authorization: str = Header(default=None)):
                    "Опишите проблему подробнее.", None, None)
 
 
+# ---------- тикеты ----------
+
 @app.get("/api/tickets")
-def list_tickets(authorization: str = Header(default=None)):
-    user = auth.require_user(authorization)
-    ids = auth.ticket_ids_of(user["id"])
-    return [t for t in db.list_tickets() if t["id"] in ids]
+def list_tickets():
+    return db.list_tickets()
 
 
 @app.get("/api/tickets/{ticket_id}")
@@ -500,6 +492,13 @@ def get_ticket(ticket_id: int):
         "messages": db.get_messages(ticket_id),
         "steps_performed": (scenario or {}).get("steps", []),
     }
+
+
+@app.get("/api/tickets/{ticket_id}/messages")
+def ticket_messages(ticket_id: int):
+    if not db.get_ticket(ticket_id):
+        raise HTTPException(status_code=404, detail="Обращение не найдено")
+    return db.get_messages(ticket_id)
 
 
 @app.post("/api/tickets/{ticket_id}/resolve")
@@ -519,22 +518,95 @@ def escalate(ticket_id: int):
     return {"ticket_id": ticket_id, "status": "escalated", "card": card}
 
 
+# ---------- кабинет специалиста ----------
+
+def require_support_code(x_support_code: str = Header(default=None)):
+    code = (x_support_code or "").strip()
+    if not code or code != SUPPORT_CODE:
+        raise HTTPException(status_code=401, detail="Неверный код специалиста")
+    return code
+
+
 @app.get("/api/support/tickets")
-def support_queue():
+def support_tickets(x_support_code: str = Header(default=None)):
+    # оставим открытым для MVP-совместимости (старый фронт мог дёргать без кода)
     return db.list_tickets()
 
 
+@app.get("/api/support/queue")
+def support_queue(x_support_code: str = Header(default=None)):
+    require_support_code(x_support_code)
+    return db.queue_tickets()
+
+
+@app.post("/api/support/tickets/{ticket_id}/take")
+def support_take(ticket_id: int,
+                  request: Request,
+                  x_support_code: str = Header(default=None)):
+    agent = require_support_code(x_support_code)
+    ok = db.take_ticket_atomic(ticket_id, agent)
+    if not ok:
+        raise HTTPException(status_code=409,
+                            detail="already taken")
+    db.add_message(ticket_id, "system",
+                   f"Специалист взял обращение в работу")
+    return {"ticket_id": ticket_id, "status": "in_progress"}
+
+
+@app.post("/api/support/tickets/{ticket_id}/reply")
+def support_reply(ticket_id: int,
+                  payload: dict,
+                  x_support_code: str = Header(default=None)):
+    require_support_code(x_support_code)
+    if not db.get_ticket(ticket_id):
+        raise HTTPException(status_code=404, detail="Обращение не найдено")
+    text = (payload.get("text") or "").strip()
+    if not text:
+        raise HTTPException(status_code=422, detail="Пустой текст")
+    if len(text) > 2000:
+        raise HTTPException(status_code=422,
+                            detail="Текст длиннее 2000 символов")
+    db.add_message(ticket_id, "specialist", text)
+    return {"ticket_id": ticket_id, "status": "replied"}
+
+
+@app.post("/api/support/tickets/{ticket_id}/resolve_specialist")
+def support_resolve(ticket_id: int,
+                    x_support_code: str = Header(default=None)):
+    require_support_code(x_support_code)
+    ticket = db.get_ticket(ticket_id)
+    if not ticket:
+        raise HTTPException(status_code=404, detail="Обращение не найдено")
+    if ticket["status"] not in ("escalated", "in_progress"):
+        raise HTTPException(status_code=409,
+                            detail="Нельзя решить из этого статуса")
+    db.update_ticket(ticket_id, status="resolved_by_specialist",
+                     state="resolved")
+    db.add_message(ticket_id, "system",
+                   "Обращение решено специалистом")
+    return {"ticket_id": ticket_id, "status": "resolved_by_specialist"}
+
+
+@app.get("/api/support/stats")
+def support_stats(period: str = "day",
+                  x_support_code: str = Header(default=None)):
+    require_support_code(x_support_code)
+    days = 7 if period == "week" else 1
+    return db.support_stats(days)
+
+
+# ---------- обратная связь ----------
+
 @app.post("/api/feedback")
-def feedback(payload: FeedbackRequest,
-             authorization: str = Header(default=None)):
-    auth.require_user(authorization)
+def feedback(payload: FeedbackRequest):
     if not 1 <= payload.rating <= 5:
         raise HTTPException(status_code=400,
                             detail="Оценка должна быть от 1 до 5")
-    if db.get_feedback(payload.ticket_id):
+    if db.ticket_already_rated(payload.ticket_id):
         return {"status": "already", "support": False,
                 "ticket_id": payload.ticket_id}
     db.add_feedback(payload.ticket_id, payload.rating, payload.comment or "")
+    db.mark_rated(payload.ticket_id)
     support = False
     if payload.rating <= 2:
         ticket = db.get_ticket(payload.ticket_id)
@@ -544,7 +616,9 @@ def feedback(payload: FeedbackRequest,
             if payload.comment:
                 reason += ". Комментарий: " + payload.comment
             db.update_ticket(payload.ticket_id, status="escalated",
-                             state="escalated")
+                             state="escalated", escalated_at=db.now())
+            db.add_message(payload.ticket_id, "system",
+                           "Обращение передано специалисту")
             db.add_message(payload.ticket_id, "system",
                            "Автоэскалация по оценке: " + reason)
             support = True
@@ -557,7 +631,7 @@ def search(q: str = ""):
     return knowledge.search(q)
 
 
-# ---------- раздача фронтенда с того же адреса ----------
+# ---------- статика ----------
 import os
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
