@@ -2,24 +2,29 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Актион Ассист — техническая поддержка</title>
 <link rel="icon" href='data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><path fill="%23E30611" d="M96 50 60.6 52.8 70.8 62 57.4 56.7 72.9 82.8 53.8 60.3 51.9 71.9 48.6 59.9 34.9 91.3 43.7 59 30.1 66.7 41.2 54.7 13.3 59.8 39 50 28.7 44.3 41.1 45.5 14.8 20.4 43.7 41 41.8 27.4 48.6 40.1 53.5 10.2 53.8 39.7 64.9 28.7 57.9 43.8Z"/></svg>'>
 <style>
 :root{--red:#E30611;--red-d:#B00500;--pink:#FF8A92;--bg:#fff;--gray:#f5f5f7;--text:#1d1d1f;--muted:#86868b;--sh:0 16px 44px rgba(15,15,20,.06)}
+
+/* ===== КАСТОМНЫЙ КУРСОР ===== */
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-html{overflow-x:hidden;overflow-x:clip;cursor:default}
-body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Roboto,sans-serif;background:var(--bg);color:var(--text);display:flex;flex-direction:column;height:100dvh;-webkit-font-smoothing:antialiased;overflow-x:hidden;overflow-x:clip;cursor:default}
-button{appearance:none;-webkit-appearance:none;font:inherit;color:inherit;background:none;border:none;cursor:pointer}
+html{overflow-x:hidden;overflow-x:clip;cursor:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32"><circle cx="16" cy="16" r="6" fill="%23E30611" opacity="0.9"/></svg>') 16 16, default}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Roboto,sans-serif;background:var(--bg);color:var(--text);display:flex;flex-direction:column;height:100dvh;-webkit-font-smoothing:antialiased;overflow-x:hidden;overflow-x:clip;cursor:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32"><circle cx="16" cy="16" r="6" fill="%23E30611" opacity="0.9"/></svg>') 16 16, default}
+
+/* Курсор-кольцо для интерактивных элементов */
+button,a,input,textarea,.stars span,.chip,.kb-item{cursor:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32"><circle cx="16" cy="16" r="10" fill="none" stroke="%23E30611" stroke-width="2.5"/></svg>') 16 16, pointer}
+button{appearance:none;-webkit-appearance:none;font:inherit;color:inherit;background:none;border:none}
 a{color:inherit}
-input,textarea{cursor:text;font:inherit;color:inherit}
+input,textarea{cursor:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32"><path d="M16 8 L16 24 M8 16 L24 16" stroke="%23E30611" stroke-width="2.5" stroke-linecap="round"/></svg>') 16 16, text}
 ::selection{background:rgba(227,6,17,.14)}
 
 /* мягкое стекло */
 .glass{position:relative;background:linear-gradient(135deg,rgba(255,255,255,.68),rgba(255,255,255,.44) 45%,rgba(246,246,248,.42));backdrop-filter:blur(20px) saturate(170%) brightness(1.03);-webkit-backdrop-filter:blur(20px) saturate(170%) brightness(1.03);border:1px solid rgba(255,255,255,.68);box-shadow:inset 0 1px 0 rgba(255,255,255,.9),inset 0 -1px 0 rgba(255,255,255,.4),var(--sh)}
 .glass::before{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;background:linear-gradient(120deg,rgba(255,255,255,.45),rgba(255,255,255,0) 36%)}
 
-/* два стеклянных блока (скрыты на мобильных) */
+/* фон */
 .glass-bg{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
 .glass-bg i{position:absolute;display:block;border-radius:44px;background:linear-gradient(140deg,rgba(246,246,248,.55),rgba(250,250,251,.28));backdrop-filter:blur(16px) saturate(150%);-webkit-backdrop-filter:blur(16px) saturate(150%);border:1px solid rgba(255,255,255,.6);box-shadow:inset 0 1px 0 rgba(255,255,255,.8),0 20px 60px rgba(15,15,20,.05);opacity:.7}
 .glass-bg .r1{width:46vw;height:34vw;left:-8vw;top:-6vw;transform:rotate(-7deg);animation:rib-drift1 48s ease-in-out infinite}
@@ -32,19 +37,21 @@ input,textarea{cursor:text;font:inherit;color:inherit}
 body.panel-open .shell{transform:translateX(-44px)}
 @media (max-width:900px){body.panel-open .shell{transform:none}}
 
-header{position:sticky;top:0;z-index:5;background:rgba(255,255,255,.62);backdrop-filter:saturate(1.5) blur(16px);-webkit-backdrop-filter:saturate(1.5) blur(16px);border-bottom:1px solid rgba(240,240,242,.8)}
+header{position:sticky;top:0;z-index:50;background:rgba(255,255,255,.72);backdrop-filter:saturate(1.5) blur(16px);-webkit-backdrop-filter:saturate(1.5) blur(16px);border-bottom:1px solid rgba(240,240,242,.8)}
 .head-row{display:flex;align-items:center;gap:12px;padding:14px 22px}
 header b.brand{font-size:19px;letter-spacing:-.01em;position:relative}
-header .tag{font-size:12px;color:var(--muted);border:1px solid #e6e6e9;border-radius:7px;padding:2px 7px}
+header .tag{font-size:12px;color:var(--muted);border:1px solid #e6e6e9;border-radius:7px;padding:2px 7px;background:rgba(255,255,255,.6)}
 header nav{margin-left:auto;display:flex;gap:9px}
-header nav button{background:rgba(245,245,247,.85);color:var(--text);border-radius:13px;padding:11px 16px;font-size:14px;transition:.2s;position:relative}
+header nav button{background:rgba(245,245,247,.85);color:var(--text);border-radius:13px;padding:11px 16px;font-size:14px;transition:.2s;position:relative;border:1px solid rgba(255,255,255,.5)}
 header nav button:hover{background:#ececef;transform:translateY(-1px);box-shadow:0 6px 16px rgba(227,6,17,.1)}
 header nav button::after{content:"";position:absolute;right:-6px;top:-6px;width:13px;height:13px;background:var(--red);clip-path:polygon(50% 0,62% 38%,100% 50%,62% 62%,50% 100%,38% 62%,0 50%,38% 38%);opacity:0;transform:scale(.3) rotate(0deg);transition:.28s cubic-bezier(.3,1.6,.4,1)}
 header nav button:hover::after{opacity:1;transform:scale(1) rotate(90deg)}
-/* маленькое окошко о помощнике */
-.brand-tip{position:absolute;top:calc(100% + 10px);left:0;width:270px;padding:10px 12px;border-radius:14px;font-size:12.5px;font-weight:400;line-height:1.45;color:var(--text);opacity:0;transform:translateY(-6px) scale(.96);pointer-events:none;transition:.25s cubic-bezier(.25,.9,.3,1.1);z-index:40;text-align:left;background:rgba(255,255,255,.9);backdrop-filter:blur(18px) saturate(170%);-webkit-backdrop-filter:blur(18px) saturate(170%);border:1px solid rgba(255,255,255,.75);box-shadow:inset 0 1px 0 rgba(255,255,255,.9),0 12px 32px rgba(15,15,20,.12)}
-header b.brand:hover .brand-tip,header b.brand:focus .brand-tip{opacity:1;transform:none}
-.brand-tip b{color:var(--red);font-size:12.5px}
+
+/* тултип */
+.brand-tip{position:absolute;top:calc(100% + 10px);left:0;width:280px;padding:14px 16px;border-radius:16px;font-size:13px;font-weight:400;line-height:1.5;color:var(--text);opacity:0;transform:translateY(-6px) scale(.96);pointer-events:none;transition:.25s cubic-bezier(.25,.9,.3,1.1);z-index:60;text-align:left;background:rgba(255,255,255,.96);backdrop-filter:blur(18px) saturate(170%);-webkit-backdrop-filter:blur(18px) saturate(170%);border:1px solid rgba(227,6,17,.15);box-shadow:0 12px 32px rgba(15,15,20,.12)}
+.brand-tip::before{content:"";position:absolute;top:-6px;left:24px;width:12px;height:12px;background:rgba(255,255,255,.96);border-left:1px solid rgba(227,6,17,.15);border-top:1px solid rgba(227,6,17,.15);transform:rotate(45deg)}
+header b.brand:hover .brand-tip,header b.brand:focus .brand-tip{opacity:1;transform:none;pointer-events:auto}
+.brand-tip b{color:var(--red)}
 
 main.shell{flex:1;display:flex;flex-direction:column;min-height:0;padding-top:14px;padding-bottom:14px;position:relative;z-index:1}
 .chat-card{flex:1;min-height:0;border-radius:28px;overflow:hidden;display:flex;max-width:100%}
@@ -60,12 +67,11 @@ main.shell{flex:1;display:flex;flex-direction:column;min-height:0;padding-top:14
 .hero h1 b{color:var(--red)}
 .hero p{color:var(--muted);font-size:16.5px;margin-top:8px}
 
-/* сообщения с яркой обводкой */
 .msg{max-width:88%;padding:15px 18px;border-radius:22px;font-size:16px;line-height:1.55;white-space:pre-wrap;animation:pop .35s cubic-bezier(.2,.9,.3,1.2);transition:transform .3s ease,box-shadow .3s ease;position:relative}
 .msg:hover{transform:translateY(-2px)}
 @keyframes pop{from{opacity:0;transform:translateY(8px) scale(.97)}}
-.msg.user{align-self:flex-end;background:rgba(245,245,247,.92);border:1.5px solid rgba(20,20,25,.16);box-shadow:inset 0 1px 0 rgba(255,255,255,.9),0 6px 20px rgba(15,15,20,.06)}
-.msg.bot{align-self:flex-start;background:rgba(255,255,255,.75);backdrop-filter:blur(16px) saturate(160%);-webkit-backdrop-filter:blur(16px) saturate(160%);border:1.5px solid rgba(227,6,17,.28);box-shadow:inset 0 1px 0 rgba(255,255,255,.9),0 10px 30px rgba(15,15,20,.07);display:flex;gap:12px}
+.msg.user{align-self:flex-end;background:rgba(245,245,247,.95);border:1.5px solid rgba(227,6,17,.18);box-shadow:inset 0 1px 0 rgba(255,255,255,.9),0 6px 20px rgba(227,6,17,.06)}
+.msg.bot{align-self:flex-start;background:rgba(255,255,255,.88);backdrop-filter:blur(16px) saturate(160%);-webkit-backdrop-filter:blur(16px) saturate(160%);border:1.5px solid rgba(227,6,17,.25);box-shadow:inset 0 1px 0 rgba(255,255,255,.9),0 10px 30px rgba(15,15,20,.07);display:flex;gap:12px}
 .abody{min-width:0}
 .badge{display:block;font-size:13px;color:var(--muted);margin-bottom:6px}
 .badge b{color:var(--red)}
@@ -94,17 +100,18 @@ main.shell{flex:1;display:flex;flex-direction:column;min-height:0;padding-top:14
 #composer button:hover{background:var(--red-d);transform:translateY(-2px) scale(1.05)}
 #composer button:active{transform:scale(.92)}
 
-/* плашки фильтров БЗ */
-.chips{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0 4px}
+/* Ветвистые плашки фильтров БЗ */
+.chips-main{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px}
+.chips-sub{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;padding-left:8px;border-left:2px solid rgba(227,6,17,.2)}
 .chip{border:1px solid rgba(230,230,233,.9);background:rgba(255,255,255,.9);color:var(--text);border-radius:999px;padding:8px 14px;font-size:13px;transition:.2s}
 .chip:hover{border-color:var(--red);color:var(--red)}
-.chip.on{background:var(--red);border-color:var(--red);color:#fff}
-.kb-item{padding:11px 13px;border:1px solid rgba(20,20,25,.1);border-radius:14px;margin-bottom:8px;background:rgba(255,255,255,.85);transition:.18s}
-.kb-item:hover{border-color:rgba(227,6,17,.3)}
-.kb-item b{font-size:14px;display:block}
-.kb-item span{display:block;font-size:12px;color:var(--muted);margin-top:3px}
+.chip.on{background:var(--red);border-color:var(--red);color:#fff;box-shadow:0 4px 12px rgba(227,6,17,.2)}
+.kb-item{padding:12px 14px;border:1px solid rgba(20,20,25,.08);border-radius:14px;margin-bottom:8px;background:rgba(255,255,255,.85);transition:.18s}
+.kb-item:hover{border-color:rgba(227,6,17,.3);transform:translateX(2px)}
+.kb-item b{font-size:14px;display:block;margin-bottom:4px}
+.kb-item span{display:inline-block;font-size:12px;color:var(--muted);background:rgba(245,245,247,.9);padding:2px 8px;border-radius:6px}
 
-/* ===== АКТИ (маскот v11) ===== */
+/* Акти */
 .akti{flex:none;--ex:0px;--ey:0px}
 .akti svg{width:100%;height:100%;display:block;overflow:visible;transform-origin:50% 80%}
 .akti .a-glow{fill:var(--red);opacity:.14;filter:blur(9px);transform-box:fill-box;transform-origin:center;transition:opacity .5s ease;animation:k-glowmorph 4.2s ease-in-out infinite}
@@ -239,9 +246,9 @@ main.shell{flex:1;display:flex;flex-direction:column;min-height:0;padding-top:14
 .salut-p{position:fixed;width:var(--size,6px);height:var(--size,6px);background:var(--c,var(--red));pointer-events:none;z-index:100;animation:salut-fly 1.15s cubic-bezier(.2,.7,.4,1) forwards;box-shadow:0 0 10px currentColor;border-radius:50% 10% 50% 10%;transform:translate(-50%,-50%);color:var(--c,var(--red))}
 @keyframes salut-fly{0%{opacity:1;transform:translate(-50%,-50%) scale(.2) rotate(0)}60%{opacity:1}100%{opacity:0;transform:translate(calc(-50% + var(--dx)),calc(-50% + var(--dy) + 60px)) scale(1.15) rotate(var(--rot))}}
 
-.panel{position:fixed;inset:0;background:rgba(20,20,22,.3);backdrop-filter:blur(2px);display:none;z-index:10}
+.panel{position:fixed;inset:0;background:rgba(20,20,22,.3);backdrop-filter:blur(2px);display:none;z-index:100}
 .panel.open{display:block}
-.panel .box{position:absolute;right:0;top:0;bottom:0;width:min(520px,100%);padding:20px;overflow-y:auto;border-radius:26px 0 0 26px;animation:slide .3s cubic-bezier(.2,.9,.3,1.1);background:rgba(255,255,255,.82);backdrop-filter:blur(24px) saturate(170%);-webkit-backdrop-filter:blur(24px) saturate(170%);border:1px solid rgba(255,255,255,.75);box-shadow:inset 0 1px 0 rgba(255,255,255,.9),-20px 0 60px rgba(15,15,20,.12)}
+.panel .box{position:absolute;right:0;top:0;bottom:0;width:min(520px,100%);padding:20px;overflow-y:auto;border-radius:26px 0 0 26px;animation:slide .3s cubic-bezier(.2,.9,.3,1.1);background:rgba(255,255,255,.92);backdrop-filter:blur(24px) saturate(170%);-webkit-backdrop-filter:blur(24px) saturate(170%);border:1px solid rgba(255,255,255,.75);box-shadow:inset 0 1px 0 rgba(255,255,255,.9),-20px 0 60px rgba(15,15,20,.12)}
 @keyframes slide{from{transform:translateX(30px);opacity:0}}
 .panel input{width:100%;border:1px solid #e6e6e9;border-radius:14px;padding:12px 14px;margin:10px 0;font-size:15px;outline:none;background:rgba(255,255,255,.85);caret-color:var(--red)}
 .panel input:focus{border-color:var(--red)}
@@ -249,16 +256,24 @@ table{width:100%;border-collapse:collapse;font-size:14px}
 td,th{padding:10px 7px;border-bottom:1px solid #f0f0f2;text-align:left}
 th{color:var(--muted);font-weight:600}
 
+/* Модальное окно ролей */
+#roleModal{position:fixed;inset:0;background:rgba(20,20,22,.5);backdrop-filter:blur(4px);display:none;z-index:1000;align-items:center;justify-content:center}
+.role-box{background:#fff;border-radius:20px;padding:28px;width:min(420px,90%);text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.15);animation:pop .3s cubic-bezier(.2,.9,.3,1.15)}
+
 @media (prefers-reduced-motion:reduce){.akti svg,.akti .a-body,.akti .a-core,.akti .a-mini,.akti .a-halo,.akti .a-glow,.akti .a-s,.akti .a-q,.akti .a-eye,.akti .a-tear,.msg,.hero,.salut-p,.glass-bg i{animation:none !important;transition:none !important}}
 @media (max-width:640px){
   .head-row{padding:12px 14px;gap:9px}
   header b.brand{font-size:17px}
   header nav button{padding:9px 12px;font-size:13px}
-  .brand-tip{width:min(240px,72vw)}
+  .brand-tip{width:min(260px,85vw);left:50%;transform:translateX(-50%) translateY(-6px) scale(.96)}
+  .brand-tip::before{left:50%;margin-left:-6px}
+  header b.brand:hover .brand-tip,header b.brand:focus .brand-tip{transform:translateX(-50%) translateY(0) scale(1)}
   .hero-akti-wrap{width:125px;height:125px}
   .msg{font-size:15px;max-width:94%}
   #chat{padding:16px}
   .shell{padding-inline:12px}
+  .panel .box{width:100vw !important;max-width:100vw !important;left:0 !important;right:0 !important;top:auto !important;bottom:0 !important;border-radius:20px 20px 0 0 !important;max-height:85vh;animation:slide-up .3s cubic-bezier(.2,.9,.3,1.1) forwards}
+  @keyframes slide-up{from{transform:translateY(100%);opacity:0}to{transform:translateY(0);opacity:1}}
 }
 </style>
 </head>
@@ -271,7 +286,7 @@ th{color:var(--muted);font-weight:600}
       <span class="brand-tip"><b>Актион Ассист</b> — ИИ-помощник техподдержки: понимает проблему своими словами, даёт шаги из базы знаний, эскалирует специалисту с карточкой диагностики.</span>
     </b>
     <span class="tag">AI</span>
-    <nav>
+    <nav id="mainNav">
       <button onclick="openPanel('history')">История</button>
       <button onclick="openPanel('kb')">База знаний</button>
       <button onclick="openPanel('support')">Специалисту</button>
@@ -295,13 +310,23 @@ th{color:var(--muted);font-weight:600}
     <button type="submit" aria-label="Отправить">↑</button>
   </form>
 </main>
+
 <div class="panel" id="panel"><div class="box">
-  <div style="display:flex;justify-content:space-between;align-items:center">
-    <b id="panelTitle"></b>
-    <button onclick="closePanel()" style="font-size:20px">×</button>
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+    <b id="panelTitle" style="font-size:18px"></b>
+    <button onclick="closePanel()" style="font-size:24px;line-height:1;opacity:.6;transition:.2s" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='.6'">×</button>
   </div>
   <div id="panelBody"></div>
 </div></div>
+
+<div id="roleModal">
+  <div class="role-box">
+    <b style="font-size:20px;display:block;margin-bottom:4px">Кто вы?</b>
+    <p style="color:var(--muted);font-size:14px;margin:8px 0 20px">Выберите роль, чтобы продолжить работу</p>
+    <button onclick="loginAs('user')" style="display:block;width:100%;margin:8px 0;padding:14px;border-radius:14px;border:1.5px solid #e3e3e3;background:#fff;cursor:pointer;font-size:15px;font-weight:500;transition:.2s" onmouseover="this.style.borderColor='var(--red)'" onmouseout="this.style.borderColor='#e3e3e3'">Я пользователь — сотрудник</button>
+    <button onclick="loginAs('specialist')" style="display:block;width:100%;margin:8px 0;padding:14px;border-radius:14px;border:none;background:var(--red);color:#fff;cursor:pointer;font-size:15px;font-weight:600;transition:.2s" onmouseover="this.style.background='var(--red-d)'" onmouseout="this.style.background='var(--red)'">Я специалист поддержки</button>
+  </div>
+</div>
 
 <script>
 const API='/api';
@@ -309,6 +334,72 @@ let ticketId=null,pending=null;
 const chat=document.getElementById('chat');
 const esc=s=>String(s??'').replace(/[<>&]/g,c=>({'<':'&lt;','>':'&gt;','&':'&amp;'}[c]));
 
+/* ===== АВТОРИЗАЦИЯ И РОЛИ ===== */
+const AA={token:localStorage.getItem('aa_token'),role:localStorage.getItem('aa_role')};
+function aaSave(t,r){AA.token=t;AA.role=r;localStorage.setItem('aa_token',t);localStorage.setItem('aa_role',r);}
+function aaClear(){localStorage.removeItem('aa_token');localStorage.removeItem('aa_role');AA.token=null;AA.role=null;}
+function showRoleModal(){document.getElementById('roleModal').style.display='flex';}
+function hideRoleModal(){document.getElementById('roleModal').style.display='none';}
+function lockChat(v){document.getElementById('composer').style.display=v?'none':'flex';}
+
+function applyRole(){
+  const nav=document.getElementById('mainNav');
+  if(AA.role==='specialist'){
+    nav.style.display='none';
+    lockChat(true);
+    return;
+  }
+  nav.style.display='flex';
+  [...nav.querySelectorAll('button')].forEach(b=>{
+    if(b.textContent.includes('Специалисту')) b.style.display='none';
+  });
+  lockChat(false);
+}
+
+async function loginAs(role){
+  const body=role==='specialist' ? {role:'specialist',login:'support',password:'akti2026'} : {role:'user'};
+  try{
+    const r=await fetch(API+'/auth/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+    if(!r.ok){alert('Не удалось войти. Попробуйте ещё раз.');return;}
+    const d=await r.json();
+    aaSave(d.token,d.role);
+    hideRoleModal();
+    applyRole();
+    if(d.role==='specialist'){renderCabinet();}else{greet();}
+  }catch(e){alert('Сервер недоступен. Попробуйте ещё раз.');}
+}
+
+async function renderCabinet(){
+  chat.innerHTML='';
+  document.getElementById('hero').classList.add('hide');
+  addBot('<b>Кабинет специалиста</b>\nНиже — эскалации и вся очередь обращений.');
+  try{
+    const list=await api('/support/tickets');
+    const esc=list.filter(t=>t.status==='escalated');
+    addBot('<b>Эскалации: '+esc.length+'</b>');
+    if(esc.length){
+      esc.forEach(t=>addBot('Обращение #'+t.id+' · '+esc(t.category)+' · '+(t.title||'без темы')+' · уверенность '+(t.confidence!=null?Math.round(t.confidence*100)+'%':'—')));
+    }else{
+      addBot('Эскалаций пока нет.');
+    }
+    addBot('<b>Все обращения: '+list.length+'</b>'+(list.length?'\n'+table(list,['id','category','status','confidence']):''));
+  }catch(e){addBot('Не удалось загрузить очередь обращений.','slow');}
+}
+
+function greet(){
+  const c=addBot('Привет! Я Акти. Опишите проблему своими словами — я помогу разобраться.','idle');
+  buttons(c,['Не могу войти в Актион 360','Не приходит письмо','Не открывается страница','Нет звука на вебинаре'],o=>send(o));
+}
+
+async function api(path,opts={}){
+  const h={'Content-Type':'application/json'};
+  if(AA.token) h['Authorization']='Bearer '+AA.token;
+  const r=await fetch(API+path,{headers:h,...opts});
+  if(!r.ok) throw new Error('HTTP '+r.status);
+  return r.json();
+}
+
+/* ===== Акти и анимации ===== */
 const SPARK="M96 50 60.6 52.8 70.8 62 57.4 56.7 72.9 82.8 53.8 60.3 51.9 71.9 48.6 59.9 34.9 91.3 43.7 59 30.1 66.7 41.2 54.7 13.3 59.8 39 50 28.7 44.3 41.1 45.5 14.8 20.4 43.7 41 41.8 27.4 48.6 40.1 53.5 10.2 53.8 39.7 64.9 28.7 57.9 43.8Z";
 const STAR="M10 0 Q11.6 6.8 20 10 Q11.6 13.2 10 20 Q8.4 13.2 0 10 Q8.4 6.8 10 0Z";
 const TEAR="M0 0 c2.6 4.2 2.6 7.4 0 9.6 c-2.6 -2.2 -2.6 -5.4 0 -9.6Z";
@@ -406,8 +497,7 @@ function burstSalut(origin,count=18){
     p.className='salut-p';
     const angle=(Math.PI*2*i)/count+(Math.random()-.5)*.5;
     const dist=70+Math.random()*110;
-    p.style.left=cx+'px';
-    p.style.top=cy+'px';
+    p.style.left=cx+'px';p.style.top=cy+'px';
     p.style.setProperty('--dx',(Math.cos(angle)*dist)+'px');
     p.style.setProperty('--dy',(Math.sin(angle)*dist-20)+'px');
     p.style.setProperty('--rot',(Math.random()*720-360)+'deg');
@@ -422,7 +512,6 @@ function addUser(t){const m=document.createElement('div');m.className='msg user'
 function addBot(html,state){const m=document.createElement('div');m.className='msg bot';m.appendChild(akti(state));const c=document.createElement('div');c.className='abody';c.innerHTML=html;m.appendChild(c);chat.appendChild(m);chat.scrollTop=chat.scrollHeight;return c;}
 function buttons(container,list,cb,primary){const w=document.createElement('div');w.className='opts';list.forEach((o,i)=>{const b=document.createElement('button');if(i===primary)b.className='primary';b.textContent=o;b.onclick=()=>{w.remove();cb(o);};w.appendChild(b);});container.appendChild(w);}
 
-async function api(path,opts={}){const r=await fetch(API+path,{headers:{'Content-Type':'application/json'},...opts});if(!r.ok)throw new Error('HTTP '+r.status);return r.json();}
 const badge=r=>r.category?`<span class="badge">Категория: <b>${esc(r.category)}</b>${r.confidence!=null?` · уверенность ${Math.round(r.confidence*100)}%`:''}</span>`:'';
 const stateFor=r=>r.type==='solution'?'solution':(r.type==='escalation'?'escalation':((r.type==='question'||r.type==='clarification')?'question':'idle'));
 
@@ -485,7 +574,6 @@ async function resolve(){
   stars(c);
 }
 
-/* ===== ВАША stars() ===== */
 function stars(c){
   const w=document.createElement('div');w.className='stars';
   let done=false;
@@ -510,35 +598,100 @@ function stars(c){
 
 document.getElementById('composer').onsubmit=e=>{e.preventDefault();const v=inputEl.value.trim();if(!v)return;inputEl.value='';send(v);};
 
-/* ===== панели + фильтры БЗ ===== */
+/* ===== ПАНЕЛИ + ВЕТВИСТАЯ ФИЛЬТРАЦИЯ БЗ ===== */
 const panel=document.getElementById('panel');
 panel.addEventListener('click',e=>{if(e.target===panel)closePanel();});
 
-const KB_CHIPS=['Все','Доступы','Письма','Страницы','Вебинары','Ошибки'];
-const KB_SYN={'доступы':['доступ','вход','пароль','логин','аккаунт'],'письма':['письм','почт','уведом'],'страницы':['страниц','интерфейс','сайт','браузер','открыв'],'вебинары':['вебинар','звук','видео','эфир','трансл'],'ошибки':['ошибк','сбой','error','не работ']};
-let kbCache=null,kbCat='Все';
+const KB_TREE={
+  'Все': [],
+  'Актион 360': ['Вход и доступы', 'Интерфейс и ошибки', 'Настройки'],
+  'Бухгалтерия': ['Отчёты', 'Проводки', 'Обновления'],
+  'Кадры и ЗП': ['Расчётные листки', 'Кадры', 'Интеграции'],
+  'Обучение': ['Вебинары', 'Видеоуроки', 'Рассылки']
+};
+let kbCache=null, kbMainCat='Все', kbSubCat='Все';
+
 function kbMatch(item){
-  const cat=(item.category||'').toLowerCase(),title=(item.title||'').toLowerCase();
-  if(kbCat!=='Все'){const syn=KB_SYN[kbCat.toLowerCase()]||[kbCat.toLowerCase()];if(!syn.some(s=>cat.includes(s)||title.includes(s)))return false;}
+  const cat=(item.category||'').toLowerCase();
+  const title=(item.title||'').toLowerCase();
   const q=(document.getElementById('kbq')?.value||'').trim().toLowerCase();
-  if(q&&!title.includes(q)&&!cat.includes(q))return false;
+  
+  if(kbMainCat!=='Все'){
+    const mainOk=cat.includes(kbMainCat.toLowerCase());
+    if(kbSubCat!=='Все'){
+      const subOk=cat.includes(kbSubCat.toLowerCase()) || title.includes(kbSubCat.toLowerCase());
+      if(!mainOk || !subOk) return false;
+    }else{
+      if(!mainOk) return false;
+    }
+  }
+  if(q && !title.includes(q) && !cat.includes(q)) return false;
   return true;
 }
+
 function renderKbList(list){
   const box=document.getElementById('kbr');
   const filtered=list.filter(kbMatch);
-  box.innerHTML=filtered.length?filtered.map(it=>`<div class="kb-item"><b>${esc(it.title)}</b><span>${esc(it.category||'')}</span></div>`).join(''):'<p>Ничего не найдено — попробуйте другую тему или запрос.</p>';
+  box.innerHTML=filtered.length?filtered.map(it=>`<div class="kb-item"><b>${esc(it.title)}</b><span>${esc(it.category||'Без категории')}</span></div>`).join(''):'<p style="color:var(--muted);font-size:14px">Ничего не найдено — попробуйте другую тему или запрос.</p>';
 }
-async function refreshKb(){
-  const q=(document.getElementById('kbq')?.value||'').trim();
-  if(kbCache&&kbCache.length){renderKbList(kbCache);return;}
-  if(q.length>=3){
-    try{const res=await api('/knowledge/search?q='+encodeURIComponent(q));const list=Array.isArray(res)?res:(res.results||[]);renderKbList(list);}
-    catch(e){document.getElementById('kbr').innerHTML='<p>Поиск временно недоступен.</p>';}
+
+function renderKbChips(){
+  const mainBox=document.getElementById('kbchipsMain');
+  const subBox=document.getElementById('kbchipsSub');
+  mainBox.innerHTML='';
+  subBox.innerHTML='';
+  
+  Object.keys(KB_TREE).forEach(cat=>{
+    const b=document.createElement('button');
+    b.className='chip'+(kbMainCat===cat?' on':'');
+    b.textContent=cat;
+    b.onclick=()=>{
+      kbMainCat=cat;
+      kbSubCat='Все';
+      renderKbChips();
+      refreshKb();
+    };
+    mainBox.appendChild(b);
+  });
+  
+  if(kbMainCat!=='Все' && KB_TREE[kbMainCat].length>0){
+    const allBtn=document.createElement('button');
+    allBtn.className='chip'+(kbSubCat==='Все'?' on':'');
+    allBtn.textContent='Все подтемы';
+    allBtn.onclick=()=>{kbSubCat='Все';renderKbChips();refreshKb();};
+    subBox.appendChild(allBtn);
+    
+    KB_TREE[kbMainCat].forEach(sub=>{
+      const sb=document.createElement('button');
+      sb.className='chip'+(kbSubCat===sub?' on':'');
+      sb.textContent=sub;
+      sb.onclick=()=>{kbSubCat=sub;renderKbChips();refreshKb();};
+      subBox.appendChild(sb);
+    });
+    subBox.style.display='flex';
   }else{
-    document.getElementById('kbr').innerHTML='<p>Выберите тему или введите запрос (минимум 3 символа).</p>';
+    subBox.style.display='none';
   }
 }
+
+async function refreshKb(){
+  const q=(document.getElementById('kbq')?.value||'').trim();
+  if(kbCache && kbCache.length && !q){
+    renderKbList(kbCache);
+    return;
+  }
+  if(q.length>=3 || kbMainCat!=='Все'){
+    try{
+      const query=q?`?q=${encodeURIComponent(q)}`:'?q=';
+      const res=await api('/knowledge/search'+query);
+      const list=Array.isArray(res)?res:(res.results||[]);
+      renderKbList(list);
+    }catch(e){document.getElementById('kbr').innerHTML='<p style="color:var(--muted)">Поиск временно недоступен.</p>';}
+  }else{
+    document.getElementById('kbr').innerHTML='<p style="color:var(--muted);font-size:14px">Выберите тему или введите запрос (минимум 3 символа).</p>';
+  }
+}
+
 async function openPanel(kind){
   panel.classList.add('open');
   document.body.classList.add('panel-open');
@@ -547,35 +700,43 @@ async function openPanel(kind){
     if(kind==='history'){
       document.getElementById('panelTitle').textContent='История обращений';
       const list=await api('/tickets');
-      body.innerHTML=Array.isArray(list)&&list.length?table(list,['id','category','status']):'<p>Пока обращений нет.</p>';
+      body.innerHTML=Array.isArray(list)&&list.length?table(list,['id','category','status']):'<p style="color:var(--muted)">Пока обращений нет.</p>';
     }else if(kind==='support'){
-      document.getElementById('panelTitle').textContent='Кабинет специалиста';
-      const list=await api('/support/tickets');
-      body.innerHTML=Array.isArray(list)&&list.length?table(list,['id','category','status','confidence']):'<p>Очередь пуста.</p>';
+      if(AA.role!=='specialist'){body.innerHTML='<p style="color:var(--muted)">Доступ запрещён.</p>';return;}
+      closePanel();
+      renderCabinet();
+      return;
     }else{
       document.getElementById('panelTitle').textContent='База знаний';
-      body.innerHTML='<div class="chips" id="kbchips"></div><input id="kbq" placeholder="Например: не приходит письмо"><div id="kbr"></div>';
-      const cw=document.getElementById('kbchips');
-      KB_CHIPS.forEach((name,i)=>{
-        const b=document.createElement('button');
-        b.className='chip'+(i===0?' on':'');
-        b.textContent=name;
-        b.onclick=()=>{kbCat=name;cw.querySelectorAll('.chip').forEach(c=>c.classList.remove('on'));b.classList.add('on');refreshKb();};
-        cw.appendChild(b);
-      });
+      body.innerHTML='<div class="chips-main" id="kbchipsMain"></div><div class="chips-sub" id="kbchipsSub" style="display:none"></div><input id="kbq" placeholder="Например: не приходит письмо" style="margin-top:4px"><div id="kbr"></div>';
+      renderKbChips();
       document.getElementById('kbq').oninput=()=>refreshKb();
-      try{const all=await api('/knowledge/search?q=');if(Array.isArray(all)&&all.length)kbCache=all;else if(all&&Array.isArray(all.results)&&all.results.length)kbCache=all.results;}catch(e){kbCache=null;}
+      try{
+        const all=await api('/knowledge/search?q=');
+        if(Array.isArray(all)&&all.length) kbCache=all;
+        else if(all&&Array.isArray(all.results)&&all.results.length) kbCache=all.results;
+      }catch(e){kbCache=null;}
       refreshKb();
     }
-  }catch(e){body.innerHTML='Не удалось загрузить данные.';}
+  }catch(e){body.innerHTML='<p style="color:var(--muted)">Не удалось загрузить данные.</p>';}
 }
+
 function table(rows,cols){return '<table><tr>'+cols.map(c=>'<th>'+c+'</th>').join('')+'</tr>'+rows.map(r=>'<tr>'+cols.map(c=>'<td>'+esc(r[c])+'</td>').join('')+'</tr>').join('')+'</table>';}
 function closePanel(){panel.classList.remove('open');document.body.classList.remove('panel-open');}
 
-(async()=>{
-  const c=addBot('Опишите проблему своими словами — я помогу разобраться.','idle');
-  buttons(c,['Не могу войти в Актион 360','Не приходит письмо','Не открывается страница','Нет звука на вебинаре'],o=>send(o));
-})();
+/* ===== ИНИЦИАЛИЗАЦИЯ ===== */
+window.addEventListener('DOMContentLoaded',()=>{
+  if(!AA.token){
+    showRoleModal();
+  }else{
+    applyRole();
+    if(AA.role==='specialist'){
+      renderCabinet();
+    }else{
+      greet();
+    }
+  }
+});
 </script>
 </body>
 </html>
