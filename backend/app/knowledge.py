@@ -81,3 +81,20 @@ def fallback_classify(text):
     if best_cat and best_hits > 0:
         return best_cat, 0.55
     return None, 0.0
+
+def find_by_title(text):
+    t = (text or "").strip().lower()
+    for item in load_kb():
+        if item.get("title", "").strip().lower() == t:
+            return item
+    return None
+
+
+def category_examples(category, limit=4):
+    out = []
+    for item in load_kb():
+        if item.get("category") == category:
+            out.append(item.get("title"))
+        if len(out) >= limit:
+            break
+    return out or CATEGORIES

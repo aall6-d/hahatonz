@@ -56,7 +56,8 @@ def init_db():
         "ALTER TABLE tickets ADD COLUMN escalated_at TEXT",
         "ALTER TABLE tickets ADD COLUMN taken_by TEXT",
         "ALTER TABLE tickets ADD COLUMN rated_at TEXT",
-        "ALTER TABLE tickets ADD COLUMN parent_id INTEGER",
+        "ALTER TABLE tickets ADD COLUMN parent_id INTEGER"
+        "ALTER TABLE tickets ADD COLUMN client_id TEXT",
     ):
         try:
             conn.execute(ddl)
@@ -79,15 +80,15 @@ def now():
 ALLOWED = {"category", "title", "problem_text", "status", "state",
            "scenario_id", "question_index", "answers", "confidence",
            "alt_used", "retry_count", "pending_category",
-           "escalated_at", "taken_by", "rated_at", "parent_id"}
+           "escalated_at", "taken_by", "rated_at", "parent_id, client_id"}
 
 
-def create_ticket(problem_text, parent_id=None):
+def create_ticket(problem_text, parent_id=None, client_id=None):
     conn = get_db()
     cur = conn.execute(
-        "INSERT INTO tickets (problem_text, parent_id, created_at, updated_at) "
-        "VALUES (?,?,?,?)",
-        (problem_text, parent_id, now(), now()))
+        "INSERT INTO tickets (problem_text, parent_id, client_id, "
+        "created_at, updated_at) VALUES (?,?,?,?,?)",
+        (problem_text, parent_id, client_id, now(), now()))
     conn.commit()
     tid = cur.lastrowid
     conn.close()
@@ -126,14 +127,19 @@ def take_ticket_atomic(ticket_id, agent):
     return affected > 0
 
 
-def list_tickets():
+def list_tickets(client_id=None):
     conn = get_db()
-    rows = conn.execute(
-        "SELECT id, category, title, status, confidence, created_at "
-        "FROM tickets ORDER BY id DESC").fetchall()
+    if client_id:
+        rows = conn.execute(
+            "SELECT id, category, title, status, confidence, created_at "
+            "FROM tickets WHERE client_id=? ORDER BY id DESC",
+            (client_id,)).fetchall()
+    else:
+        rows = conn.execute(
+            "SELECT id, category, title, status, confidence, created_at "
+            "FROM tickets ORDER BY id DESC").fetchall()
     conn.close()
     return [dict(r) for r in rows]
-
 
 def queue_tickets():
     """Очередь специалиста: escalated + in_progress, FIFO по escalated_at."""
