@@ -1,14 +1,15 @@
 import json
 import re
 import difflib
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Header
 from fastapi.middleware.cors import CORSMiddleware
 
-from app import db, knowledge, classifier
+from app import db, knowledge, classifier, auth
 from app.schemas import ChatRequest, ChatResponse, FeedbackRequest
 
 app = FastAPI(title="Актион Ассист API")
 db.init_db()
+auth.init_auth()
 
 app.add_middleware(
     CORSMiddleware,
@@ -211,6 +212,23 @@ def escalate_ticket(ticket_id):
 @app.on_event("startup")
 def startup():
     db.init_db()
+    auth.init_auth()
+
+
+# ---------- авторизация ----------
+
+@app.post("/api/auth/login")
+def auth_login(payload: dict):
+    return auth.login(payload.get("role"), payload.get("login"),
+                      payload.get("password"))
+
+
+@app.get("/api/me")
+def me(authorization: str = Header(default=None)):
+    user = auth.get_user_by_token(auth.extract_token(authorization))
+    if not user:
+        raise HTTPException(status_code=401, detail="Токен недействителен")
+    return user
 
 
 # ---------- ручки ----------
@@ -221,12 +239,14 @@ def health():
 
 
 @app.post("/api/chat", response_model=ChatResponse)
-def chat(payload: ChatRequest):
+def chat(payload: ChatRequest, authorization: str = Header(default=None)):
+    user = auth.require_user(authorization)
     text = (payload.message or payload.answer or "").strip()
     if not text:
         raise HTTPException(status_code=400, detail="Пустое сообщение")
 
-    ticket_id = payload.ticket_id
+    owned = auth.ticket_ids_of(user["id"])
+    ticket_id = payload.ticket_id if payload.ticket_id in owned else None
     state = "new"
     if ticket_id:
         ticket = db.get_ticket(ticket_id)
@@ -234,10 +254,11 @@ def chat(payload: ChatRequest):
             raise HTTPException(status_code=404, detail="Обращение не найдено")
         state = ticket["state"]
         if state in ("resolved", "escalated"):
-            ticket_id = db.create_ticket(text)
+            ticket_id = None
             state = "new"
-    else:
+    if not ticket_id:
         ticket_id = db.create_ticket(text)
+        auth.bind_ticket(ticket_id, user["id"])
 
     db.add_message(ticket_id, "user", text)
 
@@ -461,8 +482,10 @@ def chat(payload: ChatRequest):
 
 
 @app.get("/api/tickets")
-def list_tickets():
-    return db.list_tickets()
+def list_tickets(authorization: str = Header(default=None)):
+    user = auth.require_user(authorization)
+    ids = auth.ticket_ids_of(user["id"])
+    return [t for t in db.list_tickets() if t["id"] in ids]
 
 
 @app.get("/api/tickets/{ticket_id}")
@@ -502,7 +525,9 @@ def support_queue():
 
 
 @app.post("/api/feedback")
-def feedback(payload: FeedbackRequest):
+def feedback(payload: FeedbackRequest,
+             authorization: str = Header(default=None)):
+    auth.require_user(authorization)
     if not 1 <= payload.rating <= 5:
         raise HTTPException(status_code=400,
                             detail="Оценка должна быть от 1 до 5")
@@ -542,6 +567,11 @@ FRONT_DIR = os.path.join(os.path.dirname(__file__), "..", "..", "frontend")
 
 @app.get("/", include_in_schema=False)
 def root_index():
+    return FileResponse(os.path.join(FRONT_DIR, "index.html"))
+
+
+@app.get("/support", include_in_schema=False)
+def support_page():
     return FileResponse(os.path.join(FRONT_DIR, "index.html"))
 
 
