@@ -18,7 +18,6 @@ def get_db():
 
 def init_db():
     conn = get_db()
-    # WAL для быстрой конкурентной записи
     try:
         conn.execute("PRAGMA journal_mode=WAL;")
     except Exception:
@@ -49,10 +48,7 @@ def init_db():
     );
     CREATE INDEX IF NOT EXISTS idx_messages_ticket_created
         ON messages(ticket_id, created_at);
-    CREATE INDEX IF NOT EXISTS idx_tickets_status_escalated
-        ON tickets(status, escalated_at);
     """)
-    # Миграция старых таблиц
     for ddl in (
         "ALTER TABLE tickets ADD COLUMN alt_used INTEGER DEFAULT 0",
         "ALTER TABLE tickets ADD COLUMN retry_count INTEGER DEFAULT 0",
@@ -66,6 +62,12 @@ def init_db():
             conn.execute(ddl)
         except Exception:
             pass
+    # Индекс по новым колонкам — ТОЛЬКО после миграций
+    try:
+        conn.execute("CREATE INDEX IF NOT EXISTS idx_tickets_status_escalated "
+                     "ON tickets(status, escalated_at)")
+    except Exception:
+        pass
     conn.commit()
     conn.close()
 
