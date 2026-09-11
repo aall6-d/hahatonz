@@ -40,10 +40,11 @@ main.shell{flex:1;display:flex;flex-direction:column;min-height:0;padding-top:14
 #chat{flex:1;overflow-y:auto;padding:22px 24px;display:flex;flex-direction:column;gap:14px;scrollbar-gutter:stable;scrollbar-width:thin;scrollbar-color:rgba(20,20,25,.18) transparent;max-width:100%}
 #chat::-webkit-scrollbar{width:10px}
 #chat::-webkit-scrollbar-thumb{background:rgba(20,20,25,.14);border-radius:8px;border:3px solid transparent;background-clip:content-box}
-.hero{text-align:center;padding:26px 0 4px;animation:pop .6s cubic-bezier(.2,.9,.3,1.15);transition:opacity .3s,transform .3s}
-.hero.compact{opacity:.7;padding:12px 0}
-.hero.compact h1{font-size:24px}
-.hero.compact p{font-size:14px}
+.hero{text-align:center;padding:26px 0 4px;animation:pop .6s cubic-bezier(.2,.9,.3,1.15);transition:opacity .3s,padding .3s}
+.hero.compact{opacity:.75;padding:10px 0 2px}
+.hero.compact .hero-akti-wrap{width:90px;height:90px}
+.hero.compact h1{font-size:24px;margin-top:6px}
+.hero.compact p{font-size:14px;margin-top:4px}
 .hero h1{font-size:clamp(30px,6vw,48px);letter-spacing:-.03em;font-weight:700;margin-top:12px}
 .hero h1 b{color:var(--red)}
 .hero p{color:var(--muted);font-size:16.5px;margin-top:8px}
@@ -67,7 +68,7 @@ main.shell{flex:1;display:flex;flex-direction:column;min-height:0;padding-top:14
 .steps li{counter-increment:s;padding:12px 14px;border:1px solid rgba(237,237,240,.9);border-radius:15px;margin-bottom:7px;font-size:15px;background:rgba(255,255,255,.85)}
 .steps li::before{content:counter(s);display:inline-block;width:23px;height:23px;border-radius:50%;background:var(--gray);color:var(--red);font-weight:700;text-align:center;line-height:23px;margin-right:9px;font-size:12.5px}
 .stars{font-size:29px;letter-spacing:6px;color:#d6d6da;margin-top:8px}
-.stars span{transition:.15s}
+.stars span{transition:.15s;cursor:pointer}
 .stars span.on{color:var(--red)}
 #composer{display:flex;gap:10px;margin-top:12px;padding:12px 14px;border-radius:20px}
 #composer input{flex:1;border:1px solid rgba(230,230,233,.7);border-radius:15px;padding:14px 17px;font-size:16px;outline:none;background:rgba(255,255,255,.78);caret-color:var(--red);min-width:0}
@@ -155,7 +156,7 @@ th{color:var(--muted);font-weight:600}
 .akti.logo{width:36px;height:36px}
 .akti.logo svg{animation:k-sway 7s ease-in-out infinite}
 .akti.logo .a-s,.akti.logo .a-mini,.akti.logo .a-halo,.akti.logo .a-face,.akti.logo .a-tear,.akti.logo .a-q{display:none}
-.hero-akti-wrap{perspective:600px;width:160px;height:160px;margin:0 auto;position:relative}
+.hero-akti-wrap{perspective:600px;width:160px;height:160px;margin:0 auto;position:relative;transition:width .3s,height .3s}
 .hero-akti{width:100%;height:100%;transition:transform .35s;transform-style:preserve-3d;will-change:transform}
 .msg .akti{width:46px;height:46px}
 .akti:hover .a-body{animation:k-squish 1.8s ease-in-out infinite}
@@ -352,6 +353,23 @@ document.querySelectorAll('.akti').forEach(el=>el.innerHTML=aktiSVG());
 let heroAkti=document.getElementById('heroAkti');
 const setHeader=s=>{document.getElementById('logo').dataset.state=s;};
 
+// ===== FIX: единая точка создания/нормализации hero-блока с маскотом =====
+const HERO_HTML=`<div class="hero" id="hero"><div class="hero-akti-wrap"><div class="akti hero-akti" id="heroAkti" data-state="idle"></div></div><h1>Привет! Я <b>Акти</b></h1><p>Решаю технические проблемы с продуктами Актиона — быстро и по-человечески.</p></div>`;
+function ensureHero(compact){
+  let hero=document.getElementById('hero');
+  if(!hero){
+    chat.insertAdjacentHTML('afterbegin',HERO_HTML);
+    hero=document.getElementById('hero');
+  }
+  hero.classList.remove('hide');
+  hero.classList.toggle('compact',!!compact);
+  hero.style.opacity='';
+  hero.style.transform='';
+  heroAkti=document.getElementById('heroAkti');
+  if(heroAkti&&!heroAkti.querySelector('svg'))heroAkti.innerHTML=aktiSVG();
+  return hero;
+}
+
 // ===== СЕТЬ С ПОВТОРНЫМИ ПОПЫТКАМИ =====
 async function api(path,opts={},retries=3){
   for(let i=0;i<retries;i++){
@@ -411,6 +429,7 @@ function addBot(html,state,spec){
   m.appendChild(c);
   chat.appendChild(m);
   chat.scrollTop=chat.scrollHeight;
+  saveChatState();
   return c;
 }
 
@@ -420,6 +439,7 @@ function addSys(t){
   m.textContent=t;
   chat.appendChild(m);
   chat.scrollTop=chat.scrollHeight;
+  saveChatState();
 }
 
 function addError(t){
@@ -428,8 +448,10 @@ function addError(t){
   m.innerHTML='<span style="font-size:18px;margin-right:8px">⚠️</span>'+t;
   chat.appendChild(m);
   chat.scrollTop=chat.scrollHeight;
+  saveChatState();
 }
 
+// FIX: кнопки сохраняются в состоянии и оживают после восстановления
 function buttons(container,list,cb,primary){
   const w=document.createElement('div');
   w.className='opts';
@@ -437,10 +459,11 @@ function buttons(container,list,cb,primary){
     const b=document.createElement('button');
     if(i===primary)b.className='primary';
     b.textContent=o;
-    b.onclick=()=>{w.remove();cb(o);};
+    b.onclick=()=>{w.remove();saveChatState();cb(o);};
     w.appendChild(b);
   });
   container.appendChild(w);
+  saveChatState();
 }
 
 const badge=r=>r.category?`<span class="badge">Категория: <b>${esc(r.category)}</b>${r.confidence!=null?` · уверенность ${Math.round(r.confidence*100)}%`:''}</span>`:'';
@@ -449,14 +472,10 @@ const stateFor=r=>r.type==='solution'?'solution':(r.type==='escalation'?'escalat
 async function send(text){
   if(!text.trim())return;
   addUser(text);
-  
-  const heroEl = document.getElementById('hero');
-  if(heroEl && !heroEl.classList.contains('compact')){
-    heroEl.classList.add('compact');
-  }
-  
-  if(heroAkti) heroAkti.dataset.typing='false';
-  
+  // FIX: hero не удаляется, а становится компактным; доступы безопасные
+  const heroEl=document.getElementById('hero');
+  if(heroEl)heroEl.classList.add('compact');
+  if(heroAkti)heroAkti.dataset.typing='false';
   pending=addBot('Разбираюсь в проблеме…','thinking');
   setHeader('thinking');
   let r;
@@ -503,6 +522,7 @@ function render(r){
     return;
   }
   if(r.type==='escalation')escalateButtons(c);
+  saveChatState();
 }
 
 function escalateButtons(c){
@@ -568,12 +588,12 @@ function stars(c){
   c.appendChild(w);
 }
 
+// ===== ПОЛЛИНГ СООБЩЕНИЙ =====
 async function startUserPolling(tid){
   stopUserPolling();
   console.log('[POLL] Starting polling for ticket',tid);
   try{
     const msgs=await api(`/tickets/${tid}/messages`);
-    console.log('[POLL] Got messages:',msgs);
     msgs.forEach(m=>{
       if(m.role==='specialist'){
         addBot(`<span class="badge"><b class="spec">Специалист</b> · ${fmtTime(m.created_at)}</span>`+esc(m.text),'solution',true);
@@ -593,7 +613,6 @@ async function startUserPolling(tid){
       msgs.forEach(m=>{
         if(m.id>lastMsgId){
           lastMsgId=m.id;
-          console.log('[POLL] New message:',m);
           if(m.role==='specialist'){
             addBot(`<span class="badge"><b class="spec">Специалист</b> · ${fmtTime(m.created_at)}</span>`+esc(m.text),'solution',true);
           }else if(m.role==='system'){
@@ -615,13 +634,19 @@ function stopUserPolling(){
   }
 }
 
+// ===== FIX: СОХРАНЕНИЕ СОСТОЯНИЯ (кнопки сохраняются списком, "thinking" не сохраняется) =====
 function saveChatState(){
   const messages=[];
   chat.querySelectorAll('.msg').forEach(m=>{
+    const a=m.querySelector('.akti');
+    if(a&&a.dataset.state==='thinking')return;
+    const abody=m.querySelector('.abody');
+    const opts=abody?[...abody.querySelectorAll('.opts button')].map(b=>b.textContent):null;
     messages.push({
       className:m.className,
       text:m.textContent,
-      html:m.querySelector('.abody')?.innerHTML||null
+      html:abody?abody.innerHTML:null,
+      opts:(opts&&opts.length)?opts:null
     });
   });
   localStorage.setItem('chat_'+CLIENT,JSON.stringify({
@@ -629,9 +654,9 @@ function saveChatState(){
     messages:messages,
     timestamp:Date.now()
   }));
-  console.log('[STATE] Saved chat state, messages:',messages.length);
 }
 
+// ===== FIX: ВОССТАНОВЛЕНИЕ (мёртвые .opts/.stars удаляются, кнопки оживают) =====
 function loadChatState(){
   const saved=localStorage.getItem('chat_'+CLIENT);
   if(!saved){
@@ -640,36 +665,24 @@ function loadChatState(){
   }
   try{
     const data=JSON.parse(saved);
-    console.log('[STATE] Loaded chat state:',data);
     if(data.ticketId){
       ticketId=data.ticketId;
-      sessionStorage.setItem('ticket_id',ticketId);
+      sessionStorage.setItem('ticket_id',String(ticketId));
     }
     if(data.messages&&data.messages.length>0){
-      chat.innerHTML = `
-        <div class="hero compact" id="hero">
-          <div class="hero-akti-wrap"><div class="akti hero-akti" id="heroAkti" data-state="idle"></div></div>
-          <h1>Привет! Я <b>Акти</b></h1>
-          <p>Решаю технические проблемы с продуктами Актиона — быстро и по-человечески.</p>
-        </div>
-      `;
-      heroAkti = document.getElementById('heroAkti');
-      document.querySelectorAll('.akti').forEach(el=>el.innerHTML=aktiSVG());
-      
+      chat.innerHTML='';
+      ensureHero(true);
       data.messages.forEach(m=>{
         const div=document.createElement('div');
         div.className=m.className;
         if(m.className.includes('bot')&&m.html){
-          div.innerHTML=m.html;
-          const abody=div.querySelector('.abody');
-          if(!abody){
-            const newAbody=document.createElement('div');
-            newAbody.className='abody';
-            newAbody.innerHTML=m.html;
-            div.innerHTML='';
-            div.appendChild(akti('idle'));
-            div.appendChild(newAbody);
-          }
+          div.appendChild(akti('idle'));
+          const abody=document.createElement('div');
+          abody.className='abody';
+          abody.innerHTML=m.html;
+          abody.querySelectorAll('.opts,.stars').forEach(x=>x.remove());
+          div.appendChild(abody);
+          if(m.opts&&m.opts.length)buttons(abody,m.opts,o=>send(o));
         }else{
           div.textContent=m.text;
         }
@@ -684,6 +697,7 @@ function loadChatState(){
   return false;
 }
 
+// ===== ГЕЙТ РОЛЕЙ =====
 const gate=document.getElementById('gate');
 document.getElementById('gateUser').onclick=()=>{
   gate.style.display='none';
@@ -716,40 +730,19 @@ document.getElementById('gateCode').addEventListener('keydown',async e=>{
   }
 });
 
-// ===== ИСПРАВЛЕННАЯ ФУНКЦИЯ BOOTUSER =====
+// ===== FIX: BOOTUSER — маскот и кнопки гарантированно на месте =====
 async function bootUser(){
   console.log('[BOOT] Starting user mode');
   document.body.classList.remove('mode-spec');
   document.getElementById('navUser').style.display='flex';
   document.getElementById('navSpec').style.display='none';
-  
-  // ИСПРАВЛЕНИЕ: Гарантированно показываем hero с маскотом
-  const existingHero = document.getElementById('hero');
-  if(!existingHero || existingHero.classList.contains('hide')){
-    chat.innerHTML = `
-      <div class="hero" id="hero">
-        <div class="hero-akti-wrap"><div class="akti hero-akti" id="heroAkti" data-state="idle"></div></div>
-        <h1>Привет! Я <b>Акти</b></h1>
-        <p>Решаю технические проблемы с продуктами Актиона — быстро и по-человечески.</p>
-      </div>
-    `;
-    heroAkti = document.getElementById('heroAkti');
-    document.querySelectorAll('.akti').forEach(el=>el.innerHTML=aktiSVG());
-  } else {
-    // Если hero существует, убеждаемся что он видимый
-    existingHero.classList.remove('hide');
-    existingHero.style.opacity = '1';
-    existingHero.style.transform = 'none';
-  }
-  
-  // Пробуем загрузить сохранённый чат
+
   const loaded=loadChatState();
   if(loaded){
     console.log('[BOOT] Loaded saved chat');
     if(ticketId){
       try{
         const t=await api('/tickets/'+ticketId);
-        console.log('[BOOT] Ticket status:',t);
         if(t&&(t.status==='escalated'||t.status==='in_progress')){
           addSys('Обращение #'+ticketId+' у специалиста — ответ придёт в этот чат.');
           offerNewTicket();
@@ -762,12 +755,13 @@ async function bootUser(){
     }
     return;
   }
-  
-  // Если чата нет, начинаем новый
+
+  // Сохранённого чата нет — полный hero с маскотом
+  ensureHero(false);
+
   if(ticketId){
     try{
       const t=await api('/tickets/'+ticketId);
-      console.log('[BOOT] Existing ticket:',t);
       if(t&&(t.status==='escalated'||t.status==='in_progress')){
         addSys('Обращение #'+ticketId+' у специалиста — ответ придёт в этот чат.');
         offerNewTicket();
@@ -780,13 +774,13 @@ async function bootUser(){
       sessionStorage.removeItem('ticket_id');
     }
   }
-  
-  // Новый чат
+
   console.log('[BOOT] Starting fresh chat');
   const c=addBot('Опишите проблему своими словами — я помогу разобраться.','idle');
   buttons(c,['Не могу войти в Актион 360','Не приходит письмо','Не открывается страница','Нет звука на вебинаре'],o=>send(o));
 }
 
+// ===== КАБИНЕТ СПЕЦИАЛИСТА =====
 let activeTicket=null, queueTimer=null, threadTimer=null, lastThreadId=0, statPeriod='day';
 
 function enterSpec(){
@@ -814,7 +808,6 @@ function exitSpec(){
 async function loadQueue(){
   try{
     const q=await specFetch('/support/queue');
-    console.log('[QUEUE] Loaded:',q);
     document.getElementById('queue').innerHTML=q.length?q.map(t=>`
       <div class="q-card"><b>#${t.id} · ${esc(t.category||'—')}</b>
       <div class="meta">ожидание ${t.waited_minutes} мин · уверенность ${t.confidence!=null?Math.round(t.confidence*100)+'%':'—'} · ${t.status}</div>
@@ -900,7 +893,6 @@ async function resolveSpecialist(){
 async function loadStats(){
   try{
     const s=await specFetch('/support/stats?period='+statPeriod);
-    console.log('[STATS] Loaded:',s);
     document.getElementById('statCards').innerHTML=`
       <div><b>${s.total}</b><span>всего обращений</span></div>
       <div><b>${s.ai_resolved}</b><span>решено ИИ</span></div>
@@ -923,6 +915,7 @@ document.querySelectorAll('.period button').forEach(b=>b.onclick=()=>{
   loadStats();
 });
 
+// ===== АРХИВ =====
 async function openArchive(){
   panel.classList.add('open');
   document.body.classList.add('panel-open');
@@ -931,15 +924,14 @@ async function openArchive(){
   body.innerHTML='Загрузка…';
   try{
     const list=await specFetch('/support/archive');
-    console.log('[ARCHIVE] Loaded:',list);
     body.innerHTML=(list.length?list.map(t=>`
       <div class="q-card" style="margin-bottom:8px">
         <b>#${t.id} · ${esc(t.category||'—')} · ${esc(t.status)}</b>
         <div class="meta">обновлено ${esc(t.updated_at||'')}</div>
         <div class="txt">${esc((t.title||t.problem_text||'').slice(0,120))}</div>
         <button onclick="deleteTicket(${t.id})">Удалить</button>
-      </div>`).join(''):'<p style="color:var(--muted);font-size:13px">Архив пуст </p>')
-      +`<button style="margin-top:12px;padding:10px 14px;border-radius:12px;border:1px solid #e3e3e6;background:#fff;font-size:13px" onclick="cleanupOld()"> Очистить решённые старше 7 дней</button>`;
+      </div>`).join(''):'<p style="color:var(--muted);font-size:13px">Архив пуст 🎉</p>')
+      +`<button style="margin-top:12px;padding:10px 14px;border-radius:12px;border:1px solid #e3e3e6;background:#fff;font-size:13px" onclick="cleanupOld()">Очистить решённые старше 7 дней</button>`;
   }catch(e){
     console.error('[ARCHIVE] Error:',e);
     body.innerHTML='<p style="color:var(--muted)">Не удалось загрузить архив.</p>';
@@ -969,6 +961,7 @@ async function cleanupOld(){
   }
 }
 
+// ===== FIX: НОВЫЙ ЧАТ — hero и маскот пересоздаются корректно =====
 function newConversation(){
   console.log('[NEW] Starting new conversation');
   ticketId=null;
@@ -976,19 +969,9 @@ function newConversation(){
   stopUserPolling();
   lastMsgId=0;
   localStorage.removeItem('chat_'+CLIENT);
-  
-  chat.innerHTML = `
-    <div class="hero" id="hero">
-      <div class="hero-akti-wrap"><div class="akti hero-akti" id="heroAkti" data-state="idle"></div></div>
-      <h1>Привет! Я <b>Акти</b></h1>
-      <p>Решаю технические проблемы с продуктами Актиона — быстро и по-человечески.</p>
-    </div>
-  `;
-  
-  heroAkti = document.getElementById('heroAkti');
-  document.querySelectorAll('.akti').forEach(el=>el.innerHTML=aktiSVG());
-  
-  addSys('── Новый чат: опишите следующую проблему ─');
+  chat.innerHTML='';
+  ensureHero(false);
+  addSys('── Новый чат: опишите следующую проблему ──');
   const c=addBot('Я здесь! Расскажите, что случилось на этот раз.','idle');
   buttons(c,['Не могу войти в Актион 360','Не приходит письмо','Не открывается страница','Нет звука на вебинаре'],o=>send(o));
 }
@@ -998,6 +981,7 @@ function offerNewTicket(){
   buttons(c,['Начать новое обращение'],()=>newConversation());
 }
 
+// ===== ПАНЕЛИ =====
 const panel=document.getElementById('panel');
 panel.addEventListener('click',e=>{
   if(e.target===panel)closePanel();
@@ -1056,9 +1040,7 @@ async function openPanel(kind){
   try{
     if(kind==='history'){
       document.getElementById('panelTitle').textContent='Мои обращения';
-      console.log('[HISTORY] Fetching for client:',CLIENT);
       const list=await api('/tickets?client_id='+CLIENT);
-      console.log('[HISTORY] Loaded:',list);
       body.innerHTML=list.length?table(list,['id','category','status','created_at']):'<p>Пока обращений нет.</p>';
     }else{
       document.getElementById('panelTitle').textContent='База знаний';
@@ -1101,9 +1083,10 @@ function closePanel(){
   document.body.classList.remove('panel-open');
 }
 
+// ===== ПЛЕЙСХОЛДЕР И НАСТРОЕНИЯ =====
 const inputEl=document.getElementById('input');
 inputEl.addEventListener('input',()=>{
-  if(heroAkti) heroAkti.dataset.typing=inputEl.value.trim()?'true':'false';
+  if(heroAkti)heroAkti.dataset.typing=inputEl.value.trim()?'true':'false';
 });
 
 const PHRASES=['Опишите вашу проблему…','Чем я могу помочь?','Что случилось?','Не можете войти в Актион 360?','Какая ошибка на экране?'];
@@ -1146,7 +1129,7 @@ let phI=0;
 })();
 
 setInterval(()=>{
-  if(!heroAkti) return;
+  if(!heroAkti)return;
   if(heroAkti.dataset.state!=='idle'||heroAkti.dataset.typing==='true')return;
   const r=Math.random();
   if(r<.25){
@@ -1166,11 +1149,12 @@ document.getElementById('composer').onsubmit=e=>{
   send(v);
 };
 
+// ===== ИНИЦИАЛИЗАЦИЯ =====
 (async()=>{
   console.log('[INIT] Starting application...');
   console.log('[INIT] API endpoint:',API);
   console.log('[INIT] Client ID:',CLIENT);
-  
+
   const code=sessionStorage.getItem('support_code');
   if(code){
     try{
@@ -1183,7 +1167,7 @@ document.getElementById('composer').onsubmit=e=>{
       sessionStorage.removeItem('support_code');
     }
   }
-  
+
   gate.style.display='flex';
   console.log('[INIT] Showing gate');
 })();
