@@ -131,15 +131,29 @@ def list_tickets(client_id=None):
     conn = get_db()
     if client_id:
         rows = conn.execute(
-            "SELECT id, category, title, status, confidence, created_at "
-            "FROM tickets WHERE client_id=? ORDER BY id DESC",
-            (client_id,)).fetchall()
+            "SELECT id, category, title, problem_text, status, confidence, "
+            "created_at, updated_at FROM tickets WHERE client_id=? "
+            "ORDER BY id DESC", (client_id,)).fetchall()
     else:
         rows = conn.execute(
-            "SELECT id, category, title, status, confidence, created_at "
-            "FROM tickets ORDER BY id DESC").fetchall()
+            "SELECT id, category, title, problem_text, status, confidence, "
+            "created_at, updated_at FROM tickets ORDER BY id DESC"
+        ).fetchall()
+    out = []
+    for r in rows:
+        d = dict(r)
+        cnt = conn.execute(
+            "SELECT COUNT(*) c FROM messages WHERE ticket_id=?",
+            (d["id"],)).fetchone()
+        last = conn.execute(
+            "SELECT role, content FROM messages WHERE ticket_id=? "
+            "ORDER BY id DESC LIMIT 1", (d["id"],)).fetchone()
+        d["messages_count"] = cnt["c"] if cnt else 0
+        d["last_role"] = last["role"] if last else None
+        d["last_text"] = (last["content"] or "")[:80] if last else ""
+        out.append(d)
     conn.close()
-    return [dict(r) for r in rows]
+    return out
 
 def queue_tickets():
     """Очередь специалиста: escalated + in_progress, FIFO по escalated_at."""
