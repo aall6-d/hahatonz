@@ -283,6 +283,7 @@ Swagger UI (API-документация): http://127.0.0.1:8000/docs
 .
 ├── backend/
 │   ├── app/
+|   |   ├── auth.py            # Токен-аутентификация: роли пользователь/специалист, сессии, привязка тикетов
 │   │   ├── main.py            # Точка входа FastAPI, вся логика чата и роутинг
 │   │   ├── db.py              # Инициализация SQLite, CRUD-операции
 │   │   ├── classifier.py      # Словарная классификация (7 категорий, ~60 ключевых слов)
@@ -290,12 +291,13 @@ Swagger UI (API-документация): http://127.0.0.1:8000/docs
 │   │   ├── llm.py             # Обёртка для YandexGPT API (опционально)
 │   │   └── schemas.py         # Pydantic-модели: ChatRequest, ChatResponse, FeedbackRequest
 │   ├── data/
-│   │   ├── assist.db          # База данных (создаётся автоматически)
 │   │   └── knowledge_items.json  # 13 диагностических сценариев с ветвлениями
 │   └── requirements.txt       # Зависимости: fastapi, uvicorn, pydantic
 ├── frontend/
 │   └── index.html             # Единый SPA-файл: HTML + CSS + JavaScript
+|   
 └── README.md
+└── .gitignore
 ```
 ### API-эндпоинты
 
