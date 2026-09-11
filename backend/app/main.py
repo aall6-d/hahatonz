@@ -594,7 +594,36 @@ def support_stats(period: str = "day",
     days = 7 if period == "week" else 1
     return db.support_stats(days)
 
+@app.get("/api/support/archive")
+def support_archive(x_support_code: str = Header(default=None)):
+    require_support_code(x_support_code)
+    return db.archive_tickets()
 
+
+@app.delete("/api/support/tickets/{ticket_id}")
+def support_delete(ticket_id: int,
+                   x_support_code: str = Header(default=None)):
+    require_support_code(x_support_code)
+    ticket = db.get_ticket(ticket_id)
+    if not ticket:
+        raise HTTPException(status_code=404, detail="Обращение не найдено")
+    if ticket["status"] not in ("resolved", "resolved_by_specialist",
+                                "abandoned"):
+        raise HTTPException(status_code=409,
+                            detail="Можно удалять только закрытые обращения")
+    db.delete_ticket(ticket_id)
+    return {"status": "deleted", "ticket_id": ticket_id}
+
+
+@app.post("/api/support/cleanup")
+def support_cleanup(payload: dict,
+                    x_support_code: str = Header(default=None)):
+    require_support_code(x_support_code)
+    days = int(payload.get("days", 7))
+    if days < 1:
+        days = 1
+    removed = db.cleanup_resolved(days)
+    return {"status": "ok", "removed": removed}
 # ---------- обратная связь ----------
 
 @app.post("/api/feedback")

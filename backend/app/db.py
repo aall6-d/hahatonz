@@ -277,3 +277,45 @@ def support_stats(period_days):
         "avg_rating": avg_rating,
         "top": top,
     }
+
+def archive_tickets():
+    conn = get_db()
+    rows = conn.execute(
+        "SELECT id, category, title, problem_text, status, confidence, "
+        "created_at, updated_at FROM tickets "
+        "WHERE status IN ('resolved','resolved_by_specialist','abandoned') "
+        "ORDER BY id DESC").fetchall()
+    conn.close()
+    return [dict(r) for r in rows]
+
+
+def delete_ticket(ticket_id):
+    conn = get_db()
+    conn.execute("DELETE FROM messages WHERE ticket_id=?", (ticket_id,))
+    conn.execute("DELETE FROM feedback WHERE ticket_id=?", (ticket_id,))
+    cur = conn.execute("DELETE FROM tickets WHERE id=?", (ticket_id,))
+    conn.commit()
+    affected = cur.rowcount
+    conn.close()
+    return affected > 0
+
+
+def cleanup_resolved(days):
+    from datetime import timedelta
+    cutoff = (datetime.now() - timedelta(days=days)
+              ).strftime("%Y-%m-%d %H:%M:%S")
+    conn = get_db()
+    rows = conn.execute(
+        "SELECT id FROM tickets "
+        "WHERE status IN ('resolved','resolved_by_specialist','abandoned') "
+        "AND updated_at <= ?", (cutoff,)).fetchall()
+    ids = [r["id"] for r in rows]
+    for tid in ids:
+        conn.execute("DELETE FROM messages WHERE ticket_id=?", (tid,))
+        conn.execute("DELETE FROM feedback WHERE ticket_id=?", (tid,))
+    if ids:
+        qm = ",".join("?" * len(ids))
+        conn.execute(f"DELETE FROM tickets WHERE id IN ({qm})", ids)
+    conn.commit()
+    conn.close()
+    return len(ids)
