@@ -253,7 +253,7 @@ th{color:var(--muted);font-weight:600}
     <span class="tag">AI</span>
     <nav id="navUser">
       <button onclick="newConversation()">Новый чат</button>
-      <button onclick="openPanel('history')">История</button>
+      <button onclick="openHistoryPanel()">История</button>
       <button onclick="openPanel('kb')">База знаний</button>
     </nav>
     <nav id="navSpec" style="display:none">
@@ -353,7 +353,7 @@ document.querySelectorAll('.akti').forEach(el=>el.innerHTML=aktiSVG());
 let heroAkti=document.getElementById('heroAkti');
 const setHeader=s=>{document.getElementById('logo').dataset.state=s;};
 
-// ===== FIX: единая точка создания/нормализации hero-блока с маскотом =====
+// ===== единая точка создания/нормализации hero-блока с маскотом =====
 const HERO_HTML=`<div class="hero" id="hero"><div class="hero-akti-wrap"><div class="akti hero-akti" id="heroAkti" data-state="idle"></div></div><h1>Привет! Я <b>Акти</b></h1><p>Решаю технические проблемы с продуктами Актиона — быстро и по-человечески.</p></div>`;
 function ensureHero(compact){
   let hero=document.getElementById('hero');
@@ -451,7 +451,6 @@ function addError(t){
   saveChatState();
 }
 
-// FIX: кнопки сохраняются в состоянии и оживают после восстановления
 function buttons(container,list,cb,primary){
   const w=document.createElement('div');
   w.className='opts';
@@ -472,7 +471,6 @@ const stateFor=r=>r.type==='solution'?'solution':(r.type==='escalation'?'escalat
 async function send(text){
   if(!text.trim())return;
   addUser(text);
-  // FIX: hero не удаляется, а становится компактным; доступы безопасные
   const heroEl=document.getElementById('hero');
   if(heroEl)heroEl.classList.add('compact');
   if(heroAkti)heroAkti.dataset.typing='false';
@@ -595,13 +593,15 @@ async function startUserPolling(tid){
   try{
     const msgs=await api(`/tickets/${tid}/messages`);
     msgs.forEach(m=>{
-      if(m.role==='specialist'){
-        addBot(`<span class="badge"><b class="spec">Специалист</b> · ${fmtTime(m.created_at)}</span>`+esc(m.text),'solution',true);
-      }else if(m.role==='system'){
-        addSys(m.text);
+      if(m.id>lastMsgId){
+        lastMsgId=m.id;
+        if(m.role==='specialist'){
+          addBot(`<span class="badge"><b class="spec">Специалист</b> · ${fmtTime(m.created_at)}</span>`+esc(m.text),'solution',true);
+        }else if(m.role==='system'){
+          addSys(m.text);
+        }
       }
     });
-    lastMsgId=msgs.length?Math.max(...msgs.map(m=>m.id)):0;
   }catch(e){
     console.error('[POLL] Initial fetch error:',e);
     lastMsgId=0;
@@ -634,7 +634,7 @@ function stopUserPolling(){
   }
 }
 
-// ===== FIX: СОХРАНЕНИЕ СОСТОЯНИЯ (кнопки сохраняются списком, "thinking" не сохраняется) =====
+// ===== СОХРАНЕНИЕ / ВОССТАНОВЛЕНИЕ СОСТОЯНИЯ =====
 function saveChatState(){
   const messages=[];
   chat.querySelectorAll('.msg').forEach(m=>{
@@ -656,7 +656,6 @@ function saveChatState(){
   }));
 }
 
-// ===== FIX: ВОССТАНОВЛЕНИЕ (мёртвые .opts/.stars удаляются, кнопки оживают) =====
 function loadChatState(){
   const saved=localStorage.getItem('chat_'+CLIENT);
   if(!saved){
@@ -730,7 +729,6 @@ document.getElementById('gateCode').addEventListener('keydown',async e=>{
   }
 });
 
-// ===== FIX: BOOTUSER — маскот и кнопки гарантированно на месте =====
 async function bootUser(){
   console.log('[BOOT] Starting user mode');
   document.body.classList.remove('mode-spec');
@@ -756,7 +754,6 @@ async function bootUser(){
     return;
   }
 
-  // Сохранённого чата нет — полный hero с маскотом
   ensureHero(false);
 
   if(ticketId){
@@ -961,21 +958,6 @@ async function cleanupOld(){
   }
 }
 
-// ===== FIX: НОВЫЙ ЧАТ — hero и маскот пересоздаются корректно =====
-function newConversation(){
-  console.log('[NEW] Starting new conversation');
-  ticketId=null;
-  sessionStorage.removeItem('ticket_id');
-  stopUserPolling();
-  lastMsgId=0;
-  localStorage.removeItem('chat_'+CLIENT);
-  chat.innerHTML='';
-  ensureHero(false);
-  addSys('── Новый чат: опишите следующую проблему ──');
-  const c=addBot('Я здесь! Расскажите, что случилось на этот раз.','idle');
-  buttons(c,['Не могу войти в Актион 360','Не приходит письмо','Не открывается страница','Нет звука на вебинаре'],o=>send(o));
-}
-
 function offerNewTicket(){
   const c=addBot('Пока специалист работает с этим обращением, вы можете начать новый чат по другой проблеме.','idle');
   buttons(c,['Начать новое обращение'],()=>newConversation());
@@ -1033,54 +1015,119 @@ async function refreshKb(){
 }
 
 async function openPanel(kind){
+  if(kind==='history'){openHistoryPanel();return;}
   panel.classList.add('open');
   document.body.classList.add('panel-open');
   const body=document.getElementById('panelBody');
   body.innerHTML='Загрузка…';
   try{
-    if(kind==='history'){
-      document.getElementById('panelTitle').textContent='Мои обращения';
-      const list=await api('/tickets?client_id='+CLIENT);
-      body.innerHTML=list.length?table(list,['id','category','status','created_at']):'<p>Пока обращений нет.</p>';
-    }else{
-      document.getElementById('panelTitle').textContent='База знаний';
-      body.innerHTML='<div class="chips" id="kbchips"></div><input id="kbq" placeholder="Например: не приходит письмо"><div id="kbr"></div>';
-      const cw=document.getElementById('kbchips');
-      KB_CHIPS.forEach((n,i)=>{
-        const b=document.createElement('button');
-        b.className='chip'+(i===0?' on':'');
-        b.textContent=n;
-        b.onclick=()=>{
-          kbCat=n;
-          cw.querySelectorAll('.chip').forEach(c=>c.classList.remove('on'));
-          b.classList.add('on');
-          refreshKb();
-        };
-        cw.appendChild(b);
-      });
-      document.getElementById('kbq').oninput=()=>refreshKb();
-      try{
-        const all=await api('/knowledge/search?q=');
-        kbCache=Array.isArray(all)?all:(all.results||[]);
-      }catch(e){
-        console.error('[KB] Cache error:',e);
-        kbCache=null;
-      }
-      refreshKb();
+    document.getElementById('panelTitle').textContent='База знаний';
+    body.innerHTML='<div class="chips" id="kbchips"></div><input id="kbq" placeholder="Например: не приходит письмо"><div id="kbr"></div>';
+    const cw=document.getElementById('kbchips');
+    KB_CHIPS.forEach((n,i)=>{
+      const b=document.createElement('button');
+      b.className='chip'+(i===0?' on':'');
+      b.textContent=n;
+      b.onclick=()=>{
+        kbCat=n;
+        cw.querySelectorAll('.chip').forEach(c=>c.classList.remove('on'));
+        b.classList.add('on');
+        refreshKb();
+      };
+      cw.appendChild(b);
+    });
+    document.getElementById('kbq').oninput=()=>refreshKb();
+    try{
+      const all=await api('/knowledge/search?q=');
+      kbCache=Array.isArray(all)?all:(all.results||[]);
+    }catch(e){
+      console.error('[KB] Cache error:',e);
+      kbCache=null;
     }
+    refreshKb();
   }catch(e){
     console.error('[PANEL] Error:',e);
     body.innerHTML='<p style="color:var(--red)">Не удалось загрузить. Проверьте подключение к интернету.</p><p style="color:var(--muted);font-size:13px;margin-top:8px">Ошибка: '+e.message+'</p>';
   }
 }
 
-function table(rows,cols){
-  return '<table><tr>'+cols.map(c=>'<th>'+c+'</th>').join('')+'</tr>'+rows.map(r=>'<tr>'+cols.map(c=>'<td>'+esc(r[c])+'</td>').join('')+'</tr>').join('')+'</table>';
-}
-
 function closePanel(){
   panel.classList.remove('open');
   document.body.classList.remove('panel-open');
+}
+
+/* ===== ШТРИХ 2: ПЕРЕКЛЮЧАТЕЛЬ ИСТОРИЙ =====
+   Контракт бэка: история = GET /api/tickets с заголовком X-Client-Id (uuid из localStorage),
+   у каждого обращения есть messages_count, last_role, last_text;
+   продолжение истории = слать ticket_id в /api/chat;
+   тред = GET /api/tickets/{id}/messages; кабинет = всё под X-Support-Code: hacaton, без кода 401. */
+const ROLE_RU={user:'пользователь',ai:'Акти',specialist:'специалист',system:'система'};
+
+async function openHistoryPanel(){
+  panel.classList.add('open');document.body.classList.add('panel-open');
+  document.getElementById('panelTitle').textContent='Мои обращения';
+  const body=document.getElementById('panelBody');body.innerHTML='Загрузка…';
+  try{
+    const list=await api('/tickets');
+    body.innerHTML=(list.length?`<button class="chip" style="margin-bottom:10px" onclick="closePanel();newConversation()">＋ Новый чат</button>`:'')
+      +(list.length?list.map(t=>`
+      <div class="q-card" style="margin-bottom:8px">
+        <b>#${t.id} · ${esc(t.category||'без категории')}${t.id==ticketId?' · <span style="color:var(--red)">текущее</span>':''}</b>
+        <div class="meta">${esc(t.status)} · сообщений: ${t.messages_count||0}${t.last_role?(' · посл: '+(ROLE_RU[t.last_role]||esc(t.last_role))):''} · ${esc((t.updated_at||'').slice(5,16))}</div>
+        <div class="txt">${esc(t.last_text||t.problem_text||'').slice(0,120)}</div>
+        <button onclick="openTicketChat(${t.id})">Открыть в чате</button>
+        <button class="ghost" onclick="viewTicket(${t.id})">Диалог</button>
+      </div>`).join(''):'<p style="color:var(--muted)">Пока обращений нет.</p>');
+  }catch(e){body.innerHTML='<p style="color:var(--muted)">Не удалось загрузить историю.</p>';}
+}
+
+async function openTicketChat(id){
+  closePanel();
+  ticketId=id;sessionStorage.setItem('ticket_id',String(id));
+  stopUserPolling();lastMsgId=0;pending=null;
+  chat.innerHTML='';
+  ensureHero(true);
+  addSys('── Вы переключились на обращение #'+id+' ──');
+  try{
+    const msgs=await api('/tickets/'+id+'/messages');
+    msgs.forEach(m=>{
+      if(m.role==='user')addUser(m.text);
+      else if(m.role==='ai')addBot(esc(m.text));
+      else if(m.role==='specialist')addBot('<span class="badge"><b class="spec">Специалист</b> · '+fmtTime(m.created_at)+'</span>'+esc(m.text),'solution',true);
+      else addSys(m.text);
+    });
+    const t=await api('/tickets/'+id);
+    if(t&&(t.status==='escalated'||t.status==='in_progress')){
+      addSys('Обращение у специалиста — ответ придёт в этот чат.');
+      startUserPolling(id);
+    }else if(t&&(t.status==='resolved'||t.status==='resolved_by_specialist')){
+      addSys('Обращение закрыто: новое сообщение начнёт новое обращение.');
+    }
+    saveChatState();
+  }catch(e){console.error('[HISTORY] openTicketChat error:',e);addSys('Не удалось загрузить диалог.');}
+}
+
+async function viewTicket(id){
+  const body=document.getElementById('panelBody');
+  try{
+    const msgs=await api('/tickets/'+id+'/messages');
+    body.innerHTML='<div style="display:flex;justify-content:space-between;align-items:center;margin:10px 0"><h4>Диалог обращения #'+id+'</h4><button class="chip" onclick="openHistoryPanel()">← К списку</button></div>'
+      +'<div style="max-height:60vh;overflow-y:auto;display:flex;flex-direction:column;gap:6px">'
+      +msgs.map(m=>`<div class="t-msg ${esc(m.role)}" style="max-width:100%">${esc(m.text)}</div>`).join('')
+      +'</div>';
+  }catch(e){body.innerHTML='<p style="color:var(--muted)">Не удалось загрузить диалог.</p>';}
+}
+
+function newConversation(){
+  console.log('[NEW] Starting new conversation');
+  ticketId=null;sessionStorage.removeItem('ticket_id');
+  stopUserPolling();lastMsgId=0;pending=null;
+  localStorage.removeItem('chat_'+CLIENT);
+  chat.innerHTML='';
+  ensureHero(false);
+  addSys('── Новый чат: опишите следующую проблему ──');
+  const c=addBot('Я здесь! Расскажите, что случилось на этот раз.','idle');
+  buttons(c,['Не могу войти в Актион 360','Не приходит письмо','Не открывается страница','Нет звука на вебинаре'],o=>send(o));
 }
 
 // ===== ПЛЕЙСХОЛДЕР И НАСТРОЕНИЯ =====
