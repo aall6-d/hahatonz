@@ -40,8 +40,11 @@ main.shell{flex:1;display:flex;flex-direction:column;min-height:0;padding-top:14
 #chat{flex:1;overflow-y:auto;padding:22px 24px;display:flex;flex-direction:column;gap:14px;scrollbar-gutter:stable;scrollbar-width:thin;scrollbar-color:rgba(20,20,25,.18) transparent;max-width:100%}
 #chat::-webkit-scrollbar{width:10px}
 #chat::-webkit-scrollbar-thumb{background:rgba(20,20,25,.14);border-radius:8px;border:3px solid transparent;background-clip:content-box}
-.hero{text-align:center;padding:26px 0 4px;animation:pop .6s cubic-bezier(.2,.9,.3,1.15)}
-.hero.hide{opacity:0;transform:translateY(-10px);height:0;padding:0;overflow:hidden;pointer-events:none}
+.hero{text-align:center;padding:26px 0 4px;animation:pop .6s cubic-bezier(.2,.9,.3,1.15);transition:opacity .3s,transform .3s}
+/* ИЗМЕНЕНИЕ: убрано скрытие hero, теперь он просто становится компактнее */
+.hero.compact{opacity:.7;padding:12px 0}
+.hero.compact h1{font-size:24px}
+.hero.compact p{font-size:14px}
 .hero h1{font-size:clamp(30px,6vw,48px);letter-spacing:-.03em;font-weight:700;margin-top:12px}
 .hero h1 b{color:var(--red)}
 .hero p{color:var(--muted);font-size:16.5px;margin-top:8px}
@@ -448,10 +451,13 @@ async function send(text){
   if(!text.trim())return;
   addUser(text);
   
-  // ИСПРАВЛЕНИЕ: безопасное обращение к элементам, чтобы избежать крашей
-  if(heroAkti) heroAkti.dataset.typing='false';
+  // ИЗМЕНЕНИЕ: вместо скрытия hero, делаем его компактнее
   const heroEl = document.getElementById('hero');
-  if(heroEl) heroEl.classList.add('hide');
+  if(heroEl && !heroEl.classList.contains('compact')){
+    heroEl.classList.add('compact');
+  }
+  
+  if(heroAkti) heroAkti.dataset.typing='false';
   
   pending=addBot('Разбираюсь в проблеме…','thinking');
   setHeader('thinking');
@@ -645,9 +651,17 @@ function loadChatState(){
     }
     if(data.messages&&data.messages.length>0){
       chat.innerHTML='';
-      // ИСПРАВЛЕНИЕ: безопасное скрытие hero, если он ещё существует в DOM
-      const heroEl = document.getElementById('hero');
-      if(heroEl) heroEl.classList.add('hide');
+      // ИЗМЕНЕНИЕ: восстанавливаем hero блок
+      chat.innerHTML = `
+        <div class="hero compact" id="hero">
+          <div class="hero-akti-wrap"><div class="akti hero-akti" id="heroAkti" data-state="idle"></div></div>
+          <h1>Привет! Я <b>Акти</b></h1>
+          <p>Решаю технические проблемы с продуктами Актиона — быстро и по-человечески.</p>
+        </div>
+      `;
+      heroAkti = document.getElementById('heroAkti');
+      document.querySelectorAll('.akti').forEach(el=>el.innerHTML=aktiSVG());
+      
       data.messages.forEach(m=>{
         const div=document.createElement('div');
         div.className=m.className;
@@ -953,8 +967,7 @@ function newConversation(){
   lastMsgId=0;
   localStorage.removeItem('chat_'+CLIENT);
   
-  // ИСПРАВЛЕНИЕ: Восстанавливаем блок hero, так как простая очистка innerHTML 
-  // удаляла его из DOM, что приводило к крашу функции send()
+  // ИЗМЕНЕНИЕ: восстанавливаем hero блок с маскотом
   chat.innerHTML = `
     <div class="hero" id="hero">
       <div class="hero-akti-wrap"><div class="akti hero-akti" id="heroAkti" data-state="idle"></div></div>
@@ -963,12 +976,11 @@ function newConversation(){
     </div>
   `;
   
-  // Обновляем глобальную ссылку на только что созданный DOM-элемент
+  // Обновляем глобальную ссылку и инициализируем SVG
   heroAkti = document.getElementById('heroAkti');
-  // Переинициализируем SVG маскота в новом элементе
-  if(heroAkti) heroAkti.innerHTML = aktiSVG();
+  document.querySelectorAll('.akti').forEach(el=>el.innerHTML=aktiSVG());
   
-  addSys('── Новый чат: опишите следующую проблему ──');
+  addSys('── Новый чат: опишите следующую проблему ─');
   const c=addBot('Я здесь! Расскажите, что случилось на этот раз.','idle');
   buttons(c,['Не могу войти в Актион 360','Не приходит письмо','Не открывается страница','Нет звука на вебинаре'],o=>send(o));
 }
@@ -1128,14 +1140,15 @@ let phI=0;
 })();
 
 setInterval(()=>{
-  if(!heroAkti || heroAkti.dataset.state!=='idle' || heroAkti.dataset.typing==='true')return;
+  if(!heroAkti) return;
+  if(heroAkti.dataset.state!=='idle'||heroAkti.dataset.typing==='true')return;
   const r=Math.random();
   if(r<.25){
     heroAkti.dataset.mood='wink';
-    setTimeout(()=>{ if(heroAkti) heroAkti.dataset.mood=''; },900);
+    setTimeout(()=>heroAkti.dataset.mood='',900);
   }else if(r<.5){
     heroAkti.dataset.mood='shy';
-    setTimeout(()=>{ if(heroAkti) heroAkti.dataset.mood=''; },2400);
+    setTimeout(()=>heroAkti.dataset.mood='',2400);
   }
 },6500);
 
