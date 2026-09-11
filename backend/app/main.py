@@ -2,7 +2,7 @@ import json
 import re
 import os
 import difflib
-from fastapi import FastAPI, HTTPException, Header
+from fastapi import FastAPI, HTTPException, Header, Query
 from fastapi.middleware.cors import CORSMiddleware
 
 from app import db, knowledge, classifier
@@ -110,7 +110,6 @@ def safe_classify(text):
 
 
 def detect_new_problem(ticket, text):
-    """Похоже ли сообщение на НОВУЮ проблему (другая категория)."""
     if not ticket:
         return False
     if not has_problem_marker(text):
@@ -282,7 +281,6 @@ def chat(payload: ChatRequest, x_client_id: str = Header(default=None)):
 
     cur = db.get_ticket(ticket_id)
 
-    # Обращение у специалиста: либо новое обращение, либо реплика в тред
     if (cur["status"] in ("escalated", "in_progress")
             and state not in ("new", "clarification")):
         if detect_new_problem(cur, text):
@@ -300,11 +298,10 @@ def chat(payload: ChatRequest, x_client_id: str = Header(default=None)):
         return respond(ticket_id, "question",
                        "Обращение передано специалисту и в работе. "
                        "Ваше сообщение добавлено в диалог — ответ придёт "
-                       "в этот чат. Если у вас новая проблема — нажмите "
-                       "«Новый чат» в шапке.",
+                       "в этот чат. Если у вас новая проблема — начните "
+                       "новый чат.",
                        cur["category"], cur["confidence"])
 
-    # Ждём результат, но пользователь описывает ДРУГУЮ проблему -> новый тикет
     if state == "awaiting_result" and detect_new_problem(cur, text):
         old_id = ticket_id
         new_id = db.create_ticket(text, parent_id=old_id, client_id=client)
@@ -546,11 +543,12 @@ def chat(payload: ChatRequest, x_client_id: str = Header(default=None)):
                    "Опишите проблему подробнее.", None, None)
 
 
-# ---------- тикеты ----------
+# ---------- история пользователя (приватная) ----------
 
 @app.get("/api/tickets")
-def list_tickets(x_client_id: str = Header(default=None)):
-    client = (x_client_id or "").strip() or None
+def list_tickets(x_client_id: str = Header(default=None),
+                 client_id: str = Query(default=None)):
+    client = (x_client_id or client_id or "").strip() or None
     if not client:
         return []
     return db.list_tickets(client_id=client)
@@ -594,7 +592,7 @@ def escalate(ticket_id: int):
     return {"ticket_id": ticket_id, "status": "escalated", "card": card}
 
 
-# ---------- кабинет специалиста ----------
+# ---------- кабинет специалиста (только по коду) ----------
 
 def require_support_code(x_support_code: str = Header(default=None)):
     code = (x_support_code or "").strip()
@@ -604,7 +602,8 @@ def require_support_code(x_support_code: str = Header(default=None)):
 
 
 @app.get("/api/support/tickets")
-def support_tickets():
+def support_tickets(x_support_code: str = Header(default=None)):
+    require_support_code(x_support_code)
     return db.list_tickets()
 
 
